@@ -1,30 +1,34 @@
+import { DashboardKpiCards } from '@/features/dashboard/components/dashboard-kpi-cards';
+import { DashboardQuickActions } from '@/features/dashboard/components/dashboard-quick-actions';
+import { DashboardOperationsSnapshot } from '@/features/dashboard/components/dashboard-operations-snapshot';
+import { DashboardFinancialSnapshot } from '@/features/dashboard/components/dashboard-financial-snapshot';
+import { DashboardAlerts } from '@/features/dashboard/components/dashboard-alerts';
+import { AppPageHeader } from '@/components/shared';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+  description: 'Operations overview and KPIs',
+};
+
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+    <div className="flex flex-col gap-6 w-full pb-8">
+      <AppPageHeader 
+        title="Dashboard" 
+        description="Overview of your daily travel operations and financials."
+      />
+      
+      <DashboardKpiCards />
+      
+      <DashboardQuickActions />
+      
+      <div className="grid gap-4 md:grid-cols-2">
+        <DashboardOperationsSnapshot />
+        <DashboardFinancialSnapshot />
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card text-card-foreground shadow">
-          <div className="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Architecture Status</h3>
-          </div>
-          <div className="p-6 pt-0">
-            <div className="text-2xl font-bold text-primary">Foundation Ready</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              FE-1 architectural blueprint implemented.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div className="rounded-xl border bg-card text-card-foreground shadow p-6">
-        <h3 className="text-lg font-medium mb-2">Next Steps</h3>
-        <p className="text-sm text-muted-foreground">
-          Ready to begin FE-2 (Authentication + Shell Layout).
-        </p>
-      </div>
+      <DashboardAlerts />
     </div>
   );
 }

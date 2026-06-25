@@ -7,7 +7,10 @@ import {
   Briefcase,
   Wallet,
   Settings,
-  PieChart
+  PieChart,
+  UserCircle,
+  Bus,
+  Banknote
 } from 'lucide-react';
 import { AppModule } from '../permissions';
 
@@ -16,48 +19,51 @@ export interface NavItem {
   href: string;
   icon: any;
   module?: AppModule;
+  badge?: number;
 }
 
 export interface NavGroup {
   group: string;
   items: NavItem[];
+  module?: AppModule; // if the whole group is permissioned
 }
 
 export const NAVIGATION_CONFIG: NavGroup[] = [
   {
-    group: 'Overview',
+    group: 'Dashboard',
     items: [
-      { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { title: 'Overview', href: '/dashboard', icon: LayoutDashboard },
     ],
   },
   {
     group: 'Operations',
     items: [
       { title: 'Trips', href: '/trips', icon: Briefcase, module: 'TRIPS' },
+      { title: 'Customers', href: '/customers', icon: Users, module: 'COMPANIES' },
+      { title: 'Routes', href: '/routes', icon: MapPin, module: 'COMPANIES' },
     ],
   },
   {
-    group: 'Master Data',
+    group: 'Fleet',
     items: [
-      { title: 'Companies', href: '/companies', icon: Building2, module: 'COMPANIES' },
-      { title: 'Customers', href: '/customers', icon: Users, module: 'COMPANIES' },
-      { title: 'Drivers', href: '/drivers', icon: Users, module: 'DRIVERS' },
       { title: 'Vehicles', href: '/vehicles', icon: Car, module: 'VEHICLES' },
-      { title: 'Routes', href: '/routes', icon: MapPin, module: 'COMPANIES' }, // Fallback to COMPANIES permission
+      { title: 'Drivers', href: '/drivers', icon: UserCircle, module: 'DRIVERS' },
+      { title: 'Expenses', href: '/expenses', icon: Wallet, module: 'FINANCE' },
     ],
   },
   {
     group: 'Finance',
     items: [
-      { title: 'Expenses', href: '/expenses', icon: Wallet, module: 'FINANCE' },
-      { title: 'Payments', href: '/payments', icon: Wallet, module: 'FINANCE' },
+      { title: 'Payments', href: '/payments', icon: Banknote, module: 'FINANCE' },
+      { title: 'External Hiring', href: '/external-hiring', icon: Bus, module: 'FINANCE' },
       { title: 'Profitability', href: '/profitability', icon: PieChart, module: 'FINANCE' },
     ],
   },
   {
-    group: 'System',
+    group: 'Administration',
     items: [
-      { title: 'Settings', href: '/settings', icon: Settings, module: 'SETTINGS' },
+      { title: 'Company Settings', href: '/settings', icon: Building2, module: 'SETTINGS' },
+      { title: 'Profile', href: '/profile', icon: Settings }, // Profile is typically accessible to all
     ],
   },
 ];
