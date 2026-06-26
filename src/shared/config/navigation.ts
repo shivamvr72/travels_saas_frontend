@@ -17,7 +17,7 @@ import { AppModule } from '../permissions';
 export interface NavItem {
   title: string;
   href: string;
-  icon: any;
+  icon: React.ElementType;
   module?: AppModule;
   badge?: number;
 }

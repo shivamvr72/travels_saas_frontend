@@ -36,12 +36,12 @@ export interface CheckSlugResponse {
 }
 
 export const authApi = {
-  login: async (data: Record<string, any>): Promise<AuthResponse> => {
+  login: async (data: Record<string, unknown>): Promise<AuthResponse> => {
     const response = await apiClient.post(AUTH_CONFIG.LOGIN_ENDPOINT, data);
     return response.data;
   },
 
-  register: async (data: Record<string, any>): Promise<AuthResponse> => {
+  register: async (data: Record<string, unknown>): Promise<AuthResponse> => {
     const response = await apiClient.post('/auth/register', data);
     return response.data;
   },

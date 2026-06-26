@@ -113,15 +113,15 @@ function SidebarContent() {
           <Avatar className="h-9 w-9 shrink-0 border border-border">
             <AvatarImage src="" />
             <AvatarFallback className="bg-primary/10 text-primary">
-              {user.full_name.substring(0, 2).toUpperCase()}
+              {user.full_name?.substring(0, 2).toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
           <div className={cn(
             "flex flex-col overflow-hidden transition-all duration-300",
             !isSidebarOpen ? "opacity-0 md:opacity-0 md:hidden" : "opacity-100"
           )}>
-            <span className="text-sm font-medium leading-none truncate">{user.full_name}</span>
-            <span className="text-xs text-muted-foreground mt-1 truncate capitalize">{user.role}</span>
+            <span className="text-sm font-medium leading-none truncate">{user.full_name || 'User'}</span>
+            <span className="text-xs text-muted-foreground mt-1 truncate capitalize">{user.role || 'Admin'}</span>
           </div>
         </Link>
       </div>

@@ -1,10 +1,7 @@
-import { DashboardKpiCards } from '@/features/dashboard/components/dashboard-kpi-cards';
-import { DashboardQuickActions } from '@/features/dashboard/components/dashboard-quick-actions';
-import { DashboardOperationsSnapshot } from '@/features/dashboard/components/dashboard-operations-snapshot';
-import { DashboardFinancialSnapshot } from '@/features/dashboard/components/dashboard-financial-snapshot';
-import { DashboardAlerts } from '@/features/dashboard/components/dashboard-alerts';
-import { AppPageHeader } from '@/components/shared';
 import { Metadata } from 'next';
+import { AppToolbar } from '@/components/layout/crud/app-toolbar';
+import { AppPageContainer } from '@/components/layout/crud/app-page-container';
+import { DashboardKpiCards, DashboardAlertsRow, DashboardBottomRow } from '@/features/dashboard/components/dashboard-views';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -13,22 +10,18 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col gap-6 w-full pb-8">
-      <AppPageHeader 
+    <AppPageContainer maxWidth="full" className="pb-8">
+      <AppToolbar 
         title="Dashboard" 
         description="Overview of your daily travel operations and financials."
       />
       
       <DashboardKpiCards />
       
-      <DashboardQuickActions />
+      <DashboardAlertsRow />
       
-      <div className="grid gap-4 md:grid-cols-2">
-        <DashboardOperationsSnapshot />
-        <DashboardFinancialSnapshot />
-      </div>
+      <DashboardBottomRow />
       
-      <DashboardAlerts />
-    </div>
+    </AppPageContainer>
   );
 }
