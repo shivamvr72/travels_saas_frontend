@@ -45,3 +45,16 @@ export const expenseKeys = {
   details: () => [...expenseKeys.all, 'detail'] as const,
   detail: (id: string) => [...expenseKeys.details(), id] as const,
 };
+
+export const routeKeys = {
+  all: ['routes'] as const,
+  lists: () => [...routeKeys.all, 'list'] as const,
+  list: (filters: Record<string, unknown>) => [...routeKeys.lists(), { filters }] as const,
+  details: () => [...routeKeys.all, 'detail'] as const,
+  detail: (id: string) => [...routeKeys.details(), id] as const,
+};
+
+export const myCompanyKeys = {
+  all: ['my-company'] as const,
+  detail: () => [...myCompanyKeys.all, 'detail'] as const,
+};

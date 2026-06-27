@@ -1,4 +1,3 @@
-import { ReactNode } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';

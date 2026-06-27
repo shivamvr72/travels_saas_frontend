@@ -27,7 +27,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       try {
         const response = await apiClient.get('/auth/me');
         setAuth(useAuthStore.getState().accessToken!, useAuthStore.getState().refreshToken!, response.data);
-      } catch (error) {
+      } catch {
         logout();
         router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       } finally {

@@ -8,6 +8,12 @@ export const PERMISSIONS = {
   COMPANIES_VIEW: ['admin', 'manager', 'viewer'],
   COMPANIES_MANAGE: ['admin', 'manager'],
   
+  CUSTOMERS_VIEW: ['admin', 'manager', 'viewer'],
+  CUSTOMERS_MANAGE: ['admin', 'manager'],
+  
+  ROUTES_VIEW: ['admin', 'manager', 'viewer'],
+  ROUTES_MANAGE: ['admin', 'manager'],
+  
   DRIVERS_VIEW: ['admin', 'manager', 'viewer'],
   DRIVERS_MANAGE: ['admin', 'manager'],
   
@@ -31,7 +37,7 @@ export const hasPermission = (userRole: Role, allowedRoles: readonly Role[]): bo
 };
 
 // Generic module-based permission helpers
-export type AppModule = 'COMPANIES' | 'DRIVERS' | 'VEHICLES' | 'TRIPS' | 'FINANCE' | 'SETTINGS';
+export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS';
 
 export const canView = (module: AppModule, role: Role): boolean => {
   const permissionKey = `${module}_VIEW` as keyof typeof PERMISSIONS;

@@ -81,7 +81,7 @@ export function AppDataTable<T>({
             </tr>
           </thead>
           <tbody className="[&_tr:last-child]:border-0">
-            {data.map((item, rowIndex) => (
+            {data.map((item) => (
               <tr 
                 key={rowKey(item)}
                 className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"

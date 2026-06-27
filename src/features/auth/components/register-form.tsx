@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRegisterMutation } from '../hooks/use-auth-mutations';
@@ -49,8 +49,8 @@ export function RegisterForm() {
     mode: 'onChange',
   });
 
-  const travelName = form.watch('travel_name');
-  const slug = form.watch('slug');
+  const travelName = useWatch({ control: form.control, name: 'travel_name' });
+  const slug = useWatch({ control: form.control, name: 'slug' });
 
   // Auto-generate slug from travel_name
   useEffect(() => {
@@ -67,12 +67,14 @@ export function RegisterForm() {
   // Debounced slug availability check
   useEffect(() => {
     if (!slug || slug.length < 3 || !/^[a-z0-9-]+$/.test(slug)) {
-      setSlugAvailable(null);
+      setTimeout(() => setSlugAvailable(null), 0);
       return;
     }
 
-    setIsCheckingSlug(true);
-    setSlugAvailable(null);
+    setTimeout(() => {
+      setIsCheckingSlug(true);
+      setSlugAvailable(null);
+    }, 0);
 
     if (slugCheckTimeoutRef.current) {
       clearTimeout(slugCheckTimeoutRef.current);
@@ -87,7 +89,7 @@ export function RegisterForm() {
         } else {
           form.clearErrors('slug');
         }
-      } catch (error) {
+      } catch {
         setSlugAvailable(null);
       } finally {
         setIsCheckingSlug(false);
@@ -103,8 +105,9 @@ export function RegisterForm() {
     if (slugAvailable === false) return; // Prevent submission if slug is taken
 
     // Remove confirmPassword as the backend doesn't expect it
-    const { confirmPassword, ...submitData } = data;
-    registerMutation.mutate(submitData);
+    const submitData = { ...data } as Record<string, unknown>;
+    delete submitData.confirmPassword;
+    registerMutation.mutate(submitData as Omit<RegisterFormValues, 'confirmPassword'>);
   };
 
   return (

@@ -5,7 +5,7 @@ import { cn } from '@/shared/lib/utils';
 import { NAVIGATION_CONFIG } from '@/shared/config/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { canView } from '@/shared/permissions';
-import { Building2, Settings } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

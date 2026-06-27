@@ -17,6 +17,7 @@ export const useLoginMutation = () => {
       setAuth(data.tokens.access_token, data.tokens.refresh_token, data.user);
       setTenant(data.travel_company);
       toast.success('Logged in successfully');
+      router.push('/dashboard');
     },
     onError: (error) => {
       toast.error(parseApiError(error, 'Login failed'));

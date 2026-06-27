@@ -39,8 +39,9 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     group: 'Operations',
     items: [
       { title: 'Trips', href: '/trips', icon: Briefcase, module: 'TRIPS' },
-      { title: 'Customers', href: '/customers', icon: Users, module: 'COMPANIES' },
-      { title: 'Routes', href: '/routes', icon: MapPin, module: 'COMPANIES' },
+      { title: 'Companies', href: '/companies', icon: Building2, module: 'COMPANIES' },
+      { title: 'Customers', href: '/customers', icon: Users, module: 'CUSTOMERS' },
+      { title: 'Routes', href: '/routes', icon: MapPin, module: 'ROUTES' },
     ],
   },
   {
