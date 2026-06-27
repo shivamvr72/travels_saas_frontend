@@ -41,7 +41,7 @@ export class AppErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundar
       }
 
       return (
-        <div className="flex items-center justify-center min-h-[400px] w-full p-4">
+        <div className="flex items-center justify-center min-h-96 w-full p-4">
           <Card className="max-w-md w-full border-destructive/50 bg-destructive/5">
             <CardHeader className="text-center">
               <div className="mx-auto w-12 h-12 rounded-full bg-destructive/20 flex items-center justify-center mb-4">

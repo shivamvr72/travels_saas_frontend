@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import '@/shared/config/init-features';
 import { featureRegistry, FeatureKey } from '@/shared/config/feature-registry';
 import { CrudList } from './crud-list';
 import { CrudForm } from './crud-form';

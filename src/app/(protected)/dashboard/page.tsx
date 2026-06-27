@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { AppToolbar } from '@/components/layout/crud/app-toolbar';
 import { AppPageContainer } from '@/components/layout/crud/app-page-container';
-import { DashboardKpiCards, DashboardAlertsRow, DashboardBottomRow } from '@/features/dashboard/components/dashboard-views';
+import { DashboardKpiCards, DashboardMainContent } from '@/features/dashboard/components/dashboard-views';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -18,9 +18,7 @@ export default function DashboardPage() {
       
       <DashboardKpiCards />
       
-      <DashboardAlertsRow />
-      
-      <DashboardBottomRow />
+      <DashboardMainContent />
       
     </AppPageContainer>
   );

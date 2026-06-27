@@ -168,7 +168,7 @@ export function AppToolbar({
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="default" className="ml-2 px-1.5 min-w-[1.25rem] h-5 flex items-center justify-center rounded-full text-[10px]">
+                <Badge variant="default" className="ml-2 px-1.5 min-w-5 h-5 flex items-center justify-center rounded-full text-[10px]">
                   {activeFilterCount}
                 </Badge>
               )}

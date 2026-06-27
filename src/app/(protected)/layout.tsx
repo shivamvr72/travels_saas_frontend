@@ -18,8 +18,8 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
         
         <div 
           className={cn(
-            "flex flex-1 flex-col transition-all duration-300 ease-in-out w-full overflow-hidden",
-            isSidebarOpen ? "md:pl-[260px]" : "md:pl-[72px]"
+            "flex flex-1 flex-col transition-all duration-300 ease-in-out w-full",
+            isSidebarOpen ? "md:pl-64" : "md:pl-16"
           )}
         >
           <AppTopNav />

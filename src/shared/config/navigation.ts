@@ -63,8 +63,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Administration',
     items: [
-      { title: 'Company Settings', href: '/settings', icon: Building2, module: 'SETTINGS' },
-      { title: 'Profile', href: '/profile', icon: Settings }, // Profile is typically accessible to all
+      { title: 'Company Settings', href: '/settings', icon: Settings, module: 'SETTINGS' },
     ],
   },
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CrudModuleConfig } from './crud-types';
 import { AppFormPage } from './app-form-page';
@@ -94,6 +94,17 @@ export function CrudForm({
       console.error('Lifecycle error:', e);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        activeForm.handleSubmit(onSubmit)();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeForm, isEditing, id, config, createMutation, updateMutation, router]);
 
   if (isLoadingInitial) {
     return <FormSkeleton />;

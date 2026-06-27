@@ -255,10 +255,10 @@ export function AppDataTable<T>({
       <Table>
         <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 bg-background")}>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-muted/30 hover:bg-muted/30">
+            <TableRow key={headerGroup.id} className="bg-muted hover:bg-muted">
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="px-4">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -279,12 +279,12 @@ export function AppDataTable<T>({
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() => onRowClick && onRowClick(row.original)}
                 className={cn(
-                  "border-b border-border/40 transition-colors",
-                  onRowClick && "cursor-pointer hover:bg-muted/50"
+                  "border-b border-border/40 transition-colors hover:bg-muted/50",
+                  onRowClick && "cursor-pointer"
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="py-2 text-sm">
+                  <TableCell key={cell.id} className="py-3 px-4 text-sm">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

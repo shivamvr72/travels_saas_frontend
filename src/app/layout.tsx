@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Geist } from 'next/font/google';
 import './globals.css';
+import '@/shared/config/init-features';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { QueryProvider } from '@/providers/query-provider';
 import { Toaster } from '@/components/ui/sonner';

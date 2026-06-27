@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { useTenantStore } from '@/store/tenant-store';
+import { useMediaQuery } from '@/shared/hooks/use-media-query';
+import { useState, useEffect } from 'react';
 
 function SidebarContent() {
   const { user } = useAuthStore();
@@ -23,19 +25,28 @@ function SidebarContent() {
 
   return (
     <>
-      <div className="flex h-16 items-center border-b px-6 shrink-0 transition-all duration-300 overflow-hidden">
-        <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden w-full">
+      <div className={cn(
+        "flex h-16 items-center border-b shrink-0 transition-all duration-300 overflow-hidden",
+        !isSidebarOpen ? "px-0 justify-center" : "px-6"
+      )}>
+        <Link 
+          href="/dashboard" 
+          className={cn(
+            "flex items-center overflow-hidden w-full transition-all duration-300",
+            !isSidebarOpen ? "justify-center" : "gap-2"
+          )}
+        >
           <Building2 className="h-6 w-6 shrink-0 text-primary" />
           <span className={cn(
             "font-bold text-lg whitespace-nowrap transition-all duration-300",
-            !isSidebarOpen ? "opacity-0 md:opacity-0 md:-translate-x-4" : "opacity-100"
+            !isSidebarOpen ? "opacity-0 md:hidden" : "opacity-100"
           )}>
             {tenant?.name || 'SVR Travels'}
           </span>
         </Link>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-4 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 no-scrollbar">
         {NAVIGATION_CONFIG.map((group, groupIdx) => {
           // Filter items based on RBAC
           const visibleItems = group.items.filter(
@@ -47,7 +58,7 @@ function SidebarContent() {
           return (
             <div key={group.group} className={cn("mb-6 px-3", groupIdx > 0 && "mt-6")}>
               <h3 className={cn(
-                "mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-all duration-300",
+                "mb-2 px-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 transition-all duration-300",
                 !isSidebarOpen ? "opacity-0 md:opacity-0 hidden md:block md:invisible" : "opacity-100"
               )}>
                 {group.group}
@@ -66,22 +77,23 @@ function SidebarContent() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setSidebarOpen(false)} // Close on mobile navigation
+                      onClick={() => setSidebarOpen(false)}
                       className={cn(
-                        "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                        isActive ? "bg-accent/80 text-accent-foreground" : "text-muted-foreground",
-                        !isSidebarOpen && "md:justify-center md:px-2"
+                        "group flex items-center rounded-md text-sm font-medium transition-colors hover:bg-muted hover:text-foreground relative",
+                        isActive ? "bg-primary/5 text-primary" : "text-muted-foreground",
                       )}
                       title={!isSidebarOpen ? item.title : undefined}
                     >
-                      <item.icon className={cn(
-                        "h-5 w-5 shrink-0", 
-                        isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                      )} />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+                        <item.icon className={cn(
+                          "h-5 w-5", 
+                          isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                        )} />
+                      </div>
                       
                       <span className={cn(
-                        "whitespace-nowrap transition-all duration-300 flex-1 flex justify-between items-center",
-                        !isSidebarOpen ? "opacity-0 md:opacity-0 md:hidden" : "opacity-100"
+                        "whitespace-nowrap transition-all duration-300 flex-1 flex justify-between items-center overflow-hidden pr-3",
+                        !isSidebarOpen ? "opacity-0 md:opacity-0 md:w-0" : "opacity-100 w-auto"
                       )}>
                         {item.title}
                         {item.badge !== undefined && (
@@ -106,7 +118,7 @@ function SidebarContent() {
         <Link 
           href="/profile"
           className={cn(
-            "flex items-center gap-3 rounded-lg hover:bg-accent p-2 transition-colors",
+            "flex items-center gap-3 rounded-lg hover:bg-muted p-2 transition-colors",
             !isSidebarOpen ? "md:justify-center" : ""
           )}
         >
@@ -131,21 +143,28 @@ function SidebarContent() {
 
 export function AppSidebar() {
   const { isSidebarOpen, setSidebarOpen } = useUiStore();
+  const [isMounted, setIsMounted] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <>
-      {/* Mobile Drawer */}
-      <Sheet open={isSidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent side="left" className="w-[280px] p-0 flex flex-col md:hidden bg-card border-r">
-          <SidebarContent />
-        </SheetContent>
-      </Sheet>
+      {isMounted && !isDesktop && (
+        <Sheet open={isSidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="w-72 p-0 flex flex-col md:hidden bg-sidebar border-r border-border/50">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      )}
 
       {/* Desktop Fixed Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col bg-card border-r transition-all duration-300 ease-in-out md:flex",
-          isSidebarOpen ? "w-[260px]" : "w-[72px]"
+          "fixed inset-y-0 left-0 z-40 hidden flex-col bg-sidebar border-r border-border/50 transition-all duration-300 ease-in-out md:flex",
+          isSidebarOpen ? "w-64" : "w-16"
         )}
       >
         <SidebarContent />

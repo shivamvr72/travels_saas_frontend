@@ -13,7 +13,7 @@ export function TableSkeleton({ columns = 5, rows = 10, className }: TableSkelet
     <div className={cn("w-full overflow-auto rounded-md border", className)}>
       <Table>
         <TableHeader>
-          <TableRow className="bg-muted/30">
+          <TableRow className="bg-muted">
             {Array.from({ length: columns }).map((_, i) => (
               <TableHead key={`th-${i}`}>
                 <Skeleton className="h-5 w-24" />

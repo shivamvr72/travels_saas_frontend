@@ -59,7 +59,7 @@ export function AppPagination({
               value={`${pageSize}`}
               onValueChange={(value) => onPageSizeChange(Number(value))}
             >
-              <SelectTrigger className="h-8 w-[70px]">
+              <SelectTrigger className="h-8 w-20">
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
@@ -73,7 +73,7 @@ export function AppPagination({
           </div>
         )}
 
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+        <div className="flex w-28 items-center justify-center text-sm font-medium">
           Page {page} of {totalPages}
         </div>
 
