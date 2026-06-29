@@ -108,7 +108,7 @@ export function CrudList({ config }: CrudListProps) {
         icon: ba.icon,
         variant: ba.variant,
         permission: ba.permission,
-        onClick: () => ba.action(selectedIds, data?.items || [])
+        onClick: () => ba.action(selectedIds, data?.data || data?.items || [])
       }))
     : config.list.bulkActions 
       ? config.list.bulkActions(selectedIds) 
@@ -119,6 +119,10 @@ export function CrudList({ config }: CrudListProps) {
       <AppToolbar
         title={config.page?.title || config.entityNamePlural}
         description={config.page?.subtitle || `Manage your ${config.entityNamePlural.toLowerCase()}`}
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/' },
+          { label: config.entityNamePlural }
+        ]}
         primaryAction={{
           label: `Add ${config.entityName}`,
           onClick: handleCreate,
@@ -157,7 +161,7 @@ export function CrudList({ config }: CrudListProps) {
       <div className="mt-4 flex flex-col h-full space-y-4">
         <AppDataTable
           columns={columns}
-          data={data?.items || []}
+          data={data?.data || data?.items || []}
           isLoading={isLoading}
           onRowClick={handleRowClick}
           sortBy={state.sortBy}
@@ -179,7 +183,7 @@ export function CrudList({ config }: CrudListProps) {
 
         <AppPagination
           page={data?.page || 1}
-          pageSize={data?.size || 10}
+          pageSize={data?.page_size || data?.size || 10}
           total={data?.total || 0}
           onPageChange={setPage}
           onPageSizeChange={(size) => {

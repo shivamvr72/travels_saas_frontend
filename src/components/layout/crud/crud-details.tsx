@@ -84,6 +84,18 @@ export function CrudDetails({ config, id, children, extraActions }: CrudDetailsP
     }] : [])
   ];
 
+  const detailMetadata = config.detail?.metadata || (config.form?.sections ? {
+    showAuditInfo: true,
+    cards: config.form.sections.map(section => ({
+      title: section.title,
+      fields: section.fields.map(field => ({
+        name: field.name,
+        label: field.label || field.name,
+        type: field.type,
+      }))
+    }))
+  } : undefined);
+
   return (
     <AppPageContainer>
       <AppToolbar
@@ -98,9 +110,11 @@ export function CrudDetails({ config, id, children, extraActions }: CrudDetailsP
       <div className="mt-6 space-y-6">
         {children ? (
           children(data as Record<string, any>)
-        ) : config.detail?.metadata ? (
+        ) : config.detail?.customLayout ? (
+          config.detail.customLayout(data as Record<string, any>)
+        ) : detailMetadata ? (
           <>
-            {config.detail.metadata.cards.map((card, idx) => (
+            {detailMetadata.cards.map((card, idx) => (
               <Card key={idx}>
                 <CardHeader>
                   <CardTitle>{card.title}</CardTitle>
@@ -120,7 +134,7 @@ export function CrudDetails({ config, id, children, extraActions }: CrudDetailsP
               </Card>
             ))}
             
-            {config.detail.metadata.showAuditInfo !== false && (
+            {detailMetadata.showAuditInfo !== false && (
               <AppAuditInfo 
                 createdAt={(data as Record<string, any>).created_at as string} 
                 updatedAt={(data as Record<string, any>).updated_at as string} 
@@ -130,8 +144,6 @@ export function CrudDetails({ config, id, children, extraActions }: CrudDetailsP
               />
             )}
           </>
-        ) : config.detail?.customLayout ? (
-          config.detail.customLayout(data as Record<string, any>)
         ) : (
           <div className="p-4 border border-destructive/20 bg-destructive/5 text-destructive rounded-md">
             No detail layout configuration provided for {config.entityName}.

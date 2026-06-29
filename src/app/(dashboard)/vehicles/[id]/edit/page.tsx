@@ -1,5 +1,6 @@
 import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
 
-export default function EditvehiclesPage({ params }: { params: { id: string } }) {
-  return <MetadataCrudView feature="vehicles" view="form" id={params.id} isEditing />;
+export default async function ({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return <MetadataCrudView feature="vehicles" view="form" id={resolvedParams.id} isEditing />;
 }

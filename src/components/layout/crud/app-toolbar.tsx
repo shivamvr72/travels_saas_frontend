@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export interface ActionDef {
   label: string;
@@ -24,6 +26,7 @@ export interface ActionDef {
 export interface AppToolbarProps {
   title: string;
   description?: string;
+  breadcrumbs?: { label: string; href?: string }[];
   
   // Actions
   primaryAction?: ActionDef;
@@ -49,6 +52,7 @@ export interface AppToolbarProps {
 export function AppToolbar({
   title,
   description,
+  breadcrumbs,
   primaryAction,
   secondaryActions = [],
   selectedCount = 0,
@@ -69,6 +73,24 @@ export function AppToolbar({
     <div className={cn("flex flex-col gap-4 pb-4 border-b border-border/40 transition-all", className)}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          {breadcrumbs && breadcrumbs.length > 0 && (
+            <Breadcrumb className="mb-2">
+              <BreadcrumbList>
+                {breadcrumbs.map((crumb, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5">
+                    <BreadcrumbItem>
+                      {crumb.href ? (
+                        <BreadcrumbLink render={<Link href={crumb.href}>{crumb.label}</Link>} />
+                      ) : (
+                        <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                      )}
+                    </BreadcrumbItem>
+                    {idx < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                  </div>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          )}
           <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
           {description && (
             <p className="text-sm text-muted-foreground mt-1">{description}</p>
@@ -92,12 +114,11 @@ export function AppToolbar({
               )}
               {secondaryActions.length > 0 && (
                 <DropdownMenu>
-                  {/* @ts-expect-error asChild is valid but missing in strict types */}
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger render={
                     <Button variant="outline" size="sm" className="h-9">
                       More <MoreHorizontal className="ml-2 h-4 w-4" />
                     </Button>
-                  </DropdownMenuTrigger>
+                  } />
                   <DropdownMenuContent align="end">
                     {secondaryActions.map((action, i) => (
                       <DropdownMenuItem 

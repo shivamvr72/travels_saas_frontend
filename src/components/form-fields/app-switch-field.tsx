@@ -38,7 +38,7 @@ export function AppSwitchField<T extends FieldValues>({
           </div>
           <FormControl>
             <Switch
-              checked={field.value}
+              checked={!!field.value}
               onCheckedChange={field.onChange}
               disabled={disabled}
             />

@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { CrudModuleConfig } from './crud-types';
 import { AppFormPage } from './app-form-page';
-import { useForm, UseFormReturn, FieldValues } from 'react-hook-form';
+import { useForm, FormProvider, UseFormReturn, FieldValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormSkeleton } from '@/components/shared/skeletons/form-skeleton';
 import { FieldRenderer } from './field-renderer';
@@ -116,116 +116,118 @@ export function CrudForm({
       description={isEditing ? `Update the details of this ${config.entityName.toLowerCase()}` : `Create a new ${config.entityName.toLowerCase()}`}
       backUrl={config.routeBase}
     >
-      <form onSubmit={activeForm.handleSubmit(onSubmit)} className="space-y-6">
-      {children ? children : (
-        config.form ? (
-          <div className="space-y-6">
-            {config.form.layout === 'tabs' && config.form.tabs ? (
-              <Tabs defaultValue={config.form.tabs[0].title.toLowerCase().replace(/\s+/g, '-')}>
-                <TabsList className="mb-4">
+      <FormProvider {...activeForm}>
+        <form onSubmit={activeForm.handleSubmit(onSubmit)} className="space-y-6">
+        {children ? children : (
+          config.form ? (
+            <div className="space-y-6">
+              {config.form.layout === 'tabs' && config.form.tabs ? (
+                <Tabs defaultValue={config.form.tabs[0].title.toLowerCase().replace(/\s+/g, '-')}>
+                  <TabsList className="mb-4">
+                    {config.form.tabs.map(tab => (
+                      <TabsTrigger key={tab.title} value={tab.title.toLowerCase().replace(/\s+/g, '-')}>
+                        {tab.title}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
                   {config.form.tabs.map(tab => (
-                    <TabsTrigger key={tab.title} value={tab.title.toLowerCase().replace(/\s+/g, '-')}>
-                      {tab.title}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                {config.form.tabs.map(tab => (
-                  <TabsContent key={tab.title} value={tab.title.toLowerCase().replace(/\s+/g, '-')}>
-                    <div className="space-y-6">
-                      {tab.groups.map((group, gIdx) => (
-                        <div key={gIdx} className="space-y-4">
-                          <h3 className="text-lg font-semibold">{group.title}</h3>
-                          {group.sections.map((section, sIdx) => (
-                            <Card key={sIdx}>
-                              {section.title && (
-                                <CardHeader>
-                                  <CardTitle className="text-lg">{section.title}</CardTitle>
-                                  {section.description && <CardDescription>{section.description}</CardDescription>}
-                                </CardHeader>
-                              )}
-                              <CardContent className={section.title ? "" : "pt-6"}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                  {section.fields.map(field => (
-                                    <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
-                                      <FieldRenderer field={field} form={activeForm} />
-                                    </div>
-                                  ))}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </TabsContent>
-                ))}
-              </Tabs>
-            ) : config.form.layout === 'groups' && config.form.groups ? (
-              <div className="space-y-8">
-                {config.form.groups.map((group, gIdx) => (
-                  <div key={gIdx} className="space-y-4">
-                    <h3 className="text-lg font-semibold">{group.title}</h3>
-                    {group.sections.map((section, sIdx) => (
-                      <Card key={sIdx}>
-                        {section.title && (
-                          <CardHeader>
-                            <CardTitle className="text-lg">{section.title}</CardTitle>
-                            {section.description && <CardDescription>{section.description}</CardDescription>}
-                          </CardHeader>
-                        )}
-                        <CardContent className={section.title ? "" : "pt-6"}>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {section.fields.map(field => (
-                              <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
-                                <FieldRenderer field={field} form={activeForm} />
-                              </div>
+                    <TabsContent key={tab.title} value={tab.title.toLowerCase().replace(/\s+/g, '-')}>
+                      <div className="space-y-6">
+                        {tab.groups.map((group, gIdx) => (
+                          <div key={gIdx} className="space-y-4">
+                            <h3 className="text-lg font-semibold">{group.title}</h3>
+                            {group.sections.map((section, sIdx) => (
+                              <Card key={sIdx}>
+                                {section.title && (
+                                  <CardHeader>
+                                    <CardTitle className="text-lg">{section.title}</CardTitle>
+                                    {section.description && <CardDescription>{section.description}</CardDescription>}
+                                  </CardHeader>
+                                )}
+                                <CardContent className={section.title ? "" : "pt-6"}>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {section.fields.map(field => (
+                                      <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
+                                        <FieldRenderer field={field} form={activeForm} />
+                                      </div>
+                                    ))}
+                                  </div>
+                                </CardContent>
+                              </Card>
                             ))}
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              // Default Sections Layout
-              config.form.sections?.map((section, index) => (
-                <Card key={index}>
-                  {section.title && (
-                    <CardHeader>
-                      <CardTitle className="text-lg">{section.title}</CardTitle>
-                      {section.description && <CardDescription>{section.description}</CardDescription>}
-                    </CardHeader>
-                  )}
-                  <CardContent className={section.title ? "" : "pt-6"}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {section.fields.map(field => (
-                        <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
-                          <FieldRenderer field={field} form={activeForm} />
-                        </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              ) : config.form.layout === 'groups' && config.form.groups ? (
+                <div className="space-y-8">
+                  {config.form.groups.map((group, gIdx) => (
+                    <div key={gIdx} className="space-y-4">
+                      <h3 className="text-lg font-semibold">{group.title}</h3>
+                      {group.sections.map((section, sIdx) => (
+                        <Card key={sIdx}>
+                          {section.title && (
+                            <CardHeader>
+                              <CardTitle className="text-lg">{section.title}</CardTitle>
+                              {section.description && <CardDescription>{section.description}</CardDescription>}
+                            </CardHeader>
+                          )}
+                          <CardContent className={section.title ? "" : "pt-6"}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {section.fields.map(field => (
+                                <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
+                                  <FieldRenderer field={field} form={activeForm} />
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        ) : (
-          <div className="p-4 border rounded-md bg-destructive/10 text-destructive text-sm">
-            No form configuration or children provided.
-          </div>
-        )
-      )}
-      
-      <div className="flex justify-end mt-6 space-x-2">
-        <Button type="button" variant="outline" onClick={() => router.push(config.routeBase)}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : (isEditing ? 'Save Changes' : 'Create')}
-        </Button>
-      </div>
-      </form>
+                  ))}
+                </div>
+              ) : (
+                // Default Sections Layout
+                config.form.sections?.map((section, index) => (
+                  <Card key={index}>
+                    {section.title && (
+                      <CardHeader>
+                        <CardTitle className="text-lg">{section.title}</CardTitle>
+                        {section.description && <CardDescription>{section.description}</CardDescription>}
+                      </CardHeader>
+                    )}
+                    <CardContent className={section.title ? "" : "pt-6"}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {section.fields.map(field => (
+                          <div key={field.name} className={field.span === 2 ? "md:col-span-2" : ""}>
+                            <FieldRenderer field={field} form={activeForm} />
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              )}
+            </div>
+          ) : (
+            <div className="p-4 border rounded-md bg-destructive/10 text-destructive text-sm">
+              No form configuration or children provided.
+            </div>
+          )
+        )}
+        
+        <div className="flex justify-end mt-6 space-x-2">
+          <Button type="button" variant="outline" onClick={() => router.push(config.routeBase)}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : (isEditing ? 'Save Changes' : 'Create')}
+          </Button>
+        </div>
+        </form>
+      </FormProvider>
     </AppFormPage>
   );
 }

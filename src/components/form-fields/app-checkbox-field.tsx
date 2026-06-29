@@ -34,7 +34,7 @@ export function AppCheckboxField<T extends FieldValues>({
         <FormItem className={cn("flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4", className)}>
           <FormControl>
             <Checkbox
-              checked={field.value}
+              checked={!!field.value}
               onCheckedChange={field.onChange}
               disabled={disabled}
             />

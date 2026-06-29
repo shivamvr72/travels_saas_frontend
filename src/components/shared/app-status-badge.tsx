@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { resolveStatus, StatusVariant } from '@/shared/status/status-config';
 
 interface AppStatusBadgeProps {
-  status: string | null | undefined;
+  status: string | boolean | null | undefined;
   domain?: 'driver' | 'vehicle' | 'trip' | 'payment' | 'document' | 'hiring';
   size?: 'sm' | 'md';
   showIcon?: boolean;

@@ -13,19 +13,24 @@ export function createCrudApi<TResponse, TCreate, TUpdate>(basePath: string): Cr
 
   return {
     list: async (params) => {
-      return apiClient.get(normalizedBasePath, { params });
+      const res = await apiClient.get(normalizedBasePath, { params });
+      return res.data;
     },
     get: async (id: string) => {
-      return apiClient.get(`${normalizedBasePath}${id}`);
+      const res = await apiClient.get(`${normalizedBasePath}${id}`);
+      return res.data;
     },
     create: async (data: TCreate) => {
-      return apiClient.post(normalizedBasePath, data);
+      const res = await apiClient.post(normalizedBasePath, data);
+      return res.data;
     },
     update: async (id: string, data: TUpdate) => {
-      return apiClient.put(`${normalizedBasePath}${id}`, data);
+      const res = await apiClient.put(`${normalizedBasePath}${id}`, data);
+      return res.data;
     },
     delete: async (id: string) => {
-      return apiClient.delete(`${normalizedBasePath}${id}`);
+      const res = await apiClient.delete(`${normalizedBasePath}${id}`);
+      return res.data;
     },
   };
 }

@@ -35,7 +35,7 @@ export interface FeatureConfig<TList = unknown, TDetail = unknown, TCreate = unk
   
   // API Hooks (injected so Crud components are purely UI)
   hooks: {
-    useList: (params: Record<string, unknown>) => UseQueryResult<{ items: TList[]; total: number; page: number; size: number }, Error>;
+    useList: (params: Record<string, unknown>) => UseQueryResult<{ data?: TList[]; items?: TList[]; total: number; page: number; size?: number; page_size?: number }, Error>;
     useDetail: (id: string) => UseQueryResult<TDetail, Error>;
     useCreate: () => UseMutationResult<unknown, Error, TCreate, unknown>;
     useUpdate: () => UseMutationResult<unknown, Error, { id: string; data: TUpdate }, unknown>;

@@ -1,5 +1,6 @@
 import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
 
-export default function companiesDetailsPage({ params }: { params: { id: string } }) {
-  return <MetadataCrudView feature="companies" view="details" id={params.id} />;
+export default async function ({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  return <MetadataCrudView feature="companies" view="details" id={resolvedParams.id} />;
 }

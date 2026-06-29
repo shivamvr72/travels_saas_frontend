@@ -236,19 +236,6 @@ export function AppDataTable<T>({
     return <TableSkeleton columns={userColumns.length + (selectable ? 1 : 0) + (getRowActions ? 1 : 0)} className={className} />;
   }
 
-  if (data.length === 0 && emptyState) {
-    return (
-      <div className={cn("p-8", className)}>
-        <AppEmptyState 
-          title={emptyState.title} 
-          description={emptyState.description}
-          actionLabel={emptyState.actionLabel}
-          onAction={emptyState.onAction}
-          className="border-none bg-transparent"
-        />
-      </div>
-    );
-  }
 
   return (
     <div className={cn("w-full overflow-auto rounded-md border", className)}>
@@ -292,8 +279,20 @@ export function AppDataTable<T>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              <TableCell colSpan={columns.length} className="h-[400px] text-center">
+                {emptyState ? (
+                  <AppEmptyState 
+                    title={emptyState.title} 
+                    description={emptyState.description}
+                    actionLabel={emptyState.actionLabel}
+                    onAction={emptyState.onAction}
+                    className="border-none bg-transparent mx-auto max-w-sm"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    No results found.
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           )}

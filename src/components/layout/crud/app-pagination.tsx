@@ -21,6 +21,10 @@ export function AppPagination({
 }: AppPaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   
+  if (total === 0) {
+    return null;
+  }
+  
   // Guard against out of bounds page after filter changes
   if (page > totalPages && totalPages > 0) {
     onPageChange(totalPages);

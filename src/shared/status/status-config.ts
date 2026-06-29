@@ -64,10 +64,16 @@ export const STATUS_CONFIG_MAP: Record<string, StatusConfig> = {
 };
 
 export function resolveStatus(
-  rawStatus: string | null | undefined,
+  rawStatus: string | boolean | null | undefined,
   domain?: 'driver' | 'vehicle' | 'trip' | 'payment' | 'document' | 'hiring'
 ): StatusConfig {
-  if (!rawStatus) return STATUS_CONFIG_MAP.unknown;
+  if (rawStatus === null || rawStatus === undefined) return STATUS_CONFIG_MAP.unknown;
+  
+  if (typeof rawStatus === 'boolean') {
+    rawStatus = rawStatus ? 'active' : 'inactive';
+  } else if (typeof rawStatus !== 'string') {
+    rawStatus = String(rawStatus);
+  }
   
   const normalized = rawStatus.toLowerCase().trim().replace(/\s+/g, '_');
   
