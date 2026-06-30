@@ -60,7 +60,14 @@ export function AppTopNav() {
             </Badge>
           )}
           
-          <Button variant="ghost" size="icon" className="shrink-0 relative mr-1">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="shrink-0 relative mr-1"
+            onClick={() => {
+              import('sonner').then(m => m.toast.info('No new notifications'));
+            }}
+          >
             <Bell className="h-5 w-5 text-muted-foreground" />
             <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive border-2 border-background" />
             <span className="sr-only">Notifications</span>
