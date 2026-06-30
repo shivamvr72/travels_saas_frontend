@@ -97,7 +97,7 @@ export const companyConfig: FeatureConfig<Company, Company, CompanyCreate, Compa
       {
         title: 'Settings',
         fields: [
-          { name: 'credit_period_days', label: 'Credit Period (Days)', type: 'number', placeholder: '0' },
+          { name: 'credit_period_days', label: 'Credit Period (Days)', type: 'number', placeholder: '0', min: 0 },
           { name: 'is_active', label: 'Active Status', type: 'switch', description: 'Inactive companies cannot be assigned to new trips.' },
         ],
       },
