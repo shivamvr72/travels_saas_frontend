@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'auth-storage',
       // Only persist the refresh token (and maybe user) to localStorage for security
-      partialize: (state) => ({ refreshToken: state.refreshToken }),
+      partialize: (state) => ({ refreshToken: state.refreshToken, user: state.user }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           state.setHasHydrated(true);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
 import { Loader2 } from 'lucide-react';
@@ -10,23 +10,37 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, isLoading, hasHydrated, setLoading, setAuth, logout } = useAuthStore();
+  const { refreshToken, user } = useAuthStore();
+  const hasValidated = useRef(false);
 
   useEffect(() => {
     // Wait until Zustand has finished hydrating from localStorage
     if (!hasHydrated) return;
+    // Only run validation once per mount
+    if (hasValidated.current) return;
+    hasValidated.current = true;
 
     const validateSession = async () => {
-      // If already authenticated and we're not loading, nothing to do
+      // If already authenticated in memory (e.g. navigating between pages), nothing to do
       if (isAuthenticated) {
         setLoading(false);
         return;
       }
 
-      // If we don't have a token but we have a refresh token, the axios interceptor
-      // will handle the refresh automatically on our first API call to /me
+      // If we have both refreshToken and user persisted in localStorage,
+      // restore the session immediately without a network call.
+      // The axios interceptor will silently get a new accessToken on the first API request.
+      if (refreshToken && user) {
+        setAuth(useAuthStore.getState().accessToken ?? '', refreshToken, user);
+        setLoading(false);
+        return;
+      }
+
+      // No persisted session — try /auth/me which will trigger a token refresh via interceptor
       try {
         const response = await apiClient.get('/auth/me');
-        setAuth(useAuthStore.getState().accessToken!, useAuthStore.getState().refreshToken!, response.data);
+        const { accessToken: at, refreshToken: rt } = useAuthStore.getState();
+        setAuth(at!, rt!, response.data);
       } catch {
         logout();
         router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
@@ -36,7 +50,8 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     };
 
     validateSession();
-  }, [isAuthenticated, router, pathname, setLoading, setAuth, logout, hasHydrated]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHydrated]);
 
   if (!hasHydrated || isLoading) {
     return (
