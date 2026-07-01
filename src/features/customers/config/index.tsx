@@ -71,9 +71,9 @@ export const customerConfig: FeatureConfig<Customer, Customer, CustomerCreate, C
       {
         title: 'Personal Information',
         fields: [
-          { name: 'name', label: 'Full Name', type: 'text', placeholder: 'e.g. John Doe', required: true },
-          { name: 'phone', label: 'Phone Number', type: 'text', required: true },
-          { name: 'alternate_phone', label: 'Alternate Phone', type: 'text' },
+          { name: 'name', label: 'Full Name', type: 'text', placeholder: 'e.g. Firstname Middle Lastname', required: true },
+          { name: 'phone', label: 'Phone Number', type: 'text', placeholder: 'e.g. 9876543210', required: true },
+          { name: 'alternate_phone', label: 'Alternate Phone', type: 'text', placeholder: 'e.g. 9876543210' },
           { name: 'email', label: 'Email Address', type: 'email', placeholder: 'john@example.com' },
         ],
       },
@@ -87,13 +87,26 @@ export const customerConfig: FeatureConfig<Customer, Customer, CustomerCreate, C
             { value: 'Driving License', label: 'Driving License' },
             { value: 'Voter ID', label: 'Voter ID' },
           ]},
-          { name: 'id_proof_number', label: 'Document Number', type: 'text', placeholder: 'e.g. 1234 5678 9012' },
+          { name: 'id_proof_number', label: 'Document Number', type: 'text', 
+            dynamicPlaceholder: (values) => {
+              switch (values.id_proof_type) {
+                case 'PAN': return 'e.g. ABCDE1234F';
+                case 'Aadhaar': return 'e.g. 123456789012';
+                case 'Voter ID': return 'e.g. ABC1234567';
+                case 'Driving License': return 'e.g. MH1420110012345';
+                case 'Passport': return 'e.g. A1234567';
+                default: return 'Enter Document Number';
+              }
+            } 
+          },
         ],
       },
       {
         title: 'Address',
         fields: [
           { name: 'address', label: 'Full Address', type: 'textarea', placeholder: 'e.g. 123 Main St, Mumbai, Maharashtra 400001', span: 2, rows: 3 },
+          { name: 'city', label: 'City', type: 'text', placeholder: 'e.g. Mumbai' },
+          { name: 'state', label: 'State', type: 'text', placeholder: 'e.g. Maharashtra' },
         ],
       },
     ],
@@ -121,6 +134,8 @@ export const customerConfig: FeatureConfig<Customer, Customer, CustomerCreate, C
           title: 'Address Details',
           fields: [
             { name: 'address', label: 'Registered Address' },
+            { name: 'city', label: 'City' },
+            { name: 'state', label: 'State' },
           ],
         },
       ]

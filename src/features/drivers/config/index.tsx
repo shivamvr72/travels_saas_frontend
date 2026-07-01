@@ -74,19 +74,19 @@ export const driverConfig: FeatureConfig<Driver, Driver, DriverCreate, DriverUpd
       {
         title: 'Personal Information',
         fields: [
-          { name: 'name', label: 'Full Name', type: 'text', required: true },
-          { name: 'phone', label: 'Primary Phone', type: 'text', required: true },
-          { name: 'alternate_phone', label: 'Alternate Phone', type: 'text' },
+          { name: 'name', label: 'Full Name', type: 'text', placeholder: 'e.g. Firstname Middle Lastname', required: true },
+          { name: 'phone', label: 'Primary Phone', type: 'text', placeholder: 'e.g. 9876543210', required: true },
+          { name: 'alternate_phone', label: 'Alternate Phone', type: 'text', placeholder: 'e.g. 9876543210' },
           { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
-          { name: 'address', label: 'Address', type: 'textarea' },
+          { name: 'address', label: 'Address', type: 'textarea', placeholder: 'e.g. 123 Main St...' },
           { name: 'joining_date', label: 'Joining Date', type: 'date' },
-          { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', min: 0 },
+          { name: 'monthly_salary', label: 'Monthly Salary', type: 'number', placeholder: 'e.g. 25000', min: 0 },
         ],
       },
       {
         title: 'License & Documentation',
         fields: [
-          { name: 'license_no', label: 'License Number', type: 'text', required: true },
+          { name: 'license_no', label: 'License Number', type: 'text', placeholder: 'e.g. MH1420110012345', required: true },
           { name: 'license_expiry', label: 'License Expiry Date', type: 'date', required: true },
         ],
       },

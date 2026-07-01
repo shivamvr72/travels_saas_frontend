@@ -46,6 +46,7 @@ export interface FormFieldConfig {
   type?: FieldType;
   
   placeholder?: string;
+  dynamicPlaceholder?: (formValues: Record<string, unknown>) => string;
   description?: string;
   required?: boolean;
   

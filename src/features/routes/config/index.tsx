@@ -65,11 +65,11 @@ export const routeConfig: FeatureConfig<Route, Route, RouteCreate, RouteUpdate> 
       {
         title: 'Route Details',
         fields: [
-          { name: 'from_location', label: 'Origin', type: 'text', placeholder: 'Mumbai', required: true },
-          { name: 'to_location', label: 'Destination', type: 'text', placeholder: 'Pune', required: true },
-          { name: 'distance_km', label: 'Total Distance (km)', type: 'number', min: 0 },
-          { name: 'hours_occupied', label: 'Est. Duration (hours)', type: 'number', min: 0 },
-          { name: 'notes', label: 'Notes', type: 'textarea' },
+          { name: 'from_location', label: 'Origin', type: 'text', placeholder: 'e.g. Mumbai', required: true },
+          { name: 'to_location', label: 'Destination', type: 'text', placeholder: 'e.g. Pune', required: true },
+          { name: 'distance_km', label: 'Total Distance (km)', type: 'number', placeholder: 'e.g. 150', min: 0 },
+          { name: 'hours_occupied', label: 'Est. Duration (hours)', type: 'number', placeholder: 'e.g. 3.5', min: 0 },
+          { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'e.g. Highway route via Expressway' },
         ],
       },
       {

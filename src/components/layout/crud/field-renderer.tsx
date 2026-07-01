@@ -40,7 +40,7 @@ export function FieldRenderer({ field, form }: FieldRendererProps) {
     control: form.control,
     name: field.name,
     label: field.label,
-    placeholder: field.placeholder,
+    placeholder: field.dynamicPlaceholder ? field.dynamicPlaceholder(formValues) : field.placeholder,
     description: field.description,
     required: isRequired,
     disabled: !isEnabled || isReadonly,
