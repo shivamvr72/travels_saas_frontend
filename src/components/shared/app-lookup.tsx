@@ -102,15 +102,15 @@ export function AppLookup({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      {/* @ts-expect-error asChild is valid but missing in strict types */}
-      <PopoverTrigger asChild>
+      <PopoverTrigger render={
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
           className="w-full justify-between font-normal"
-        >
+        />
+      }>
           {selectedValues.length > 0 ? (
             multiple ? (
               <div className="flex flex-wrap gap-1">
@@ -123,7 +123,6 @@ export function AppLookup({
             <span className="text-muted-foreground">{placeholder}</span>
           )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 p-0" align="start">
         <Command shouldFilter={false}>

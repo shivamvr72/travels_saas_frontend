@@ -6,7 +6,33 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
-const Select = SelectPrimitive.Root
+// Controlled-friendly wrapper around Base UI Select.Root.
+// Base UI's onValueChange receives (value, eventDetails) — we strip eventDetails
+// so callers can use the familiar (value: string) => void signature from Radix.
+function Select({
+  value,
+  defaultValue,
+  onValueChange,
+  children,
+  ...props
+}: {
+  value?: string | null;
+  defaultValue?: string | null;
+  onValueChange?: (value: string) => void;
+  children?: React.ReactNode;
+  [key: string]: any;
+}) {
+  return (
+    <SelectPrimitive.Root
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={onValueChange ? (v: string | null) => { if (v !== null) onValueChange(v); } : undefined}
+      {...props}
+    >
+      {children}
+    </SelectPrimitive.Root>
+  );
+}
 
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
