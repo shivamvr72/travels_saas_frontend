@@ -8,6 +8,7 @@ interface AppStatusBadgeProps {
   size?: 'sm' | 'md';
   showIcon?: boolean;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const variantStyles: Record<StatusVariant, string> = {
@@ -34,7 +35,8 @@ export function AppStatusBadge({
   domain,
   size = 'md',
   showIcon = true,
-  className
+  className,
+  children
 }: AppStatusBadgeProps) {
   const config = resolveStatus(status, domain);
   const Icon = config.icon;
@@ -55,7 +57,7 @@ export function AppStatusBadge({
           size === 'sm' ? "w-3 h-3" : "w-3.5 h-3.5"
         )} />
       )}
-      {config.label}
+      {children || config.label}
     </Badge>
   );
 }

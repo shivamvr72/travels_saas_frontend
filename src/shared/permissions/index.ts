@@ -22,7 +22,14 @@ export const PERMISSIONS = {
   
   // Operations
   TRIPS_VIEW: ['admin', 'manager', 'viewer'],
-  TRIPS_MANAGE: ['admin', 'manager'],
+  TRIPS_MANAGE: ['admin', 'manager'], // Legacy
+  TRIPS_CREATE: ['admin', 'manager'],
+  TRIPS_EDIT: ['admin', 'manager'],
+  TRIPS_ASSIGN: ['admin', 'manager'],
+  TRIPS_DISPATCH: ['admin', 'manager'],
+  TRIPS_CANCEL: ['admin', 'manager'],
+  TRIPS_CLOSE: ['admin'],
+  TRIPS_DELETE: ['admin'],
   
   // Finance
   FINANCE_VIEW: ['admin', 'manager'],
@@ -37,7 +44,7 @@ export const hasPermission = (userRole: Role, allowedRoles: readonly Role[]): bo
 };
 
 // Generic module-based permission helpers
-export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS';
+export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS' | 'TRIPS_CREATE' | 'TRIPS_EDIT' | 'TRIPS_ASSIGN' | 'TRIPS_DISPATCH' | 'TRIPS_CANCEL' | 'TRIPS_CLOSE' | 'TRIPS_DELETE';
 
 export const canView = (module: AppModule, role: Role): boolean => {
   const permissionKey = `${module}_VIEW` as keyof typeof PERMISSIONS;

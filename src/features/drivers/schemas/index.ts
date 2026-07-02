@@ -9,7 +9,7 @@ export const driverSchema = z.object({
   joining_date: z.string().min(1, 'Joining date is required'),
   monthly_salary: z.preprocess(
     (val) => (val === '' || val == null ? null : Number(val)), 
-    z.number({ invalid_type_error: 'Salary must be a valid number' })
+    z.number()
       .min(0, 'Salary cannot be negative')
       .max(1000000, 'Salary exceeds allowed maximum')
       .nullable().optional()

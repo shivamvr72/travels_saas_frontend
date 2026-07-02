@@ -1,5 +1,5 @@
-import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
+import { TripCreatePage } from '@/features/trips/pages/trip-create-page';
 
-export default function NewtripsPage() {
-  return <MetadataCrudView feature="trips" view="form" />;
+export default function NewTripRoute() {
+  return <TripCreatePage />;
 }

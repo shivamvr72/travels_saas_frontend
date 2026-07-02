@@ -65,5 +65,13 @@ export const LookupRegistry: Record<string, LookupConfig> = {
     defaultSortBy: 'from_location',
     staleTime: 5 * 60 * 1000,
     permissions: ['ROUTES'],
+  },
+  dispatchers: {
+    endpoint: '/api/v1/users?role=dispatcher', // Mock endpoint logic
+    displayField: 'full_name',
+    searchFields: ['full_name', 'email'],
+    defaultSortBy: 'full_name',
+    staleTime: 5 * 60 * 1000,
+    permissions: [], // Open or specific permission
   }
 };

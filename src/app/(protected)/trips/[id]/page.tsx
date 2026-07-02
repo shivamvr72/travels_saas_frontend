@@ -1,6 +1,12 @@
-import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
+import dynamic from 'next/dynamic';
+import { AppLoadingState } from '@/components/shared/app-loading-state';
 
-export default async function tripsDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+const TripWorkspace = dynamic(
+  () => import('@/features/trips/workspace/trip-workspace').then(mod => ({ default: mod.TripWorkspace })),
+  { loading: () => <AppLoadingState /> }
+);
+
+export default async function TripDetailPage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  return <MetadataCrudView feature="trips" view="details" id={id} />;
+  return <TripWorkspace tripId={id} />;
 }

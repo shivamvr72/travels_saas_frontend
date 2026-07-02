@@ -1,5 +1,5 @@
-import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
+import { TripListPage } from '@/features/trips/pages/trip-list-page';
 
-export default function tripsListPage() {
-  return <MetadataCrudView feature="trips" view="list" />;
+export default function TripsPage() {
+  return <TripListPage />;
 }

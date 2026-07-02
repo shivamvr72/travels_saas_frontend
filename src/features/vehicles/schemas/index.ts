@@ -10,7 +10,7 @@ export const vehicleSchema = z.object({
   vehicle_type: z.string().max(50, 'Vehicle type cannot exceed 50 characters').nullable().optional(),
   seating_capacity: z.preprocess(
     (val) => (val === '' || val == null ? null : Number(val)), 
-    z.number({ invalid_type_error: 'Seating capacity must be a valid number' })
+    z.number()
       .int('Must be a whole number')
       .min(1, 'Capacity must be at least 1')
       .max(100, 'Capacity cannot exceed 100')

@@ -12,6 +12,10 @@ import {
   FileX,
   CreditCard,
   Banknote,
+  CalendarCheck,
+  Users,
+  Send,
+  Lock,
 } from 'lucide-react';
 
 export type StatusVariant =
@@ -42,9 +46,12 @@ export const STATUS_CONFIG_MAP: Record<string, StatusConfig> = {
   
   // Trip Statuses
   draft: { variant: 'inactive', label: 'Draft', icon: FileCheck },
-  scheduled: { variant: 'upcoming', label: 'Scheduled', icon: Clock },
+  planned: { variant: 'upcoming', label: 'Planned', icon: CalendarCheck },
+  assigned: { variant: 'upcoming', label: 'Assigned', icon: Users },
+  dispatched: { variant: 'warning', label: 'Dispatched', icon: Send },
   in_progress: { variant: 'active', label: 'In Progress', icon: PlayCircle },
   completed: { variant: 'completed', label: 'Completed', icon: CheckCircle2 },
+  closed: { variant: 'completed', label: 'Closed', icon: Lock },
   cancelled: { variant: 'cancelled', label: 'Cancelled', icon: Ban },
   billed: { variant: 'completed', label: 'Billed', icon: Banknote },
   
