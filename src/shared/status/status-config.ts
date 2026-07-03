@@ -89,6 +89,28 @@ export function resolveStatus(
     if (normalized === 'active') return STATUS_CONFIG_MAP.healthy;
   }
   
+  const validVariants: Record<string, StatusVariant> = {
+    active: 'active',
+    inactive: 'inactive',
+    expired: 'expired',
+    expiring_soon: 'expiring_soon',
+    upcoming: 'upcoming',
+    healthy: 'healthy',
+    warning: 'warning',
+    critical: 'critical',
+    pending: 'pending',
+    completed: 'completed',
+    cancelled: 'cancelled',
+    unknown: 'unknown',
+  };
+
+  if (normalized in validVariants) {
+    return {
+      variant: validVariants[normalized],
+      label: rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).replace(/_/g, ' '),
+    };
+  }
+
   return STATUS_CONFIG_MAP[normalized] || {
     variant: 'unknown',
     label: rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).replace(/_/g, ' '),
