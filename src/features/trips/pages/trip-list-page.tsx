@@ -92,7 +92,7 @@ export function TripListPage() {
           'Urgent': 'critical'
         };
         const mappedVariant = priorityColors[item.priority] || 'inactive';
-        return <AppStatusBadge status={mappedVariant} size="sm" showIcon={false} />;
+        return <AppStatusBadge status={mappedVariant} size="sm" showIcon={false}>{item.priority}</AppStatusBadge>;
       },
     },
     {
