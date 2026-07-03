@@ -334,14 +334,17 @@ export const tripApi = {
   
   update: async (id: string, data: TripUpdate): Promise<Trip> => {
     await refreshLookupsIfNeeded();
+    const uuid = (v: string | null | undefined) => (v && v.trim() !== '' ? v : null);
 
     // 1. Map fields to backend schema
     const backendPayload: Record<string, any> = {};
     if (data.start_date) backendPayload.trip_date = data.start_date;
-    if (data.company_id !== undefined) backendPayload.company_id = data.company_id;
-    if (data.remarks !== undefined) backendPayload.notes = data.remarks;
-    if (data.origin !== undefined) backendPayload.reporting_address = data.origin;
-    if (data.customer_id !== undefined) backendPayload.engaged_by = data.customer_id;
+    if (data.company_id !== undefined) backendPayload.company_id = uuid(data.company_id);
+    if (data.remarks !== undefined) backendPayload.notes = data.remarks?.trim() || null;
+    if (data.origin !== undefined) backendPayload.reporting_address = data.origin?.trim() || null;
+    
+    // engaged_by on backend is a plain text field (varchar 150), not customer FK — keep null
+    backendPayload.engaged_by = null;
 
     if (Object.keys(backendPayload).length > 0) {
       await apiClient.put(`/api/v1/trips/${id}`, backendPayload);
@@ -349,11 +352,11 @@ export const tripApi = {
 
     // Update local client-only metadata
     saveTripMetadata(id, {
-      customer_id: data.customer_id !== undefined ? data.customer_id : undefined,
+      customer_id: data.customer_id !== undefined ? (data.customer_id || null) : undefined,
       trip_type: data.trip_type !== undefined ? data.trip_type : undefined,
       priority: data.priority !== undefined ? data.priority : undefined,
-      co_driver_id: data.co_driver_id !== undefined ? data.co_driver_id : undefined,
-      dispatcher_id: data.dispatcher_id !== undefined ? data.dispatcher_id : undefined,
+      co_driver_id: data.co_driver_id !== undefined ? (data.co_driver_id || null) : undefined,
+      dispatcher_id: data.dispatcher_id !== undefined ? (data.dispatcher_id || null) : undefined,
     });
 
     // 2. Map route updates to location API if locations exist
@@ -426,8 +429,13 @@ export const tripApi = {
   // ─── Assignment ──────────────────────────────────────────────────────
   assign: async (id: string, assignment: TripAssignPayload): Promise<Trip> => {
     await refreshLookupsIfNeeded();
-    if (assignment.vehicle_id) {
-      await apiClient.patch(`/api/v1/trips/${id}/assign-vehicle`, { vehicle_id: assignment.vehicle_id });
+    const uuid = (v: string | null | undefined) => (v && v.trim() !== '' ? v : null);
+
+    const vehicleId = uuid(assignment.vehicle_id);
+    const driverId = uuid(assignment.driver_id);
+
+    if (vehicleId) {
+      await apiClient.patch(`/api/v1/trips/${id}/assign-vehicle`, { vehicle_id: vehicleId });
       addLocalActivityEvent(id, {
         event_type: 'vehicle_assigned',
         title: 'Vehicle Assigned',
@@ -435,8 +443,8 @@ export const tripApi = {
         actor: 'Dispatcher',
       });
     }
-    if (assignment.driver_id) {
-      await apiClient.patch(`/api/v1/trips/${id}/assign-driver`, { driver_id: assignment.driver_id });
+    if (driverId) {
+      await apiClient.patch(`/api/v1/trips/${id}/assign-driver`, { driver_id: driverId });
       addLocalActivityEvent(id, {
         event_type: 'driver_assigned',
         title: 'Driver Assigned',
