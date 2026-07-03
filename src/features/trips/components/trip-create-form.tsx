@@ -244,14 +244,14 @@ export function TripCreateForm() {
           </div>
         </AppSectionCard>
 
-        <AppSectionCard title="4. Resources (Optional)">
+        <AppSectionCard title="4. Resources">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="vehicle_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vehicle</FormLabel>
+                  <FormLabel>Vehicle *</FormLabel>
                   <FormControl>
                     <AppLookup 
                       lookupKey="vehicles" 
@@ -269,7 +269,7 @@ export function TripCreateForm() {
               name="driver_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Primary Driver</FormLabel>
+                  <FormLabel>Primary Driver *</FormLabel>
                   <FormControl>
                     <AppLookup 
                       lookupKey="drivers" 

@@ -29,9 +29,9 @@ export const tripSchema = z.object({
   company_id: z.string().uuid('Invalid Company selection').nullable().optional().or(z.literal('')),
   customer_id: z.string().uuid('Invalid Customer selection').nullable().optional().or(z.literal('')),
 
-  // Section 4 — Resources (optional at creation)
-  vehicle_id: z.string().uuid('Invalid Vehicle selection').nullable().optional().or(z.literal('')),
-  driver_id: z.string().uuid('Invalid Driver selection').nullable().optional().or(z.literal('')),
+  // Section 4 — Resources (Required by Backend)
+  vehicle_id: z.string().uuid('Please select a vehicle'),
+  driver_id: z.string().uuid('Please select a driver'),
   co_driver_id: z.string().uuid('Invalid Co-driver selection').nullable().optional().or(z.literal('')),
   dispatcher_id: z.string().uuid('Invalid Dispatcher selection').nullable().optional().or(z.literal('')),
 
