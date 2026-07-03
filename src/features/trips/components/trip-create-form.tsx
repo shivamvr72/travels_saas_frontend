@@ -163,7 +163,15 @@ export function TripCreateForm() {
                 <FormItem>
                   <FormLabel>Origin *</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Mumbai" {...field} />
+                    <Input 
+                      placeholder="e.g. Mumbai" 
+                      {...field} 
+                      onChange={(e) => {
+                        field.onChange(e);
+                        // Manual edit of origin clears the selected route ID
+                        form.setValue('route_id', '');
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -176,7 +184,15 @@ export function TripCreateForm() {
                 <FormItem>
                   <FormLabel>Destination *</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Pune" {...field} />
+                    <Input 
+                      placeholder="e.g. Pune" 
+                      {...field} 
+                      onChange={(e) => {
+                        field.onChange(e);
+                        // Manual edit of destination clears the selected route ID
+                        form.setValue('route_id', '');
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -198,6 +214,15 @@ export function TripCreateForm() {
                       lookupKey="routes" 
                       value={field.value || undefined} 
                       onChange={field.onChange} 
+                      onSelectRecord={(route) => {
+                        if (route) {
+                          form.setValue('origin', (route.from_location as string) || '');
+                          form.setValue('destination', (route.to_location as string) || '');
+                          if (route.total_km) {
+                            form.setValue('distance_km', Number(route.total_km));
+                          }
+                        }
+                      }}
                       placeholder="Select route..." 
                     />
                   </FormControl>

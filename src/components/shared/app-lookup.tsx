@@ -30,6 +30,8 @@ interface AppLookupProps {
   value?: string | string[];
   /** Callback when selection changes */
   onChange?: (value: string | string[] | null) => void;
+  /** Callback with the full selected record object (for single select only) */
+  onSelectRecord?: (record: any) => void;
   /** Whether multiple items can be selected */
   multiple?: boolean;
   /** Placeholder text */
@@ -42,6 +44,7 @@ export function AppLookup({
   lookupKey,
   value,
   onChange,
+  onSelectRecord,
   multiple = false,
   placeholder = 'Select option...',
   disabled = false,
@@ -84,6 +87,7 @@ export function AppLookup({
   const selectedValues = Array.isArray(value) ? value : (value ? [value] : []);
 
   const handleSelect = (currentValue: string) => {
+    const record = items.find(i => i[config.valueField || 'id'] === currentValue);
     if (multiple) {
       if (selectedValues.includes(currentValue)) {
         onChange?.(selectedValues.filter((v) => v !== currentValue));
@@ -91,7 +95,9 @@ export function AppLookup({
         onChange?.([...selectedValues, currentValue]);
       }
     } else {
-      onChange?.(currentValue === value ? null : currentValue);
+      const isSelected = currentValue === value;
+      onChange?.(isSelected ? null : currentValue);
+      onSelectRecord?.(isSelected ? null : record);
       setOpen(false);
     }
   };
