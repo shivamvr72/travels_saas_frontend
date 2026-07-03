@@ -237,9 +237,27 @@ export const tripApi = {
   list: async (params?: TripListParams): Promise<TripListResponse> => {
     await refreshLookupsIfNeeded();
 
-    const backendParams: Record<string, any> = { ...params };
-    if (params?.date_from) backendParams.start_date = params.date_from;
-    if (params?.date_to) backendParams.end_date = params.date_to;
+    // Sanitize query params: strip empty strings so backend doesn't reject them
+    const backendParams: Record<string, any> = {};
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        const val = (params as any)[key];
+        if (val !== undefined && val !== null && val !== '') {
+          backendParams[key] = val;
+        }
+      });
+    }
+
+    if (params?.date_from && params.date_from.trim() !== '') {
+      backendParams.start_date = params.date_from;
+    }
+    if (params?.date_to && params.date_to.trim() !== '') {
+      backendParams.end_date = params.date_to;
+    }
+
+    // Client-only params are removed to avoid poluting request query
+    delete backendParams.date_from;
+    delete backendParams.date_to;
 
     const r = await apiClient.get('/api/v1/trips', { params: backendParams });
     const payload = r.data;
