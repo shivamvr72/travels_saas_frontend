@@ -44,9 +44,9 @@ export const LookupRegistry: Record<string, LookupConfig> = {
   },
   vehicles: {
     endpoint: '/api/v1/vehicles',
-    displayField: 'license_plate',
-    searchFields: ['license_plate', 'make', 'model'],
-    defaultSortBy: 'license_plate',
+    displayField: 'reg_number',
+    searchFields: ['reg_number', 'brand_name', 'model_type'],
+    defaultSortBy: 'reg_number',
     staleTime: 5 * 60 * 1000,
     permissions: ['VEHICLES'],
   },

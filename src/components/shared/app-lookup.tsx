@@ -56,16 +56,17 @@ export function AppLookup({
   const { data, isLoading } = useQuery({
     queryKey: ['lookup', lookupKey, debouncedSearch],
     queryFn: async () => {
-      if (!config) return { items: [] };
-      // Simulate API call to the configured endpoint with search params
+      if (!config) return [];
       const searchParams = new URLSearchParams();
       if (debouncedSearch) {
         searchParams.set('search', debouncedSearch);
       }
-      searchParams.set('page_size', '50'); // Default lookup size
+      searchParams.set('page_size', '50');
 
       const res = await apiClient.get(`${config.endpoint}?${searchParams.toString()}`);
-      return res.data as unknown as { items: Record<string, unknown>[] };
+      // Backend PaginatedResponse uses { data: [...], total, page, page_size, total_pages }
+      const payload = res.data as { data?: Record<string, unknown>[]; items?: Record<string, unknown>[] };
+      return payload.data ?? payload.items ?? [];
     },
     staleTime: config?.staleTime || CacheProfiles.Lookup.staleTime,
     gcTime: CacheProfiles.Lookup.gcTime,
@@ -77,7 +78,7 @@ export function AppLookup({
     return <div className="text-sm text-destructive">Invalid Lookup Config</div>;
   }
 
-  const items = data?.items || [];
+  const items = (data as Record<string, unknown>[] | undefined) ?? [];
 
   // Format selected values as an array for easier logic
   const selectedValues = Array.isArray(value) ? value : (value ? [value] : []);
