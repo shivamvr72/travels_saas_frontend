@@ -180,6 +180,7 @@ export function TripListPage() {
           selectable={true}
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
+          onRowClick={(item) => router.push(`/trips/${item.id}`)}
         />
       )}
 
