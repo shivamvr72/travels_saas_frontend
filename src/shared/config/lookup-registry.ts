@@ -59,7 +59,7 @@ export const LookupRegistry: Record<string, LookupConfig> = {
     permissions: ['DRIVERS'],
   },
   routes: {
-    endpoint: '/api/v1/routes',
+    endpoint: '/api/v1/routes?active_only=true',
     displayField: 'from_location', // Temporarily using from_location, ideally we'd compute "Origin to Destination"
     searchFields: ['from_location', 'to_location'],
     defaultSortBy: 'from_location',

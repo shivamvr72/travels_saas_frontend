@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { CrudModuleConfig } from './crud-types';
 import { AppFormPage } from './app-form-page';
@@ -46,11 +46,25 @@ export function CrudForm({
   const { data: initialData, isLoading: isFetchingDetail } = config.hooks.useDetail(id || '');
   const isLoadingInitial = isEditing ? isFetchingDetail : false;
 
+  const computedDefaultValues = useMemo(() => {
+    const defaults: Record<string, any> = { ...defaultValues };
+    if (!isEditing) {
+      config.form.sections.forEach(sec => {
+        sec.fields.forEach(f => {
+          if (f.type === 'switch' && defaults[f.name] === undefined) {
+            defaults[f.name] = true;
+          }
+        });
+      });
+    }
+    return defaults;
+  }, [config.form.sections, defaultValues, isEditing]);
+
   const internalForm = useForm<FieldValues>({
     // @ts-expect-error schema typings mismatch
     resolver: config.schema ? zodResolver(config.schema) : undefined,
-    defaultValues: defaultValues || {},
-    values: initialData || defaultValues, // Auto-updates when initialData is fetched
+    defaultValues: computedDefaultValues,
+    values: initialData || computedDefaultValues, // Auto-updates when initialData is fetched
   });
 
   const activeForm = form || internalForm;
