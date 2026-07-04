@@ -1,4 +1,4 @@
-// removed CrudModuleConfig
+import { ExpiryField, RegNoExpiryAlert } from '../components/expiry-field';
 import {
   useVehicles,
   useVehicle,
@@ -36,6 +36,7 @@ export const vehicleConfig: FeatureConfig<Vehicle, Vehicle, VehicleCreate, Vehic
           header: 'Reg No',
           sortable: true,
           className: 'font-medium',
+          render: (item: Vehicle) => <RegNoExpiryAlert vehicle={item} />
         },
         {
           key: 'brand_name',
@@ -123,10 +124,10 @@ export const vehicleConfig: FeatureConfig<Vehicle, Vehicle, VehicleCreate, Vehic
         {
           title: 'Compliance Documents (Expiry)',
           fields: [
-            { name: 'rc_expiry', label: 'RC Expiry', type: 'date' },
-            { name: 'insurance_expiry', label: 'Insurance Expiry', type: 'date' },
-            { name: 'fitness_expiry', label: 'Fitness Expiry', type: 'date' },
-            { name: 'permit_expiry', label: 'Permit Expiry', type: 'date' },
+            { name: 'rc_expiry', label: 'RC Expiry', renderDetail: (data: any) => <ExpiryField dateStr={data.rc_expiry} type="rc" /> },
+            { name: 'insurance_expiry', label: 'Insurance Expiry', renderDetail: (data: any) => <ExpiryField dateStr={data.insurance_expiry} type="insurance" /> },
+            { name: 'fitness_expiry', label: 'Fitness Expiry', renderDetail: (data: any) => <ExpiryField dateStr={data.fitness_expiry} type="fitness" /> },
+            { name: 'permit_expiry', label: 'Permit Expiry', renderDetail: (data: any) => <ExpiryField dateStr={data.permit_expiry} type="permit" /> },
           ],
         },
       ]

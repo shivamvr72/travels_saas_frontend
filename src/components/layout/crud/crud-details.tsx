@@ -21,7 +21,8 @@ interface CrudDetailsProps {
   extraActions?: (data: Record<string, any>) => ActionDef[];
 }
 
-function renderFieldValue(field: { name: string, type?: string, label?: string }, data: Record<string, any>) {
+function renderFieldValue(field: { name: string, type?: string, label?: string, renderDetail?: (data: Record<string, any>) => ReactNode }, data: Record<string, any>) {
+  if (field.renderDetail) return field.renderDetail(data);
   const value = data[field.name];
   if (value === null || value === undefined) return '-';
   

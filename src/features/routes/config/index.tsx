@@ -1,4 +1,4 @@
-// removed CrudModuleConfig
+import { DurationPicker } from '../components/duration-picker';
 import {
   useRoutes,
   useRoute,
@@ -68,7 +68,12 @@ export const routeConfig: FeatureConfig<Route, Route, RouteCreate, RouteUpdate> 
           { name: 'from_location', label: 'Origin', type: 'text', placeholder: 'e.g. Mumbai', required: true },
           { name: 'to_location', label: 'Destination', type: 'text', placeholder: 'e.g. Pune', required: true },
           { name: 'distance_km', label: 'Total Distance (km)', type: 'number', placeholder: 'e.g. 150', min: 0, step: 0.1 },
-          { name: 'hours_occupied', label: 'Est. Duration (hours)', type: 'number', placeholder: 'e.g. 3.5', min: 0, step: 0.01 },
+          { 
+            name: 'hours_occupied', 
+            label: 'Est. Duration', 
+            type: 'custom', 
+            render: (form) => <DurationPicker form={form} /> 
+          },
           { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'e.g. Highway route via Expressway' },
         ],
       },

@@ -84,6 +84,7 @@ export interface FormFieldConfig {
   
   // For 'custom' type
   render?: (form: UseFormReturn<FieldValues>) => ReactNode;
+  renderDetail?: (data: Record<string, any>) => ReactNode;
 }
 
 export interface FormSectionConfig {
