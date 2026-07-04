@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Trip } from '../../domain/trip-types';
 import { TripActivityFeed } from '../../components/trip-activity-feed';
-import { useActivityFeed } from '../../hooks/use-activity-feed';
+import { useTripActivityFeed } from '../../api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -12,7 +12,7 @@ interface TripActivityTabProps {
 }
 
 export function TripActivityTab({ trip }: TripActivityTabProps) {
-  const { data, isLoading } = useActivityFeed(trip.id);
+  const { data, isLoading } = useTripActivityFeed(trip.id);
   const [isNoteDialogOpen, setIsNoteDialogOpen] = useState(false);
 
   return (

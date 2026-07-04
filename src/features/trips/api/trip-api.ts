@@ -200,16 +200,23 @@ const getLocalActivity = (tripId: string): ActivityFeedResponse => {
   const mockEvents: ActivityFeedResponse = {
     events: [
       {
+        id: 'event-2',
+        event_type: 'details_updated',
+        title: 'Trip Details Updated',
+        description: 'Updated trip priority to High.',
+        actor: 'System Admin',
+        timestamp: new Date(Date.now() - 3600000).toISOString(),
+      },
+      {
         id: 'event-1',
         event_type: 'trip_created',
-        title: 'Trip Registered',
-        description: 'Trip was registered on the dispatch board.',
-        actor: 'Dispatcher',
-        actor_role: 'Admin',
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        title: 'Trip Created',
+        description: 'Trip was created and saved as Draft.',
+        actor: 'System Admin',
+        timestamp: new Date(Date.now() - 86400000).toISOString(),
       }
     ],
-    total: 1
+    total: 2
   };
   localStorage.setItem(`trip_activity_${tripId}`, JSON.stringify(mockEvents));
   return mockEvents;
