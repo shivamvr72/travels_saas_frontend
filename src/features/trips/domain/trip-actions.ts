@@ -10,16 +10,19 @@ export interface TripActionDef {
 }
 
 export const TRIP_ACTIONS_MAP: Record<TripStatus, TripActionDef> = {
-  draft: { targetStatus: 'draft', label: 'Revert to Draft', icon: FileCheck, variant: 'outline', requiresConfirmation: false },
-  planned: { targetStatus: 'planned', label: 'Plan Trip', icon: CalendarCheck, variant: 'secondary', requiresConfirmation: false },
-  assigned: { targetStatus: 'assigned', label: 'Assign', icon: Users, variant: 'secondary', requiresConfirmation: false },
-  dispatched: { targetStatus: 'dispatched', label: 'Dispatch', icon: Send, variant: 'default', requiresConfirmation: true },
-  in_progress: { targetStatus: 'in_progress', label: 'Start Trip', icon: PlayCircle, variant: 'default', requiresConfirmation: false },
+  pending: { targetStatus: 'pending', label: 'Revert to Pending', icon: FileCheck, variant: 'outline', requiresConfirmation: false },
+  in_progress: { targetStatus: 'in_progress', label: 'Dispatch Trip', icon: Send, variant: 'default', requiresConfirmation: false },
   completed: { targetStatus: 'completed', label: 'Complete Trip', icon: CheckCircle2, variant: 'default', requiresConfirmation: true },
-  closed: { targetStatus: 'closed', label: 'Close', icon: Lock, variant: 'default', requiresConfirmation: true },
+  billed: { targetStatus: 'billed', label: 'Mark as Billed', icon: Edit3, variant: 'secondary', requiresConfirmation: true },
+  paid: { targetStatus: 'paid', label: 'Mark as Paid', icon: CheckCircle2, variant: 'default', requiresConfirmation: true },
   cancelled: { targetStatus: 'cancelled', label: 'Cancel Trip', icon: Ban, variant: 'destructive', requiresConfirmation: true },
 };
 
-export function getActionDef(target: TripStatus): TripActionDef {
-  return TRIP_ACTIONS_MAP[target];
+export function getActionDef(target: TripStatus, currentStatus?: TripStatus): TripActionDef {
+  const def = { ...TRIP_ACTIONS_MAP[target] };
+  if (currentStatus === 'paid' && target === 'billed') {
+    def.label = 'Revert to Billed';
+    def.variant = 'outline';
+  }
+  return def;
 }

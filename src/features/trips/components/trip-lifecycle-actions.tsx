@@ -31,10 +31,15 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (confirmAction) {
-      execute(confirmAction);
-      setConfirmAction(null);
+      try {
+        await execute(confirmAction);
+        setConfirmAction(null);
+      } catch (error) {
+        // Error is already toasted by execute(), keep dialog open
+        throw error; 
+      }
     }
   };
 
@@ -45,13 +50,11 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
         
         // Map target status to required permission
         let requiredPermission: any = PERMISSIONS.TRIPS_EDIT;
-        if (action.targetStatus === 'dispatched' || action.targetStatus === 'in_progress') {
+        if (action.targetStatus === 'in_progress') {
           requiredPermission = PERMISSIONS.TRIPS_DISPATCH;
-        } else if (action.targetStatus === 'assigned') {
-          requiredPermission = PERMISSIONS.TRIPS_ASSIGN;
         } else if (action.targetStatus === 'cancelled') {
           requiredPermission = PERMISSIONS.TRIPS_CANCEL;
-        } else if (action.targetStatus === 'closed') {
+        } else if (action.targetStatus === 'billed' || action.targetStatus === 'paid') {
           requiredPermission = PERMISSIONS.TRIPS_CLOSE;
         }
 
@@ -75,10 +78,10 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
         isOpen={!!confirmAction && confirmAction !== 'cancelled'}
         onClose={() => setConfirmAction(null)}
         onConfirm={handleConfirm}
-        title={`Confirm ${confirmAction ? getActionDef(confirmAction).label : ''}`}
+        title={`Confirm ${confirmAction ? getActionDef(confirmAction, trip.status).label : ''}`}
         description={`Are you sure you want to transition this trip to ${confirmAction}?`}
         cancelLabel="Cancel"
-        isDestructive={confirmAction ? getActionDef(confirmAction).variant === 'destructive' : false}
+        isDestructive={confirmAction ? getActionDef(confirmAction, trip.status).variant === 'destructive' : false}
       />
 
       <TripCancelDialog

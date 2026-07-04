@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTripList, useDeleteTrip } from '../api';
@@ -37,6 +37,18 @@ export function TripListPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'table' | 'card' | 'calendar' | 'board'>('table');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('tripList_viewMode');
+    if (saved === 'table' || saved === 'card' || saved === 'calendar' || saved === 'board') {
+      setViewMode(saved);
+    }
+  }, []);
+
+  const handleViewModeChange = (val: string) => {
+    setViewMode(val as any);
+    localStorage.setItem('tripList_viewMode', val);
+  };
 
   const { data, isLoading, refetch } = useTripList({ ...params, ...queryParams });
 
@@ -154,7 +166,7 @@ export function TripListPage() {
       />
       
       <div className="flex items-center justify-between">
-        <Tabs value={viewMode} onValueChange={(val) => setViewMode(val as any)}>
+        <Tabs value={viewMode} onValueChange={handleViewModeChange}>
           <TabsList>
             <TabsTrigger value="table"><List className="h-4 w-4 mr-2" /> Table</TabsTrigger>
             <TabsTrigger value="card"><LayoutGrid className="h-4 w-4 mr-2" /> Grid</TabsTrigger>

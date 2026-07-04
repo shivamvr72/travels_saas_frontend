@@ -5,6 +5,7 @@ import { AppStatusBadge } from '@/components/shared/app-status-badge';
 import { MapPin, User, Car, Calendar, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { tripNumberService } from '../services/trip-number.service';
 import { cn } from '@/shared/lib/utils';
 
@@ -16,6 +17,7 @@ interface TripCardProps {
 }
 
 export function TripCard({ trip, isSelected, onSelect, selectable }: TripCardProps) {
+  const router = useRouter();
   const priorityColors: Record<string, 'inactive' | 'upcoming' | 'warning' | 'critical'> = {
     'Low': 'inactive',
     'Normal': 'upcoming',
@@ -24,10 +26,13 @@ export function TripCard({ trip, isSelected, onSelect, selectable }: TripCardPro
   };
 
   return (
-    <Card className={cn(
-      "group relative overflow-hidden transition-all hover:shadow-md",
-      isSelected && "ring-2 ring-primary border-primary"
-    )}>
+    <Card 
+      onClick={() => router.push(`/trips/${trip.id}`)}
+      className={cn(
+        "group relative overflow-hidden transition-all hover:shadow-md cursor-pointer",
+        isSelected && "ring-2 ring-primary border-primary"
+      )}
+    >
       {selectable && onSelect && (
         <div className="absolute top-3 right-3 z-10">
           <input 

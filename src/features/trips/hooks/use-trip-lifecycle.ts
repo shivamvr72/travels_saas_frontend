@@ -22,8 +22,8 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
   }, [trip]);
 
   const availableActions = useMemo(() => {
-    return availableTransitions.map(target => getActionDef(target));
-  }, [availableTransitions]);
+    return availableTransitions.map(target => getActionDef(target, trip?.status));
+  }, [availableTransitions, trip?.status]);
 
   const isTerminal = useMemo(() => {
     if (!trip) return false;

@@ -56,7 +56,7 @@ export function FieldRenderer({ field, form }: FieldRendererProps) {
     
     case 'number':
     case 'currency':
-      return <AppNumberField {...commonProps} min={field.min} max={field.max} />;
+      return <AppNumberField {...commonProps} min={field.min} max={field.max} step={field.step ?? 'any'} />;
     
     case 'email':
       return <AppEmailField {...commonProps} />;

@@ -34,7 +34,7 @@ const PRIORITIES: { label: string; value: TripPriority }[] = [
 ];
 
 const TRIP_STATUS_LIST: TripStatus[] = [
-  'draft', 'planned', 'assigned', 'dispatched', 'in_progress', 'completed', 'closed', 'cancelled'
+  'pending', 'in_progress', 'completed', 'billed', 'paid', 'cancelled'
 ];
 
 export function TripFilterBar({ filters, onUpdateFilter, onReset, isOpen }: TripFilterBarProps) {

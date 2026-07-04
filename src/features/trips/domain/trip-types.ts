@@ -9,13 +9,11 @@
 // ─── Enumerations ────────────────────────────────────────────────────────────
 
 export type TripStatus =
-  | 'draft'
-  | 'planned'
-  | 'assigned'
-  | 'dispatched'
+  | 'pending'
   | 'in_progress'
   | 'completed'
-  | 'closed'
+  | 'billed'
+  | 'paid'
   | 'cancelled';
 
 export type TripType =

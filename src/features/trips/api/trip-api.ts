@@ -115,19 +115,15 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   const firstLoc = be.locations?.[0];
   const lastLoc = be.locations && be.locations.length > 0 ? be.locations[be.locations.length - 1] : undefined;
 
-  // Map backend status to frontend status
-  let mappedStatus: TripStatus = 'planned';
-  if (be.status === 'pending') {
-    mappedStatus = (be.vehicle_id && be.driver_id) ? 'assigned' : 'planned';
-  } else if (be.status === 'in_progress') {
-    mappedStatus = 'in_progress';
-  } else if (be.status === 'completed') {
-    mappedStatus = 'completed';
-  } else if (be.status === 'billed' || be.status === 'paid') {
-    mappedStatus = 'closed';
-  } else if (be.status === 'cancelled') {
-    mappedStatus = 'cancelled';
-  }
+  // Backend status maps 1:1 to frontend status — use directly
+  const mappedStatus: TripStatus = (
+    be.status === 'pending'
+    || be.status === 'in_progress'
+    || be.status === 'completed'
+    || be.status === 'billed'
+    || be.status === 'paid'
+    || be.status === 'cancelled'
+  ) ? (be.status as TripStatus) : 'pending';
 
   const metadata = getTripMetadata(be.id);
   const relations = resolveTripRelations(be, metadata.customer_id);
@@ -258,13 +254,39 @@ export const tripApi = {
     // Client-only params are removed to avoid poluting request query
     delete backendParams.date_from;
     delete backendParams.date_to;
+    
+    // We will do search filtering on the client side since many fields (like priority, driver name, route)
+    // are resolved client-side or from local storage.
+    const searchQuery = params?.search?.toLowerCase().trim();
+    delete backendParams.search;
 
     const r = await apiClient.get('/api/v1/trips', { params: backendParams });
     const payload = r.data;
-    const items = (payload.data || payload.items || []) as BETrip[];
+    const beItems = (payload.data || payload.items || []) as BETrip[];
+    
+    let items = beItems.map(mapBackendToFrontendTrip);
+
+    if (searchQuery) {
+      items = items.filter(t => {
+        const formattedDate = t.start_date ? new Date(t.start_date).toLocaleDateString().toLowerCase() : '';
+        return (
+          (t.trip_number || '').toLowerCase().includes(searchQuery) ||
+          (t.customer?.name || '').toLowerCase().includes(searchQuery) ||
+          (t.origin || '').toLowerCase().includes(searchQuery) ||
+          (t.destination || '').toLowerCase().includes(searchQuery) ||
+          (t.vehicle?.license_plate || '').toLowerCase().includes(searchQuery) ||
+          (t.driver?.name || '').toLowerCase().includes(searchQuery) ||
+          (t.status || '').toLowerCase().includes(searchQuery) ||
+          (t.priority || '').toLowerCase().includes(searchQuery) ||
+          (t.start_date || '').toLowerCase().includes(searchQuery) ||
+          formattedDate.includes(searchQuery)
+        );
+      });
+    }
+
     return {
-      items: items.map(mapBackendToFrontendTrip),
-      total: payload.total || 0,
+      items,
+      total: searchQuery ? items.length : (payload.total || 0),
       page: payload.page || 1,
       page_size: payload.page_size || 50,
     };
@@ -403,16 +425,7 @@ export const tripApi = {
   // ─── Lifecycle Actions ───────────────────────────────────────────────
   transition: async (id: string, action: string, payload?: TripTransitionPayload): Promise<Trip> => {
     await refreshLookupsIfNeeded();
-    let targetStatus = 'pending';
-    if (action === 'dispatch') {
-      targetStatus = 'in_progress';
-    } else if (action === 'complete') {
-      targetStatus = 'completed';
-    } else if (action === 'cancel') {
-      targetStatus = 'cancelled';
-    } else if (action === 'close') {
-      targetStatus = 'billed';
-    }
+    const targetStatus = action;
 
     const res = await apiClient.patch(`/api/v1/trips/${id}/status`, { status: targetStatus }).then((r) => r.data as BETrip);
 

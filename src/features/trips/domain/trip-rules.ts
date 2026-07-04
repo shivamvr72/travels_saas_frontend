@@ -14,23 +14,8 @@ export function validateTransition(trip: Trip, targetStatus: TripStatus): RuleVi
   const violations: RuleViolation[] = [];
 
   switch (targetStatus) {
-    case 'planned':
-      // Basic check, usually no strict rules for draft -> planned
-      break;
-
-    case 'assigned':
-      // To be assigned, must have at least one resource assigned
-      if (!trip.vehicle_id && !trip.driver_id) {
-        violations.push({
-          code: 'MISSING_RESOURCES',
-          message: 'At least a vehicle or a driver must be assigned.',
-          severity: 'error',
-        });
-      }
-      break;
-
-    case 'dispatched':
-      // To dispatch, must have both vehicle and driver
+    case 'in_progress':
+      // To dispatch, must have both vehicle and driver assigned
       if (!trip.vehicle_id || !trip.driver_id) {
         violations.push({
           code: 'INCOMPLETE_ASSIGNMENT',
@@ -40,27 +25,27 @@ export function validateTransition(trip: Trip, targetStatus: TripStatus): RuleVi
       }
       break;
 
-    case 'in_progress':
-      // Usually transition happens when actual trip starts
-      if (trip.status !== 'dispatched') {
+    case 'completed':
+      // No strict resource rules — handled by UI
+      break;
+
+    case 'billed':
+      // Trip must be completed first (or reverting from paid)
+      if (trip.status !== 'completed' && trip.status !== 'paid') {
         violations.push({
-          code: 'NOT_DISPATCHED',
-          message: 'Trip must be dispatched before it can be started.',
+          code: 'NOT_COMPLETED',
+          message: 'Trip must be completed before marking as billed.',
           severity: 'error',
         });
       }
       break;
 
-    case 'completed':
-      // No strict resource rules here, handled mostly by UI logic (e.g. entering end date)
-      break;
-      
-    case 'closed':
-      // Final lock check
-      if (trip.status !== 'completed') {
+    case 'paid':
+      // Trip must be billed first
+      if (trip.status !== 'billed') {
         violations.push({
-          code: 'NOT_COMPLETED',
-          message: 'Trip must be completed before closing.',
+          code: 'NOT_BILLED',
+          message: 'Trip must be billed before marking as paid.',
           severity: 'error',
         });
       }

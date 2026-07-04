@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
@@ -34,7 +34,13 @@ export function TripAssignmentDialog({
   isOpen,
   onClose,
 }: TripAssignmentDialogProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(currentResourceId || null);
+  
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedId(currentResourceId || null);
+    }
+  }, [isOpen, currentResourceId]);
   const assignMutation = useTripAssign();
   const queryClient = useQueryClient();
 

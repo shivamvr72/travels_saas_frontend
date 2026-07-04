@@ -22,7 +22,7 @@ export const tripSchema = z.object({
     .min(2, 'Destination must be at least 2 characters')
     .max(200),
   distance_km: z.coerce.number().positive().nullable().optional(),
-  estimated_duration_mins: z.coerce.number().int().positive().nullable().optional(),
+  estimated_duration_mins: z.coerce.number().positive().nullable().optional(),
 
   // Section 3 — Route & Parties
   route_id: z.string().uuid('Invalid Route selection').nullable().optional().or(z.literal('')),

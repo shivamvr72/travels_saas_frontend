@@ -59,6 +59,7 @@ export interface FormFieldConfig {
   // Specific to numbers/currency
   min?: number;
   max?: number;
+  step?: number | 'any';
   
   // Specific to textarea
   rows?: number;

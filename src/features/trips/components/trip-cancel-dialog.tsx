@@ -47,15 +47,16 @@ export function TripCancelDialog({
           setReason('');
           setError(null);
         },
-        onError: (err: any) => {
-          setError(err?.response?.data?.detail || 'Failed to cancel the trip. Please try again.');
+        onError: (err: unknown) => {
+          const errorResponse = err as { response?: { data?: { detail?: string } } };
+          setError(errorResponse?.response?.data?.detail || 'Failed to cancel the trip. Please try again.');
         }
       }
     );
   };
 
   const handleClose = () => {
-    if (!transitionMutation.isPending) {
+    if (!transitionMutation.isPending && !error) {
       onClose();
       setReason('');
       setError(null);
