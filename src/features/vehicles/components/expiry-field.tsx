@@ -55,12 +55,14 @@ export function ExpiryField({ dateStr, type }: { dateStr: string | null | undefi
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-1.5 cursor-help">
-            <span className={getTextColorClass()}>{formattedDate}</span>
-            {getAlertIcon()}
-          </div>
-        </TooltipTrigger>
+        <TooltipTrigger
+          render={
+            <div className="flex items-center gap-1.5 cursor-help">
+              <span className={getTextColorClass()}>{formattedDate}</span>
+              {getAlertIcon()}
+            </div>
+          }
+        />
         <TooltipContent className="text-xs bg-slate-900 text-slate-50 border border-slate-800 shadow-md">
           {getTooltipMessage()}
         </TooltipContent>
@@ -99,11 +101,13 @@ export function RegNoExpiryAlert({ vehicle }: { vehicle: any }) {
       <span>{vehicle.reg_number}</span>
       <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="cursor-help inline-flex items-center">
-              <AlertCircle className={`h-4 w-4 ${alertColor} shrink-0`} />
-            </div>
-          </TooltipTrigger>
+          <TooltipTrigger
+            render={
+              <div className="cursor-help inline-flex items-center">
+                <AlertCircle className={`h-4 w-4 ${alertColor} shrink-0`} />
+              </div>
+            }
+          />
           <TooltipContent className="text-xs bg-slate-900 text-slate-50 border border-slate-800 p-2.5 rounded shadow-lg max-w-[280px]">
             <div className="space-y-1.5">
               <p className="font-semibold text-[11px] text-slate-300 border-b border-slate-800 pb-1">Compliance Warnings:</p>

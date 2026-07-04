@@ -48,7 +48,7 @@ export function CrudForm({
 
   const computedDefaultValues = useMemo(() => {
     const defaults: Record<string, any> = { ...defaultValues };
-    if (!isEditing) {
+    if (!isEditing && config.form?.sections) {
       config.form.sections.forEach(sec => {
         sec.fields.forEach(f => {
           if (f.type === 'switch' && defaults[f.name] === undefined) {
@@ -58,9 +58,10 @@ export function CrudForm({
       });
     }
     return defaults;
-  }, [config.form.sections, defaultValues, isEditing]);
+  }, [config.form?.sections, defaultValues, isEditing]);
 
   const internalForm = useForm<FieldValues>({
+    mode: 'onChange',
     // @ts-expect-error schema typings mismatch
     resolver: config.schema ? zodResolver(config.schema) : undefined,
     defaultValues: computedDefaultValues,

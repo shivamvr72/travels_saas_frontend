@@ -88,6 +88,7 @@ export const customerConfig: FeatureConfig<Customer, Customer, CustomerCreate, C
             { value: 'Voter ID', label: 'Voter ID' },
           ]},
           { name: 'id_proof_number', label: 'Document Number', type: 'text', 
+            enabledWhen: (values) => !!values.id_proof_type,
             dynamicPlaceholder: (values) => {
               switch (values.id_proof_type) {
                 case 'PAN': return 'e.g. ABCDE1234F';
@@ -95,7 +96,7 @@ export const customerConfig: FeatureConfig<Customer, Customer, CustomerCreate, C
                 case 'Voter ID': return 'e.g. ABC1234567';
                 case 'Driving License': return 'e.g. MH1420110012345';
                 case 'Passport': return 'e.g. A1234567';
-                default: return 'Enter Document Number';
+                default: return 'Select Document Type first';
               }
             } 
           },

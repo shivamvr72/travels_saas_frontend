@@ -28,6 +28,7 @@ export function LoginForm() {
   const loginMutation = useLoginMutation();
 
   const form = useForm<LoginFormValues>({
+    mode: 'onChange',
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',

@@ -11,6 +11,22 @@ export const customerSchema = z.object({
   city: z.string().max(100).nullable().optional(),
   state: z.string().max(100).nullable().optional(),
 }).superRefine((data, ctx) => {
+  if (data.id_proof_number && !data.id_proof_type) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please select an ID Document Type first',
+      path: ['id_proof_number'],
+    });
+  }
+  
+  if (data.id_proof_type && !data.id_proof_number) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Document number is required when document type is selected',
+      path: ['id_proof_number'],
+    });
+  }
+
   if (data.id_proof_type && data.id_proof_number) {
     if (data.id_proof_type === 'PAN') {
       const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;

@@ -37,6 +37,7 @@ export function RegisterForm() {
   const userEditedSlug = useRef(false);
 
   const form = useForm<RegisterFormValues>({
+    mode: 'onChange',
     resolver: zodResolver(registerSchema),
     defaultValues: {
       travel_name: '',

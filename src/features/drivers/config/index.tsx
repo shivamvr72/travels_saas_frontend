@@ -46,7 +46,7 @@ export const driverConfig: FeatureConfig<Driver, Driver, DriverCreate, DriverUpd
           type: 'phone',
         },
         {
-          key: 'license_number',
+          key: 'license_no',
           header: 'License No',
           sortable: true,
         },

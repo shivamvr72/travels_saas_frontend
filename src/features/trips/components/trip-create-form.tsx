@@ -19,6 +19,7 @@ export function TripCreateForm() {
   const createTrip = useCreateTrip();
 
   const form = useForm<TripFormValues>({
+    mode: 'onChange',
     resolver: zodResolver(tripSchema) as any,
     defaultValues: {
       trip_type: 'One Way',
