@@ -158,6 +158,16 @@ export const useDeleteTripDocument = () => {
   });
 };
 
+export const useAddTripNote = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, note }: { id: string; note: string }) => tripApi.addNote(id, note),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+    },
+  });
+};
+
 // ─── Bulk Operations ────────────────────────────────────────────────────────
 export const useBulkTripAssign = () => {
   const queryClient = useQueryClient();

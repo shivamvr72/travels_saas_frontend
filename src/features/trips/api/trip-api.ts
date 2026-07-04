@@ -612,5 +612,14 @@ export const tripApi = {
   
   bulkExport: (payload: BulkExportPayload): Promise<Blob> =>
     apiClient.post('/api/v1/trips/bulk/export', payload, { responseType: 'blob' }).then((r) => r.data),
+
+  addNote: async (id: string, note: string): Promise<void> => {
+    addLocalActivityEvent(id, {
+      event_type: 'note_added',
+      title: 'Dispatcher Note',
+      description: note,
+      actor: 'Dispatcher',
+    });
+  },
 };
 
