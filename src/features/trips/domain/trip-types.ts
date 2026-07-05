@@ -262,7 +262,14 @@ export type ActivityEventType =
   | 'co_driver_assigned'
   | 'note_added'
   | 'document_uploaded'
-  | 'details_updated';
+  | 'details_updated'
+  | 'expense_added'
+  | 'expense_updated'
+  | 'invoice_generated'
+  | 'invoice_cancelled'
+  | 'payment_received'
+  | 'outstanding_updated'
+  | 'receipt_uploaded';
 
 export interface ActivityFeedEvent {
   id: string;

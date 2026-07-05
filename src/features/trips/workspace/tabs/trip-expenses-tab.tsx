@@ -1,87 +1,142 @@
+import { useState, useEffect } from 'react';
 import { Trip } from '../../domain/trip-types';
-import { Card, CardContent } from '@/components/ui/card';
+import { TripExpense } from '@/features/finance/domain/finance-types';
+import { FinanceApi } from '@/features/finance/api/finance-api';
+import { CalculationEngine } from '@/features/finance/domain/calculation-engine';
+import { FinanceRules } from '@/features/finance/domain/finance-rules';
+import { ExpenseFormValues } from '@/features/finance/schemas/finance-schemas';
+import { ExpenseForm } from '@/features/finance/components/expense-form';
+import { ExpenseCard } from '@/features/finance/components/expense-card';
+import { CURRENCY_CONFIG } from '@/features/finance/domain/finance-constants';
 import { Button } from '@/components/ui/button';
-import { InfoIcon, Banknote } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Banknote, AlertCircle } from 'lucide-react';
+import { AppLoadingState } from '@/components/shared/app-loading-state';
 
 interface TripExpensesTabProps {
   trip: Trip;
 }
 
 export function TripExpensesTab({ trip }: TripExpensesTabProps) {
+  const [expenses, setExpenses] = useState<TripExpense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<TripExpense | null>(null);
+
+  const fetchExpenses = async () => {
+    setIsLoading(true);
+    try {
+      const data = await FinanceApi.getTripExpenses(trip.id);
+      setExpenses(data);
+    } catch (error) {
+      console.error('Failed to fetch expenses', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, [trip.id]);
+
+  const handleSaveExpense = async (data: ExpenseFormValues) => {
+    try {
+      if (editingExpense) {
+        // Mock update: delete then add
+        await FinanceApi.deleteTripExpense(editingExpense.id, trip.id);
+      }
+      await FinanceApi.addTripExpense(trip.id, data);
+      await fetchExpenses();
+      setIsFormOpen(false);
+      setEditingExpense(null);
+    } catch (error) {
+      console.error('Failed to save expense', error);
+    }
+  };
+
+  const handleDeleteExpense = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this expense?')) return;
+    try {
+      await FinanceApi.deleteTripExpense(id, trip.id);
+      await fetchExpenses();
+    } catch (error) {
+      console.error('Failed to delete expense', error);
+    }
+  };
+
+  const totalAmount = CalculationEngine.aggregateExpenses(expenses);
+  const formattedTotal = new Intl.NumberFormat(CURRENCY_CONFIG.locale, {
+    style: 'currency',
+    currency: CURRENCY_CONFIG.currency,
+  }).format(totalAmount);
+
+  const canModify = FinanceRules.canModifyExpenses(trip.status);
+
+  if (isLoading) return <AppLoadingState />;
+
   return (
-    <Card className="max-w-2xl mx-auto mt-6">
-      <CardContent className="p-8">
-        <div className="flex items-center gap-3 mb-6 border-b pb-4">
-          <div className="bg-primary/10 p-2 rounded-full">
-            <Banknote className="h-6 w-6 text-primary" />
-          </div>
-          <h2 className="text-xl font-semibold">Trip Expenses Summary</h2>
+    <div className="max-w-4xl mx-auto mt-6 space-y-6">
+      {!canModify && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 flex gap-3 text-yellow-800 dark:text-yellow-400">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <p className="text-sm">Expenses cannot be modified because the trip is currently {trip.status}.</p>
         </div>
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <div className="bg-muted/30 rounded-lg p-5 border h-full">
-              <h3 className="font-medium text-sm text-muted-foreground mb-4 uppercase tracking-wider">Financial Overview</h3>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Total Expenses</span>
-                  <span className="font-medium text-muted-foreground">No expenses logged</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Advances Issued</span>
-                  <span className="font-medium text-muted-foreground">No advances logged</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Estimated Cost</span>
-                  <span className="font-medium">—</span>
-                </div>
-                <div className="flex justify-between items-center pt-3 border-t">
-                  <span className="font-medium">Net Profitability</span>
-                  <span className="font-medium text-muted-foreground">Pending FE-5</span>
-                </div>
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between border-b pb-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-primary/10 p-2 rounded-full">
+                <Banknote className="h-6 w-6 text-primary" />
               </div>
+              <h2 className="text-xl font-semibold">Trip Expenses</h2>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Total Expenses</p>
+              <p className="text-2xl font-bold">{formattedTotal}</p>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-muted/30 rounded-lg p-5 border h-full">
-              <h3 className="font-medium text-sm text-muted-foreground mb-4 uppercase tracking-wider">Operational Metrics</h3>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Est. Distance</span>
-                  <span className="font-medium">{trip.route?.distance_km || 0} km</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Est. Duration</span>
-                  <span className="font-medium">{trip.route?.estimated_duration_mins ? Math.round(trip.route.estimated_duration_mins / 60) : 0} hrs</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Fuel Efficiency</span>
-                  <span className="font-medium text-muted-foreground">Waiting for logs</span>
-                </div>
-                <div className="flex justify-between items-center pt-3 border-t">
-                  <span className="font-medium">On-Time Performance</span>
-                  <span className="font-medium text-muted-foreground">Pending</span>
-                </div>
-              </div>
+          {!isFormOpen && canModify && (
+            <div className="flex justify-end mb-6">
+              <Button onClick={() => { setEditingExpense(null); setIsFormOpen(true); }}>
+                <Plus className="mr-2 h-4 w-4" /> Add Expense
+              </Button>
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="mt-6 bg-blue-50/50 dark:bg-blue-950/20 rounded-lg p-5 border border-blue-100 dark:border-blue-900 flex gap-4">
-          <InfoIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-          <div className="space-y-2">
-            <p className="text-sm text-blue-900 dark:text-blue-200 leading-relaxed">
-              Full expense tracking, driver advances, and detailed operational analytics will be available in the <strong>Expense Management module (FE-5)</strong>.
-            </p>
-            <p className="text-sm text-blue-800/80 dark:text-blue-300/80">
-              This trip's financial and operational data will automatically populate here once integrated.
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+          {isFormOpen && canModify ? (
+            <div className="bg-muted/30 p-6 rounded-lg border mb-6">
+              <h3 className="font-medium mb-4">{editingExpense ? 'Edit Expense' : 'Record New Expense'}</h3>
+              <ExpenseForm 
+                initialData={editingExpense || undefined}
+                onSubmit={handleSaveExpense} 
+                onCancel={() => { setIsFormOpen(false); setEditingExpense(null); }} 
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {expenses.length === 0 ? (
+                <div className="text-center py-12 bg-muted/20 rounded-lg border border-dashed">
+                  <Banknote className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                  <p className="text-muted-foreground">No expenses recorded for this trip yet.</p>
+                </div>
+              ) : (
+                expenses.map(expense => (
+                  <ExpenseCard 
+                    key={expense.id} 
+                    expense={expense} 
+                    onEdit={canModify ? setEditingExpense : undefined}
+                    onDelete={canModify ? handleDeleteExpense : undefined}
+                    readOnly={!canModify}
+                  />
+                ))
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

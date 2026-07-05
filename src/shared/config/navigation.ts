@@ -55,9 +55,8 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Finance',
     items: [
-      { title: 'Payments', href: '/payments', icon: Banknote, module: 'FINANCE' },
-      { title: 'External Hiring', href: '/external-hiring', icon: Bus, module: 'FINANCE' },
-      { title: 'Profitability', href: '/profitability', icon: PieChart, module: 'FINANCE' },
+      { title: 'Dashboard', href: '/finance/dashboard', icon: PieChart, module: 'FINANCE' },
+      { title: 'Receivables', href: '/finance/receivables', icon: Banknote, module: 'FINANCE' },
     ],
   },
   {

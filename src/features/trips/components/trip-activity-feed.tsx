@@ -62,6 +62,19 @@ export function TripActivityFeed({ events, isLoading }: TripActivityFeedProps) {
         return <FileText className="h-5 w-5 text-slate-500" />;
       case 'details_updated':
         return <Info className="h-5 w-5 text-blue-400" />;
+      case 'expense_added':
+      case 'expense_updated':
+        return <FileText className="h-5 w-5 text-amber-500" />;
+      case 'invoice_generated':
+        return <FileText className="h-5 w-5 text-indigo-500" />;
+      case 'invoice_cancelled':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'payment_received':
+        return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+      case 'outstanding_updated':
+        return <Info className="h-5 w-5 text-amber-500" />;
+      case 'receipt_uploaded':
+        return <FileUp className="h-5 w-5 text-teal-500" />;
       default:
         return <Clock className="h-5 w-5 text-muted-foreground" />;
     }
