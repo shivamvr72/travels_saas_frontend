@@ -3,6 +3,8 @@ import { Trip } from '../../domain/trip-types';
 import { Invoice } from '@/features/finance/domain/finance-types';
 import { BillingService } from '@/features/finance/services/billing.service';
 import { InvoiceSummary } from '@/features/finance/components/invoice-summary';
+import { InvoiceForm } from '@/features/finance/components/invoice-form';
+import { InvoiceUpdateValues } from '@/features/finance/schemas/finance-schemas';
 import { FinanceRules } from '@/features/finance/domain/finance-rules';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,6 +19,7 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -50,6 +53,17 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
     }
   };
 
+  const handleSaveInvoice = async (values: InvoiceUpdateValues) => {
+    if (!invoice) return;
+    try {
+      const updated = await BillingService.updateDraftInvoice(trip.id, invoice.id, values);
+      setInvoice(updated);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Failed to update invoice', error);
+    }
+  };
+
   const canGenerate = FinanceRules.canGenerateInvoice(trip.status);
 
   if (isLoading) return <AppLoadingState />;
@@ -65,25 +79,38 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
 
       {invoice ? (
         <div className="space-y-6">
-          <InvoiceSummary invoice={invoice} />
-          
-          {FinanceRules.canEditInvoice(invoice.status) && invoice.status === 'Draft' && (
-            <div className="flex justify-end gap-4">
-              <Button variant="outline">Edit Invoice Details</Button>
-              <Button onClick={handleFinalize} disabled={isGenerating}>
-                {isGenerating ? 'Generating...' : 'Finalize & Generate Invoice'}
-              </Button>
+          {isEditing ? (
+            <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm">
+              <h3 className="font-semibold text-lg mb-4">Edit Draft Invoice</h3>
+              <InvoiceForm 
+                initialData={invoice} 
+                onSubmit={handleSaveInvoice} 
+                onCancel={() => setIsEditing(false)} 
+              />
             </div>
-          )}
+          ) : (
+            <>
+              <InvoiceSummary invoice={invoice} />
+              
+              {FinanceRules.canEditInvoice(invoice.status) && invoice.status === 'Draft' && (
+                <div className="flex justify-end gap-4">
+                  <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Invoice Details</Button>
+                  <Button onClick={handleFinalize} disabled={isGenerating}>
+                    {isGenerating ? 'Generating...' : 'Finalize & Generate Invoice'}
+                  </Button>
+                </div>
+              )}
 
-          {invoice.status !== 'Draft' && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex gap-3 text-green-800 dark:text-green-400">
-              <CheckCircle2 className="h-5 w-5 shrink-0" />
-              <div className="text-sm space-y-1">
-                <p className="font-semibold">Invoice Finalized</p>
-                <p>This invoice can no longer be edited as it has been generated and locked.</p>
-              </div>
-            </div>
+              {invoice.status !== 'Draft' && (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex gap-3 text-green-800 dark:text-green-400">
+                  <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  <div className="text-sm space-y-1">
+                    <p className="font-semibold">Invoice Finalized</p>
+                    <p>This invoice can no longer be edited as it has been generated and locked.</p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (

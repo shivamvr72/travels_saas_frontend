@@ -11,6 +11,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, IndianRupee, Plus } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface TripPaymentsTabProps {
   trip: Trip;
@@ -53,6 +64,15 @@ export function TripPaymentsTab({ trip }: TripPaymentsTabProps) {
     }
   };
 
+  const handleResetPayments = async () => {
+    try {
+      await PaymentService.resetPayments(trip.id);
+      await fetchData();
+    } catch (error) {
+      console.error('Failed to reset payments', error);
+    }
+  };
+
   const canReceivePayment = FinanceRules.canReceivePayment(invoice);
 
   if (isLoading) return <AppLoadingState />;
@@ -70,11 +90,30 @@ export function TripPaymentsTab({ trip }: TripPaymentsTabProps) {
         <div className="space-y-6">
           <PaymentHistory paymentDetails={paymentDetails} />
 
-          {canReceivePayment && !paymentDetails.is_settled && !isFormOpen && (
-            <div className="flex justify-end">
-              <Button onClick={() => setIsFormOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Record New Payment
-              </Button>
+          {canReceivePayment && !isFormOpen && (
+            <div className="flex justify-end gap-4">
+              <AlertDialog>
+                <AlertDialogTrigger render={<Button variant="outline" />}>
+                  Clear Payments
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear All Payments?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will wipe all recorded payments for this trip and reset the balance due. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleResetPayments}>Yes, Clear Payments</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              {!paymentDetails.is_settled && (
+                <Button onClick={() => setIsFormOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" /> Record New Payment
+                </Button>
+              )}
             </div>
           )}
 

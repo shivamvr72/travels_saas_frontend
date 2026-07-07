@@ -53,16 +53,22 @@ export interface Invoice {
   updated_at: string;
 }
 
+export interface PaymentTransaction {
+  id: string;
+  amount: number;
+  payment_date: string;
+  payment_mode: PaymentMode;
+  reference_no?: string;
+}
+
 export interface TripPaymentDetails {
   id: string;
   trip_id: string;
   advance_payment: number;
   total_payment: number;
-  other_payment: number;
+  other_payment: number; // Aggregate sum for backward compatibility
+  transactions: PaymentTransaction[];
   balance_due: number;
-  payment_mode?: PaymentMode;
-  payment_date?: string;
-  reference_no?: string;
   is_settled: boolean;
   status: PaymentStatus;
   created_at: string;

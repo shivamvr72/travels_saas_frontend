@@ -40,10 +40,11 @@ export const FinanceRules = {
   },
 
   /**
-   * Constraint: Outstanding balance cannot become negative.
+   * Constraint: Payment amount must be positive.
+   * (Overpayments are allowed to accommodate round-offs or tips)
    */
   isValidPaymentAmount: (amountToPay: number, currentBalanceDue: number): boolean => {
-    return amountToPay > 0 && amountToPay <= currentBalanceDue;
+    return amountToPay > 0;
   },
 
   /**

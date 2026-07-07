@@ -2,7 +2,7 @@ import { Invoice } from '../domain/finance-types';
 import { FinanceApi } from '../api/finance-api';
 import { CalculationEngine } from '../domain/calculation-engine';
 import { FinanceRules } from '../domain/finance-rules';
-import { InvoiceGenerationValues } from '../schemas/finance-schemas';
+import { InvoiceGenerationValues, InvoiceUpdateValues } from '../schemas/finance-schemas';
 import { TripStatus } from '@/features/trips/domain/trip-types';
 
 export const BillingService = {
@@ -47,6 +47,26 @@ export const BillingService = {
     return invoice;
   },
 
+  updateDraftInvoice: async (tripId: string, invoiceId: string, values: InvoiceUpdateValues): Promise<Invoice> => {
+    const currentInvoice = await FinanceApi.getTripInvoice(tripId);
+    if (!currentInvoice || !FinanceRules.canEditInvoice(currentInvoice.status)) {
+      throw new Error('Invoice cannot be edited in its current state.');
+    }
+
+    // Recalculate dynamic totals based on the new values
+    const newTotals = BillingService.recalculateTotals({
+      ...currentInvoice,
+      ...values,
+    });
+
+    const updates = {
+      ...values,
+      ...newTotals,
+    };
+
+    return await FinanceApi.updateDraftInvoice(tripId, invoiceId, updates);
+  },
+
   /**
    * Finalizes a draft invoice.
    */
@@ -62,7 +82,7 @@ export const BillingService = {
   /**
    * Calculates dynamic totals based on user edits to a draft invoice.
    */
-  recalculateTotals: (invoiceBase: Partial<Invoice>): { subtotal: number; gst_amount: number; total_amount: number } => {
+  recalculateTotals: (invoiceBase: Partial<Invoice>): { subtotal: number; gst_amount: number; total_amount: number; extra_km_amount: number; extra_hr_amount: number } => {
     // If we wanted to also recalculate extra_km_amount = extra_km * extra_km_rate here, we could
     // but the engine currently aggregates the final components. We'll pre-calculate multipliers first.
     
@@ -75,6 +95,12 @@ export const BillingService = {
       extra_hr_amount: extraHrAmount,
     };
 
-    return CalculationEngine.calculateInvoiceTotals(preparedBase);
+    const totals = CalculationEngine.calculateInvoiceTotals(preparedBase);
+    
+    return {
+      ...totals,
+      extra_km_amount: extraKmAmount,
+      extra_hr_amount: extraHrAmount,
+    };
   }
 };

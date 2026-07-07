@@ -58,24 +58,24 @@ export function PaymentHistory({ paymentDetails }: PaymentHistoryProps) {
           </div>
         )}
 
-        {paymentDetails.other_payment > 0 && (
-          <div className="flex items-center justify-between p-3 rounded-md bg-muted/40 border">
+        {paymentDetails.transactions?.map((txn, index) => (
+          <div key={txn.id} className="flex items-center justify-between p-3 rounded-md bg-muted/40 border">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 p-2 rounded-full text-primary">
                 <IndianRupee className="h-4 w-4" />
               </div>
               <div>
-                <p className="font-medium">Subsequent Payments</p>
+                <p className="font-medium">Payment {index + 1}</p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                  {paymentDetails.payment_date && <span>{format(new Date(paymentDetails.payment_date), 'MMM dd, yyyy')}</span>}
-                  {paymentDetails.payment_mode && <span className="capitalize">• {paymentDetails.payment_mode}</span>}
-                  {paymentDetails.reference_no && <span>• Ref: {paymentDetails.reference_no}</span>}
+                  {txn.payment_date && <span>{format(new Date(txn.payment_date), 'MMM dd, yyyy')}</span>}
+                  {txn.payment_mode && <span className="capitalize">• {txn.payment_mode}</span>}
+                  {txn.reference_no && <span>• Ref: {txn.reference_no}</span>}
                 </div>
               </div>
             </div>
-            <span className="font-bold">{formatCurrency(paymentDetails.other_payment)}</span>
+            <span className="font-bold">{formatCurrency(txn.amount)}</span>
           </div>
-        )}
+        ))}
 
         {(paymentDetails.advance_payment === 0 && paymentDetails.other_payment === 0) && (
           <div className="text-center py-6 text-sm text-muted-foreground border border-dashed rounded-md">

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Banknote, AlertCircle } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
+import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
 
 interface TripExpensesTabProps {
   trip: Trip;
@@ -22,6 +23,7 @@ export function TripExpensesTab({ trip }: TripExpensesTabProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<TripExpense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
 
   const fetchExpenses = async () => {
     setIsLoading(true);
@@ -54,13 +56,19 @@ export function TripExpensesTab({ trip }: TripExpensesTabProps) {
     }
   };
 
-  const handleDeleteExpense = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this expense?')) return;
+  const handleDeleteExpense = (id: string) => {
+    setExpenseToDelete(id);
+  };
+
+  const confirmDeleteExpense = async () => {
+    if (!expenseToDelete) return;
     try {
-      await FinanceApi.deleteTripExpense(id, trip.id);
+      await FinanceApi.deleteTripExpense(expenseToDelete, trip.id);
       await fetchExpenses();
     } catch (error) {
       console.error('Failed to delete expense', error);
+    } finally {
+      setExpenseToDelete(null);
     }
   };
 
@@ -127,7 +135,7 @@ export function TripExpensesTab({ trip }: TripExpensesTabProps) {
                   <ExpenseCard 
                     key={expense.id} 
                     expense={expense} 
-                    onEdit={canModify ? setEditingExpense : undefined}
+                    onEdit={canModify ? (exp) => { setEditingExpense(exp); setIsFormOpen(true); } : undefined}
                     onDelete={canModify ? handleDeleteExpense : undefined}
                     readOnly={!canModify}
                   />
@@ -137,6 +145,16 @@ export function TripExpensesTab({ trip }: TripExpensesTabProps) {
           )}
         </CardContent>
       </Card>
+
+      <AppConfirmDialog
+        isOpen={!!expenseToDelete}
+        onClose={() => setExpenseToDelete(null)}
+        title="Delete Expense"
+        description="Are you sure you want to delete this expense? This action cannot be undone."
+        onConfirm={confirmDeleteExpense}
+        confirmLabel="Delete"
+        isDestructive={true}
+      />
     </div>
   );
 }

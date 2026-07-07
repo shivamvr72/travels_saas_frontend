@@ -24,9 +24,16 @@ export const PaymentService = {
     }
 
     if (currentPaymentDetails && !FinanceRules.isValidPaymentAmount(values.amount, currentPaymentDetails.balance_due)) {
-      throw new Error('Payment amount is invalid or exceeds the balance due.');
+      throw new Error('Payment amount is invalid.');
     }
 
     return await FinanceApi.recordPayment(tripId, values);
+  },
+
+  /**
+   * Resets all payments for a trip (Mock only)
+   */
+  resetPayments: async (tripId: string): Promise<void> => {
+    await FinanceApi.resetPayments(tripId);
   }
 };

@@ -50,8 +50,8 @@ export function PaymentForm({ balanceDue, onSubmit, onCancel, isLoading }: Payme
                   <Input 
                     type="number" 
                     step="0.01" 
-                    max={balanceDue}
                     {...field} 
+                    onWheel={(e) => e.currentTarget.blur()} 
                   />
                 </FormControl>
                 <FormMessage />
@@ -64,7 +64,7 @@ export function PaymentForm({ balanceDue, onSubmit, onCancel, isLoading }: Payme
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Payment Mode</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select payment mode" />

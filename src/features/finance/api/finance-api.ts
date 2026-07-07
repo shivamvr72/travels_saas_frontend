@@ -2,10 +2,26 @@ import { apiClient } from '@/shared/lib/axios';
 import { Invoice, TripExpense, TripPaymentDetails, ProfitabilitySummary } from '../domain/finance-types';
 import { ExpenseFormValues, PaymentFormValues, InvoiceGenerationValues } from '../schemas/finance-schemas';
 
-// --- MOCK STORAGE (Since DBML does not have a trip_expenses table yet) ---
-const mockExpenses: Record<string, TripExpense[]> = {};
-const mockInvoices: Record<string, Invoice> = {};
-const mockPayments: Record<string, TripPaymentDetails> = {};
+// --- MOCK STORAGE with localStorage persistence ---
+const getStorage = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  } catch (e) {
+    return defaultValue;
+  }
+};
+
+const setStorage = (key: string, value: any) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+};
+
+let mockExpenses: Record<string, TripExpense[]> = getStorage('svr_mockExpenses', {});
+let mockInvoices: Record<string, Invoice> = getStorage('svr_mockInvoices', {});
+let mockPayments: Record<string, TripPaymentDetails> = getStorage('svr_mockPayments', {});
 
 /**
  * Temporary mock API client for Finance endpoints.
@@ -33,6 +49,7 @@ export const FinanceApi = {
     };
     if (!mockExpenses[tripId]) mockExpenses[tripId] = [];
     mockExpenses[tripId].push(newExpense);
+    setStorage('svr_mockExpenses', mockExpenses);
     return newExpense;
   },
 
@@ -40,6 +57,7 @@ export const FinanceApi = {
     await new Promise(resolve => setTimeout(resolve, 300));
     if (mockExpenses[tripId]) {
       mockExpenses[tripId] = mockExpenses[tripId].filter(e => e.id !== expenseId);
+      setStorage('svr_mockExpenses', mockExpenses);
     }
   },
 
@@ -62,7 +80,21 @@ export const FinanceApi = {
       updated_at: new Date().toISOString(),
     } as Invoice;
     mockInvoices[tripId] = newInvoice;
+    setStorage('svr_mockInvoices', mockInvoices);
     return newInvoice;
+  },
+
+  updateDraftInvoice: async (tripId: string, invoiceId: string, updates: Partial<Invoice>): Promise<Invoice> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    const invoice = mockInvoices[tripId];
+    if (!invoice || invoice.id !== invoiceId) throw new Error('Invoice not found');
+    if (invoice.status !== 'Draft') throw new Error('Only draft invoices can be updated');
+    
+    Object.assign(invoice, updates);
+    invoice.updated_at = new Date().toISOString();
+    mockInvoices[tripId] = invoice;
+    setStorage('svr_mockInvoices', mockInvoices);
+    return invoice;
   },
 
   finalizeInvoice: async (invoiceId: string, tripId: string, values: InvoiceGenerationValues): Promise<Invoice> => {
@@ -73,6 +105,8 @@ export const FinanceApi = {
     invoice.invoice_number = `KT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`;
     invoice.due_date = values.due_date;
     invoice.updated_at = new Date().toISOString();
+    mockInvoices[tripId] = invoice;
+    setStorage('svr_mockInvoices', mockInvoices);
     return invoice;
   },
 
@@ -94,6 +128,7 @@ export const FinanceApi = {
         trip_id: tripId,
         advance_payment: 0,
         other_payment: 0,
+        transactions: [],
         total_payment: mockInvoices[tripId]?.total_amount || 0,
         balance_due: mockInvoices[tripId]?.total_amount || 0,
         is_settled: false,
@@ -104,15 +139,41 @@ export const FinanceApi = {
       mockPayments[tripId] = payment;
     }
 
+    const newTransaction = {
+      id: `txn-${Math.random().toString(36).substring(7)}`,
+      amount: data.amount,
+      payment_date: data.payment_date,
+      payment_mode: data.payment_mode as any,
+      reference_no: data.reference_no,
+    };
+
+    if (!payment.transactions) {
+      payment.transactions = [];
+    }
+    payment.transactions.push(newTransaction);
+
     payment.other_payment += data.amount;
     payment.balance_due = Math.max(0, payment.total_payment - (payment.advance_payment + payment.other_payment));
     payment.status = payment.balance_due === 0 ? 'Completed' : 'Partial';
     payment.is_settled = payment.balance_due === 0;
-    payment.payment_mode = data.payment_mode;
-    payment.payment_date = data.payment_date;
-    payment.reference_no = data.reference_no;
     payment.updated_at = new Date().toISOString();
 
+    mockPayments[tripId] = payment;
+    setStorage('svr_mockPayments', mockPayments);
     return payment;
+  },
+
+  resetPayments: async (tripId: string): Promise<void> => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    if (mockPayments[tripId]) {
+      const payment = mockPayments[tripId];
+      payment.other_payment = 0;
+      payment.advance_payment = 0;
+      payment.transactions = [];
+      payment.balance_due = payment.total_payment;
+      payment.status = 'Pending';
+      payment.is_settled = false;
+      setStorage('svr_mockPayments', mockPayments);
+    }
   }
 };
