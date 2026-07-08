@@ -19,8 +19,8 @@ export function ProfitCard({ summary }: ProfitCardProps) {
   const isLoss = summary.net_profit < 0;
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-muted/30 border-b pb-4">
+    <Card className="overflow-hidden p-0 gap-0">
+      <CardHeader className="bg-muted/30 border-b p-4 sm:p-6">
         <CardTitle className="text-lg flex items-center gap-2">
           <IndianRupee className="h-5 w-5 text-primary" />
           Profitability Overview

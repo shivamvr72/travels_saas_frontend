@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
+import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
 
 interface TripInvoiceTabProps {
   trip: Trip;
@@ -19,7 +20,10 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isReverting, setIsReverting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isRevertConfirmOpen, setIsRevertConfirmOpen] = useState(false);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -50,6 +54,21 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
       console.error('Failed to finalize invoice', error);
     } finally {
       setIsGenerating(false);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  const handleRevert = async () => {
+    if (!invoice) return;
+    setIsReverting(true);
+    try {
+      const reverted = await BillingService.revertInvoice(trip.id);
+      setInvoice(reverted);
+    } catch (error) {
+      console.error('Failed to revert invoice', error);
+    } finally {
+      setIsReverting(false);
+      setIsRevertConfirmOpen(false);
     }
   };
 
@@ -95,19 +114,57 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
               {FinanceRules.canEditInvoice(invoice.status) && invoice.status === 'Draft' && (
                 <div className="flex justify-end gap-4">
                   <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Invoice Details</Button>
-                  <Button onClick={handleFinalize} disabled={isGenerating}>
+                  <Button onClick={() => setIsConfirmOpen(true)} disabled={isGenerating}>
                     {isGenerating ? 'Generating...' : 'Finalize & Generate Invoice'}
                   </Button>
                 </div>
               )}
 
+              <AppConfirmDialog
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                title="Finalize Invoice"
+                description={
+                  <span className="flex flex-col gap-2">
+                    <span>Are you sure you want to finalize this invoice?</span>
+                    {invoice.total_amount === 0 && (
+                      <span className="text-destructive font-medium">
+                        Warning: This invoice has a total amount of ₹0.00.
+                      </span>
+                    )}
+                    <span className="text-sm text-muted-foreground">
+                      Once finalized, the invoice will be locked and you will not be able to edit it anymore.
+                    </span>
+                  </span>
+                }
+                onConfirm={handleFinalize}
+                confirmLabel="Yes, Finalize Invoice"
+              />
+
               {invoice.status !== 'Draft' && (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex gap-3 text-green-800 dark:text-green-400">
-                  <CheckCircle2 className="h-5 w-5 shrink-0" />
-                  <div className="text-sm space-y-1">
-                    <p className="font-semibold">Invoice Finalized</p>
-                    <p>This invoice can no longer be edited as it has been generated and locked.</p>
+                <div className="space-y-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex gap-3 text-green-800 dark:text-green-400">
+                    <CheckCircle2 className="h-5 w-5 shrink-0" />
+                    <div className="text-sm space-y-1">
+                      <p className="font-semibold">Invoice Finalized</p>
+                      <p>This invoice can no longer be edited as it has been generated and locked.</p>
+                    </div>
                   </div>
+                  <div className="flex justify-end">
+                    <Button variant="outline" className="text-destructive hover:bg-destructive/10" onClick={() => setIsRevertConfirmOpen(true)} disabled={isReverting}>
+                      {isReverting ? 'Reverting...' : 'Revert to Draft'}
+                    </Button>
+                  </div>
+
+                  <AppConfirmDialog
+                    isOpen={isRevertConfirmOpen}
+                    onClose={() => setIsRevertConfirmOpen(false)}
+                    title="Revert Invoice to Draft"
+                    description="Are you sure you want to revert this invoice back to a draft? This will remove the invoice number and allow you to edit the details again."
+                    onConfirm={handleRevert}
+                    confirmLabel="Yes, Revert to Draft"
+                    isDestructive={true}
+                  />
                 </div>
               )}
             </>

@@ -110,7 +110,7 @@ export function TripWorkspace({ tripId }: TripWorkspaceProps) {
           </TabsList>
         </div>
 
-        <div className="flex-1 mt-4">
+        <div className="flex-1 mt-4 overflow-y-auto min-h-0 pr-2 pb-10">
           <TabsContent value="overview" className="m-0 border-0 p-0">
             <TripOverviewTab trip={trip} />
           </TabsContent>

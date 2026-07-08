@@ -1,6 +1,7 @@
 import { apiClient } from '@/shared/lib/axios';
 import { Invoice, TripExpense, TripPaymentDetails, ProfitabilitySummary } from '../domain/finance-types';
 import { ExpenseFormValues, PaymentFormValues, InvoiceGenerationValues } from '../schemas/finance-schemas';
+import { ExpenseCategory } from '../domain/finance-constants';
 
 // --- MOCK STORAGE with localStorage persistence ---
 const getStorage = <T>(key: string, defaultValue: T): T => {
@@ -28,152 +29,162 @@ let mockPayments: Record<string, TripPaymentDetails> = getStorage('svr_mockPayme
  * These methods will be replaced with actual `apiClient` calls once backend DB changes are applied.
  */
 
+const mapBackendToFrontendCategory = (backendType: string): ExpenseCategory => {
+  const mapping: Record<string, ExpenseCategory> = {
+    fuel: 'Fuel',
+    toll: 'Toll',
+    parking: 'Parking',
+    repair: 'Repair',
+    service: 'Maintenance',
+    permit: 'Permit Charges',
+  };
+  return mapping[backendType] || 'Miscellaneous';
+};
+
+const mapFrontendToBackendCategory = (frontendType: ExpenseCategory): string => {
+  const mapping: Record<ExpenseCategory, string> = {
+    'Fuel': 'fuel',
+    'Toll': 'toll',
+    'Parking': 'parking',
+    'Repair': 'repair',
+    'Maintenance': 'service',
+    'Permit Charges': 'permit',
+    'Driver Allowance': 'other',
+    'Food': 'other',
+    'Accommodation': 'other',
+    'Police / Checkpost': 'other',
+    'Miscellaneous': 'other',
+  };
+  return mapping[frontendType] || 'other';
+};
+
 export const FinanceApi = {
   // ─── EXPENSES ─────────────────────────────────────────────────────────────
   
   getTripExpenses: async (tripId: string): Promise<TripExpense[]> => {
-    // Mock implementation
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockExpenses[tripId] || [];
+    const response = await apiClient.get(`/api/v1/trips/${tripId}/expenses`);
+    return response.data.map((exp: any) => ({
+      id: exp.id,
+      trip_id: exp.trip_id,
+      amount: exp.amount,
+      category: mapBackendToFrontendCategory(exp.expense_type),
+      payment_mode: 'Cash', // default since backend doesn't have it on vehicle expenses
+      paid_by: exp.vendor_name,
+      expense_date: exp.expense_date,
+      remarks: exp.notes,
+      receipt_url: exp.receipt_url,
+      approval_status: 'approved',
+      created_at: exp.created_at,
+      updated_at: exp.created_at,
+    }));
   },
 
   addTripExpense: async (tripId: string, data: ExpenseFormValues): Promise<TripExpense> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const newExpense: TripExpense = {
-      id: `exp-${Math.random().toString(36).substring(7)}`,
-      trip_id: tripId,
-      ...data,
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/expenses`, {
+      expense_date: new Date().toISOString().split('T')[0], // ensure format YYYY-MM-DD
+      expense_type: mapFrontendToBackendCategory(data.category),
+      amount: data.amount,
+      vendor_name: data.paid_by,
+      notes: data.remarks,
+      receipt_url: data.receipt_url,
+    });
+    const exp = response.data;
+    return {
+      id: exp.id,
+      trip_id: exp.trip_id,
+      amount: exp.amount,
+      category: mapBackendToFrontendCategory(exp.expense_type),
+      payment_mode: data.payment_mode,
+      paid_by: exp.vendor_name,
+      expense_date: exp.expense_date,
+      remarks: exp.notes,
+      receipt_url: exp.receipt_url,
       approval_status: 'approved',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: exp.created_at,
+      updated_at: exp.created_at,
     };
-    if (!mockExpenses[tripId]) mockExpenses[tripId] = [];
-    mockExpenses[tripId].push(newExpense);
-    setStorage('svr_mockExpenses', mockExpenses);
-    return newExpense;
   },
 
   deleteTripExpense: async (expenseId: string, tripId: string): Promise<void> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    if (mockExpenses[tripId]) {
-      mockExpenses[tripId] = mockExpenses[tripId].filter(e => e.id !== expenseId);
-      setStorage('svr_mockExpenses', mockExpenses);
-    }
+    await apiClient.delete(`/api/v1/trips/${tripId}/expenses/${expenseId}`);
   },
 
   // ─── BILLING & INVOICING ──────────────────────────────────────────────────
   
   getTripInvoice: async (tripId: string): Promise<Invoice | null> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockInvoices[tripId] || null;
+    try {
+      const response = await apiClient.get(`/api/v1/trips/${tripId}/billing`);
+      const billing = response.data;
+      return {
+        ...billing,
+        invoice_number: billing.invoice_id,
+        status: billing.invoice_id ? 'Generated' : 'Draft',
+      } as Invoice;
+    } catch (e: any) {
+      if (e.response?.status === 404) return null;
+      throw e;
+    }
   },
 
   generateDraftInvoice: async (tripId: string, invoiceBase: Partial<Invoice>): Promise<Invoice> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const newInvoice: Invoice = {
-      ...invoiceBase,
-      id: `inv-${Math.random().toString(36).substring(7)}`,
-      invoice_number: `DRAFT-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
-      trip_id: tripId,
-      status: 'Draft',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+    const response = await apiClient.put(`/api/v1/trips/${tripId}/billing`, invoiceBase);
+    const billing = response.data;
+    return {
+      ...billing,
+      invoice_number: billing.invoice_id,
+      status: billing.invoice_id ? 'Generated' : 'Draft',
     } as Invoice;
-    mockInvoices[tripId] = newInvoice;
-    setStorage('svr_mockInvoices', mockInvoices);
-    return newInvoice;
   },
 
   updateDraftInvoice: async (tripId: string, invoiceId: string, updates: Partial<Invoice>): Promise<Invoice> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const invoice = mockInvoices[tripId];
-    if (!invoice || invoice.id !== invoiceId) throw new Error('Invoice not found');
-    if (invoice.status !== 'Draft') throw new Error('Only draft invoices can be updated');
-    
-    Object.assign(invoice, updates);
-    invoice.updated_at = new Date().toISOString();
-    mockInvoices[tripId] = invoice;
-    setStorage('svr_mockInvoices', mockInvoices);
-    return invoice;
+    const response = await apiClient.put(`/api/v1/trips/${tripId}/billing`, updates);
+    const billing = response.data;
+    return {
+      ...billing,
+      invoice_number: billing.invoice_id,
+      status: billing.invoice_id ? 'Generated' : 'Draft',
+    } as Invoice;
   },
 
   finalizeInvoice: async (invoiceId: string, tripId: string, values: InvoiceGenerationValues): Promise<Invoice> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const invoice = mockInvoices[tripId];
-    if (!invoice) throw new Error('Invoice not found');
-    invoice.status = 'Generated';
-    invoice.invoice_number = `KT-${new Date().getFullYear()}-${Math.floor(Math.random() * 10000)}`;
-    invoice.due_date = values.due_date;
-    invoice.updated_at = new Date().toISOString();
-    mockInvoices[tripId] = invoice;
-    setStorage('svr_mockInvoices', mockInvoices);
-    return invoice;
+    // values.due_date is not supported in the backend yet, ignoring for now.
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/finalize`);
+    const billing = response.data;
+    return {
+      ...billing,
+      invoice_number: billing.invoice_id,
+      status: billing.invoice_id ? 'Generated' : 'Draft',
+    } as Invoice;
+  },
+
+  revertInvoice: async (tripId: string): Promise<Invoice> => {
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/revert`);
+    const billing = response.data;
+    return {
+      ...billing,
+      invoice_number: billing.invoice_id,
+      status: billing.invoice_id ? 'Generated' : 'Draft',
+    } as Invoice;
   },
 
   // ─── PAYMENTS ──────────────────────────────────────────────────────────────
   
   getTripPaymentDetails: async (tripId: string): Promise<TripPaymentDetails | null> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockPayments[tripId] || null;
+    try {
+      const response = await apiClient.get(`/api/v1/trips/${tripId}/payment`);
+      return response.data;
+    } catch (e: any) {
+      if (e.response?.status === 404) return null;
+      throw e;
+    }
   },
 
   recordPayment: async (tripId: string, data: PaymentFormValues): Promise<TripPaymentDetails> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    let payment = mockPayments[tripId];
-    
-    // Create default if not exists
-    if (!payment) {
-      payment = {
-        id: `pay-${Math.random().toString(36).substring(7)}`,
-        trip_id: tripId,
-        advance_payment: 0,
-        other_payment: 0,
-        transactions: [],
-        total_payment: mockInvoices[tripId]?.total_amount || 0,
-        balance_due: mockInvoices[tripId]?.total_amount || 0,
-        is_settled: false,
-        status: 'Pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
-      mockPayments[tripId] = payment;
-    }
-
-    const newTransaction = {
-      id: `txn-${Math.random().toString(36).substring(7)}`,
-      amount: data.amount,
-      payment_date: data.payment_date,
-      payment_mode: data.payment_mode as any,
-      reference_no: data.reference_no,
-    };
-
-    if (!payment.transactions) {
-      payment.transactions = [];
-    }
-    payment.transactions.push(newTransaction);
-
-    payment.other_payment += data.amount;
-    payment.balance_due = Math.max(0, payment.total_payment - (payment.advance_payment + payment.other_payment));
-    payment.status = payment.balance_due === 0 ? 'Completed' : 'Partial';
-    payment.is_settled = payment.balance_due === 0;
-    payment.updated_at = new Date().toISOString();
-
-    mockPayments[tripId] = payment;
-    setStorage('svr_mockPayments', mockPayments);
-    return payment;
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/payment/record`, data);
+    return response.data;
   },
 
   resetPayments: async (tripId: string): Promise<void> => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    if (mockPayments[tripId]) {
-      const payment = mockPayments[tripId];
-      payment.other_payment = 0;
-      payment.advance_payment = 0;
-      payment.transactions = [];
-      payment.balance_due = payment.total_payment;
-      payment.status = 'Pending';
-      payment.is_settled = false;
-      setStorage('svr_mockPayments', mockPayments);
-    }
+    await apiClient.delete(`/api/v1/trips/${tripId}/payment/clear`);
   }
 };
