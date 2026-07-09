@@ -146,6 +146,16 @@ export const FinanceApi = {
     } as Invoice;
   },
 
+  syncExpenses: async (tripId: string): Promise<Invoice> => {
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/sync-expenses`);
+    const billing = response.data;
+    return {
+      ...billing,
+      invoice_number: billing.invoice_id,
+      status: billing.invoice_id ? 'Generated' : 'Draft',
+    } as Invoice;
+  },
+
   finalizeInvoice: async (invoiceId: string, tripId: string, values: InvoiceGenerationValues): Promise<Invoice> => {
     // values.due_date is not supported in the backend yet, ignoring for now.
     const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/finalize`);

@@ -87,6 +87,13 @@ export const BillingService = {
   },
 
   /**
+   * Syncs Toll and Parking expenses to the draft invoice.
+   */
+  syncExpenses: async (tripId: string): Promise<Invoice> => {
+    return await FinanceApi.syncExpenses(tripId);
+  },
+
+  /**
    * Calculates dynamic totals based on user edits to a draft invoice.
    */
   recalculateTotals: (invoiceBase: Partial<Invoice>): { subtotal: number; gst_amount: number; total_amount: number; extra_km_amount: number; extra_hr_amount: number } => {

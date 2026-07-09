@@ -19,9 +19,6 @@ export const PaymentService = {
     
     // In a real system, we'd also validate against the invoice status,
     // but the API handles the balance_due rules currently.
-    if (currentPaymentDetails && currentPaymentDetails.balance_due <= 0) {
-      throw new Error('This trip is already fully paid.');
-    }
 
     if (currentPaymentDetails && !FinanceRules.isValidPaymentAmount(values.amount, currentPaymentDetails.balance_due)) {
       throw new Error('Payment amount is invalid.');

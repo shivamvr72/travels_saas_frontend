@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { useTripLifecycle } from '../hooks/use-trip-lifecycle';
@@ -15,6 +15,17 @@ interface TripLifecycleActionsProps {
 export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
   const { availableActions, execute, isPending } = useTripLifecycle(trip);
   const [confirmAction, setConfirmAction] = useState<TripStatus | null>(null);
+  const [isSettled, setIsSettled] = useState(false);
+
+  useEffect(() => {
+    if (trip.status === 'billed' || trip.status === 'paid') {
+      import('@/features/finance/services/payment.service').then(({ PaymentService }) => {
+        PaymentService.getPaymentDetails(trip.id)
+          .then(details => setIsSettled(details.is_settled))
+          .catch(err => console.error('Failed to fetch payment status for lifecycle actions', err));
+      });
+    }
+  }, [trip.id, trip.status]);
 
   if (!availableActions || availableActions.length === 0) {
     return null;
@@ -45,7 +56,9 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
 
   return (
     <div className="flex items-center space-x-2">
-      {availableActions.map((action) => {
+      {availableActions
+        .filter(action => !(action.targetStatus === 'paid' && isSettled))
+        .map((action) => {
         const Icon = action.icon;
         
         // Map target status to required permission

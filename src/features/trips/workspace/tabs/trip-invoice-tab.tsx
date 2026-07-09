@@ -8,7 +8,7 @@ import { InvoiceUpdateValues } from '@/features/finance/schemas/finance-schemas'
 import { FinanceRules } from '@/features/finance/domain/finance-rules';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, FileText, CheckCircle2, RefreshCw } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
 import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
 
@@ -22,6 +22,7 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isReverting, setIsReverting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isRevertConfirmOpen, setIsRevertConfirmOpen] = useState(false);
 
@@ -83,6 +84,19 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
     }
   };
 
+  const handleSyncExpenses = async () => {
+    if (!invoice) return;
+    setIsSyncing(true);
+    try {
+      const updated = await BillingService.syncExpenses(trip.id);
+      setInvoice(updated);
+    } catch (error) {
+      console.error('Failed to sync expenses', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const canGenerate = FinanceRules.canGenerateInvoice(trip.status);
 
   if (isLoading) return <AppLoadingState />;
@@ -98,6 +112,12 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
 
       {invoice ? (
         <div className="space-y-6">
+          {invoice.status === 'Draft' && invoice.total_amount === 0 && (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 flex gap-3 text-yellow-800 dark:text-yellow-400">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <p className="text-sm font-medium">Route has no rate card. Please click "Edit Invoice Details" to enter charges manually before finalizing.</p>
+            </div>
+          )}
           {isEditing ? (
             <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm">
               <h3 className="font-semibold text-lg mb-4">Edit Draft Invoice</h3>
@@ -113,6 +133,10 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
               
               {FinanceRules.canEditInvoice(invoice.status) && invoice.status === 'Draft' && (
                 <div className="flex justify-end gap-4">
+                  <Button variant="outline" onClick={handleSyncExpenses} disabled={isSyncing}>
+                    <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} /> 
+                    {isSyncing ? 'Syncing...' : 'Auto-Fill Tolls & Parking'}
+                  </Button>
                   <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Invoice Details</Button>
                   <Button onClick={() => setIsConfirmOpen(true)} disabled={isGenerating}>
                     {isGenerating ? 'Generating...' : 'Finalize & Generate Invoice'}

@@ -109,11 +109,9 @@ export function TripPaymentsTab({ trip }: TripPaymentsTabProps) {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              {!paymentDetails.is_settled && (
-                <Button onClick={() => setIsFormOpen(true)}>
-                  <Plus className="mr-2 h-4 w-4" /> Record New Payment
-                </Button>
-              )}
+              <Button onClick={() => setIsFormOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" /> Record New Payment
+              </Button>
             </div>
           )}
 
