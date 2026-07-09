@@ -4,7 +4,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { paymentFormSchema, PaymentFormValues } from '../schemas/finance-schemas';
+import { createPaymentFormSchema, PaymentFormValues } from '../schemas/finance-schemas';
 import { PAYMENT_MODES, CURRENCY_CONFIG } from '../domain/finance-constants';
 
 interface PaymentFormProps {
@@ -15,8 +15,9 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({ balanceDue, onSubmit, onCancel, isLoading }: PaymentFormProps) {
+  const schema = createPaymentFormSchema(balanceDue > 0 ? balanceDue : undefined);
   const form = useForm<PaymentFormValues>({
-    resolver: zodResolver(paymentFormSchema) as any,
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       amount: balanceDue > 0 ? balanceDue : 0,
       payment_mode: 'cash',

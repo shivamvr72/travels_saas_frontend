@@ -11,6 +11,8 @@ export interface LookupConfig {
   endpoint: string;
   /** The field to display in the dropdown (e.g., 'name', 'license_plate') */
   displayField: string;
+  /** Optional function to custom format the display string */
+  formatDisplay?: (item: any) => string;
   /** The field to use as the value (defaults to 'id') */
   valueField?: string;
   /** Which fields to search by when typing */
@@ -45,6 +47,7 @@ export const LookupRegistry: Record<string, LookupConfig> = {
   vehicles: {
     endpoint: '/api/v1/vehicles',
     displayField: 'reg_number',
+    formatDisplay: (item: any) => `${item.reg_number} • ${item.brand_name || ''} ${item.model_type || ''}`.trim(),
     searchFields: ['reg_number', 'brand_name', 'model_type'],
     defaultSortBy: 'reg_number',
     staleTime: 5 * 60 * 1000,
@@ -60,7 +63,8 @@ export const LookupRegistry: Record<string, LookupConfig> = {
   },
   routes: {
     endpoint: '/api/v1/routes?active_only=true',
-    displayField: 'from_location', // Temporarily using from_location, ideally we'd compute "Origin to Destination"
+    displayField: 'from_location', 
+    formatDisplay: (item: any) => `${item.from_location} → ${item.to_location}`,
     searchFields: ['from_location', 'to_location'],
     defaultSortBy: 'from_location',
     staleTime: 5 * 60 * 1000,

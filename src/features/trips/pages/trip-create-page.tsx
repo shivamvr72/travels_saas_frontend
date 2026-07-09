@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export function TripCreatePage() {
   return (
-    <div className="space-y-4 max-w-5xl mx-auto pb-10">
+    <div className="space-y-4 max-w-7xl mx-auto pb-10">
       <AppToolbar
         title="New Trip"
         description="Create a new trip and assign resources."

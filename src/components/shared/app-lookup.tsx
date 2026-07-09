@@ -66,7 +66,8 @@ export function AppLookup({
       }
       searchParams.set('page_size', '50');
 
-      const res = await apiClient.get(`${config.endpoint}?${searchParams.toString()}`);
+      const separator = config.endpoint.includes('?') ? '&' : '?';
+      const res = await apiClient.get(`${config.endpoint}${separator}${searchParams.toString()}`);
       // Backend PaginatedResponse uses { data: [...], total, page, page_size, total_pages }
       const payload = res.data as { data?: Record<string, unknown>[]; items?: Record<string, unknown>[] };
       return payload.data ?? payload.items ?? [];
@@ -104,7 +105,9 @@ export function AppLookup({
 
   const getDisplayLabel = (val: string) => {
     const item = items.find(i => i[config.valueField || 'id'] === val);
-    return item ? String(item[config.displayField]) : val;
+    if (!item) return val;
+    if (config.formatDisplay) return config.formatDisplay(item);
+    return String(item[config.displayField]);
   };
 
   return (
@@ -154,7 +157,7 @@ export function AppLookup({
               <CommandGroup>
                 {items.map((item) => {
                   const itemValue = String(item[config.valueField || 'id']);
-                  const itemDisplay = String(item[config.displayField]);
+                  const itemDisplay = config.formatDisplay ? config.formatDisplay(item) : String(item[config.displayField]);
                   const isSelected = selectedValues.includes(itemValue);
 
                   return (

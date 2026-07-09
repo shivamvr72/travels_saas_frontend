@@ -37,6 +37,10 @@ const mapBackendToFrontendCategory = (backendType: string): ExpenseCategory => {
     repair: 'Repair',
     service: 'Maintenance',
     permit: 'Permit Charges',
+    driver_allowance: 'Driver Allowance',
+    food: 'Food',
+    accommodation: 'Accommodation',
+    police: 'Police / Checkpost',
   };
   return mapping[backendType] || 'Miscellaneous';
 };
@@ -49,10 +53,10 @@ const mapFrontendToBackendCategory = (frontendType: ExpenseCategory): string => 
     'Repair': 'repair',
     'Maintenance': 'service',
     'Permit Charges': 'permit',
-    'Driver Allowance': 'other',
-    'Food': 'other',
-    'Accommodation': 'other',
-    'Police / Checkpost': 'other',
+    'Driver Allowance': 'driver_allowance',
+    'Food': 'food',
+    'Accommodation': 'accommodation',
+    'Police / Checkpost': 'police',
     'Miscellaneous': 'other',
   };
   return mapping[frontendType] || 'other';
@@ -68,7 +72,7 @@ export const FinanceApi = {
       trip_id: exp.trip_id,
       amount: exp.amount,
       category: mapBackendToFrontendCategory(exp.expense_type),
-      payment_mode: 'Cash', // default since backend doesn't have it on vehicle expenses
+      payment_mode: exp.payment_mode || 'cash',
       paid_by: exp.vendor_name,
       expense_date: exp.expense_date,
       remarks: exp.notes,
@@ -84,6 +88,7 @@ export const FinanceApi = {
       expense_date: new Date().toISOString().split('T')[0], // ensure format YYYY-MM-DD
       expense_type: mapFrontendToBackendCategory(data.category),
       amount: data.amount,
+      payment_mode: data.payment_mode,
       vendor_name: data.paid_by,
       notes: data.remarks,
       receipt_url: data.receipt_url,
@@ -94,7 +99,7 @@ export const FinanceApi = {
       trip_id: exp.trip_id,
       amount: exp.amount,
       category: mapBackendToFrontendCategory(exp.expense_type),
-      payment_mode: data.payment_mode,
+      payment_mode: exp.payment_mode || data.payment_mode || 'cash',
       paid_by: exp.vendor_name,
       expense_date: exp.expense_date,
       remarks: exp.notes,

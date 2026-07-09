@@ -1,13 +1,16 @@
 import { useMemo } from 'react';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { tripLifecycleService } from '../services/trip-lifecycle.service';
-import { useTripTransition } from '../api';
-import { getActionDef, TripActionDef } from '../domain/trip-actions';
+import { useTripTransition, tripQueryKeys } from '../api';
+import { getActionDef } from '../domain/trip-actions';
 import { toast } from 'sonner';
 import { isTerminalState } from '../domain/trip-status';
+import { useQueryClient } from '@tanstack/react-query';
+import { tripApi } from '../api/trip-api';
 
 export function useTripLifecycle(trip: Trip | undefined | null) {
   const transition = useTripTransition();
+  const queryClient = useQueryClient();
 
   // ─── Computations ────────────────────────────────────────────────────────
   
@@ -38,8 +41,22 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
       return;
     }
 
+    // Always fetch the latest trip data from server before executing to
+    // avoid stale-status race conditions (e.g. navigating from list with cached data)
+    let currentTrip = trip;
+    try {
+      const freshTrip = await tripApi.get(trip.id);
+      if (freshTrip) {
+        currentTrip = freshTrip;
+        // Update the cache so the UI reflects the real status
+        queryClient.setQueryData(tripQueryKeys.detail(trip.id), freshTrip);
+      }
+    } catch (_) {
+      // If refresh fails, proceed with the prop we have — backend will still validate
+    }
+
     // Run business rule validations before firing API call
-    const violations = tripLifecycleService.validateTransition(trip, target);
+    const violations = tripLifecycleService.validateTransition(currentTrip, target);
     if (violations.length > 0) {
       // Display the most critical violation
       const error = violations.find(v => v.severity === 'error') || violations[0];
@@ -48,7 +65,7 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
     }
 
     try {
-      await transition.mutateAsync({ id: trip.id, action: target, payload });
+      await transition.mutateAsync({ id: currentTrip.id, action: target, payload });
       toast.success(`Trip status updated to ${tripLifecycleService.getActionLabel(target)}`);
     } catch (error: any) {
       // Handle known API error formats

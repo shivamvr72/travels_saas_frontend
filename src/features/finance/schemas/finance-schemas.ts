@@ -13,15 +13,25 @@ export const expenseFormSchema = z.object({
 
 export type ExpenseFormValues = z.infer<typeof expenseFormSchema>;
 
-export const paymentFormSchema = z.object({
-  amount: z.coerce.number().positive('Amount must be positive'),
-  payment_mode: z.enum(PAYMENT_MODES),
-  payment_date: z.string().min(1, 'Date is required'),
-  reference_no: z.string().optional(),
-  remarks: z.string().optional(),
-});
+export const createPaymentFormSchema = (maxAmount?: number) =>
+  z.object({
+    amount: z.coerce
+      .number()
+      .positive('Amount must be positive')
+      .refine(
+        (val) => maxAmount === undefined || maxAmount <= 0 || val <= maxAmount,
+        { message: `Amount cannot exceed balance due of ₹${maxAmount?.toFixed(2) ?? 0}` }
+      ),
+    payment_mode: z.enum(PAYMENT_MODES),
+    payment_date: z.string().min(1, 'Date is required'),
+    reference_no: z.string().optional(),
+    remarks: z.string().optional(),
+  });
 
-export type PaymentFormValues = z.infer<typeof paymentFormSchema>;
+// Default schema without max constraint (for backward compat)
+export const paymentFormSchema = createPaymentFormSchema();
+
+export type PaymentFormValues = z.infer<ReturnType<typeof createPaymentFormSchema>>;
 
 export const invoiceGenerationSchema = z.object({
   due_date: z.string().min(1, 'Due date is required'),
