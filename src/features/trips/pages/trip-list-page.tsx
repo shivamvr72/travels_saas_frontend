@@ -57,6 +57,7 @@ export function TripListPage() {
     {
       key: 'trip_number',
       header: 'Trip #',
+      sortable: true,
       render: (item: Trip) => (
         <Link href={`/trips/${item.id}`} className="font-mono text-primary hover:underline">
           {tripNumberService.format(item.trip_number)}
@@ -66,6 +67,7 @@ export function TripListPage() {
     {
       key: 'customer',
       header: 'Customer',
+      sortable: true,
       render: (item: Trip) => item.customer?.name || <span className="text-muted-foreground text-sm">N/A</span>,
     },
     {
@@ -81,21 +83,25 @@ export function TripListPage() {
     {
       key: 'vehicle',
       header: 'Vehicle',
+      sortable: true,
       render: (item: Trip) => item.vehicle?.license_plate || <span className="text-muted-foreground text-sm">Unassigned</span>,
     },
     {
       key: 'driver',
       header: 'Driver',
+      sortable: true,
       render: (item: Trip) => item.driver?.name || <span className="text-muted-foreground text-sm">Unassigned</span>,
     },
     {
       key: 'status',
       header: 'Status',
+      sortable: true,
       render: (item: Trip) => <TripStatusBadge status={item.status} size="sm" />,
     },
     {
       key: 'priority',
       header: 'Priority',
+      sortable: true,
       render: (item: Trip) => {
         const priorityColors: Record<string, 'inactive' | 'upcoming' | 'warning' | 'critical'> = {
           'Low': 'inactive',
@@ -110,6 +116,7 @@ export function TripListPage() {
     {
       key: 'start_date',
       header: 'Start Date',
+      sortable: true,
       render: (item: Trip) => new Date(item.start_date).toLocaleDateString(),
     },
     {
@@ -192,6 +199,12 @@ export function TripListPage() {
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           onRowClick={(item) => router.push(`/trips/${item.id}`)}
+          sortBy={queryParams.order_by}
+          sortDir={queryParams.order_dir as 'asc' | 'desc'}
+          onSortChange={(sortBy, sortDir) => {
+            updateFilter('order_by', sortBy);
+            updateFilter('order_dir', sortDir);
+          }}
         />
       )}
 
