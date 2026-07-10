@@ -38,6 +38,20 @@ export const customerKeys = {
   detail: (id: string) => [...customerKeys.details(), id] as const,
 };
 
+export const reportKeys = {
+  all: ['reports'] as const,
+  executiveSummary: (f: any) => [...reportKeys.all, 'executive', f] as const,
+  revenue: (g: string, f: any) => [...reportKeys.all, 'revenue', g, f] as const,
+  expenses: (f: any) => [...reportKeys.all, 'expenses', f] as const,
+  fleet: (f: any) => [...reportKeys.all, 'fleet', f] as const,
+  drivers: (f: any) => [...reportKeys.all, 'drivers', f] as const,
+  customers: (f: any) => [...reportKeys.all, 'customers', f] as const,
+  routes: (f: any) => [...reportKeys.all, 'routes', f] as const,
+  registers: (t: string, f: any) => [...reportKeys.all, 'registers', t, f] as const,
+  pnl: (f: any) => [...reportKeys.all, 'pnl', f] as const,
+  alerts: () => [...reportKeys.all, 'alerts'] as const,
+};
+
 export const expenseKeys = {
   all: ['expenses'] as const,
   lists: () => [...expenseKeys.all, 'list'] as const,

@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
-import { AppToolbar } from '@/components/layout/crud/app-toolbar';
 import { AppPageContainer } from '@/components/layout/crud/app-page-container';
-import { DashboardKpiCards, DashboardMainContent } from '@/features/dashboard/components/dashboard-views';
+import { ExecutiveDashboardPage } from '@/features/reports/pages/executive-dashboard-page';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -11,15 +10,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <AppPageContainer maxWidth="full" className="pb-8">
-      <AppToolbar 
-        title="Dashboard" 
-        description="Overview of your daily travel operations and financials."
-      />
-      
-      <DashboardKpiCards />
-      
-      <DashboardMainContent />
-      
+      <ExecutiveDashboardPage />
     </AppPageContainer>
   );
 }

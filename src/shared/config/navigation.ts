@@ -10,7 +10,11 @@ import {
   PieChart,
   UserCircle,
   Bus,
-  Banknote
+  Banknote,
+  BarChart2,
+  TrendingUp,
+  Receipt,
+  FileText
 } from 'lucide-react';
 import { AppModule } from '../permissions';
 
@@ -57,6 +61,18 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     items: [
       { title: 'Dashboard', href: '/finance/dashboard', icon: PieChart, module: 'FINANCE' },
       { title: 'Receivables', href: '/finance/receivables', icon: Banknote, module: 'FINANCE' },
+    ],
+  },
+  {
+    group: 'Reports & Analytics',
+    items: [
+      { title: 'Executive Dashboard', href: '/reports', icon: BarChart2, module: 'REPORTS' },
+      { title: 'Revenue Analytics', href: '/reports/revenue', icon: TrendingUp, module: 'REPORTS' },
+      { title: 'Expense Analytics', href: '/reports/expenses', icon: Receipt, module: 'REPORTS' },
+      { title: 'Profitability', href: '/reports/profitability', icon: PieChart, module: 'REPORTS' },
+      { title: 'Fleet Analytics', href: '/reports/fleet', icon: Car, module: 'REPORTS' },
+      { title: 'Driver Analytics', href: '/reports/drivers', icon: UserCircle, module: 'REPORTS' },
+      { title: 'Financial Registers', href: '/reports/registers', icon: FileText, module: 'REPORTS' },
     ],
   },
   {

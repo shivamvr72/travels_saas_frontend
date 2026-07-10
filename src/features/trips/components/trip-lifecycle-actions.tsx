@@ -21,7 +21,7 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
     if (trip.status === 'billed' || trip.status === 'paid') {
       import('@/features/finance/services/payment.service').then(({ PaymentService }) => {
         PaymentService.getPaymentDetails(trip.id)
-          .then(details => setIsSettled(details.is_settled))
+          .then(details => { if (details) setIsSettled(details.is_settled); })
           .catch(err => console.error('Failed to fetch payment status for lifecycle actions', err));
       });
     }

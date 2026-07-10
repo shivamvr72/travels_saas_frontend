@@ -47,7 +47,6 @@ export function RegisterForm() {
       password: '',
       confirmPassword: '',
     },
-    mode: 'onChange',
   });
 
   const travelName = useWatch({ control: form.control, name: 'travel_name' });

@@ -37,14 +37,17 @@ export const PERMISSIONS = {
   
   // Settings
   SETTINGS_MANAGE: ['admin'],
+  
+  // Reports
+  REPORTS_VIEW: ['admin', 'manager'],
+  REPORTS_MANAGE: ['admin'],
 } as const;
 
 export const hasPermission = (userRole: Role, allowedRoles: readonly Role[]): boolean => {
   return allowedRoles.includes(userRole);
 };
 
-// Generic module-based permission helpers
-export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS' | 'TRIPS_CREATE' | 'TRIPS_EDIT' | 'TRIPS_ASSIGN' | 'TRIPS_DISPATCH' | 'TRIPS_CANCEL' | 'TRIPS_CLOSE' | 'TRIPS_DELETE';
+export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS' | 'TRIPS_CREATE' | 'TRIPS_EDIT' | 'TRIPS_ASSIGN' | 'TRIPS_DISPATCH' | 'TRIPS_CANCEL' | 'TRIPS_CLOSE' | 'TRIPS_DELETE' | 'REPORTS';
 
 export const canView = (module: AppModule, role: Role): boolean => {
   const permissionKey = `${module}_VIEW` as keyof typeof PERMISSIONS;
