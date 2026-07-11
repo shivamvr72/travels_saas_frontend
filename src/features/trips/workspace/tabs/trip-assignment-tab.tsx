@@ -1,8 +1,8 @@
 import { Trip } from '../../domain/trip-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PERMISSIONS } from '@/shared/permissions';
-import { RequirePermission } from '@/shared/permissions/require-permission';
+import { PERMISSION_KEYS } from '@/shared/permissions';
+import { Can } from '@/shared/permissions/can';
 import { Car, User, Users } from 'lucide-react';
 import { TripAssignmentDialog } from '../../components/trip-assignment-dialog';
 import { ResourceType } from '../../services/resource-availability.service';
@@ -37,11 +37,11 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
       <CardContent>
         <div className="flex justify-between items-center">
           <p className="font-semibold">{value || 'Unassigned'}</p>
-          <RequirePermission roles={PERMISSIONS.TRIPS_ASSIGN as any}>
+          <Can permission={PERMISSION_KEYS.TRIPS_ASSIGN}>
             <Button variant="outline" size="sm" onClick={() => handleOpenDialog(type, currentId)}>
               {value ? 'Change' : 'Assign'}
             </Button>
-          </RequirePermission>
+          </Can>
         </div>
       </CardContent>
     </Card>

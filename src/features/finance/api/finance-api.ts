@@ -20,9 +20,9 @@ const setStorage = (key: string, value: any) => {
   }
 };
 
-let mockExpenses: Record<string, TripExpense[]> = getStorage('svr_mockExpenses', {});
-let mockInvoices: Record<string, Invoice> = getStorage('svr_mockInvoices', {});
-let mockPayments: Record<string, TripPaymentDetails> = getStorage('svr_mockPayments', {});
+const mockExpenses: Record<string, TripExpense[]> = getStorage('svr_mockExpenses', {});
+const mockInvoices: Record<string, Invoice> = getStorage('svr_mockInvoices', {});
+const mockPayments: Record<string, TripPaymentDetails> = getStorage('svr_mockPayments', {});
 
 /**
  * Temporary mock API client for Finance endpoints.

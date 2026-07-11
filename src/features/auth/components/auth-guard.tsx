@@ -50,7 +50,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     };
 
     validateSession();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasHydrated]);
 
   if (!hasHydrated || isLoading) {
@@ -63,6 +62,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return null; // Will redirect in useEffect
+  }
+
+  // Force password change interceptor
+  if (user?.must_change_password && !pathname.startsWith('/profile')) {
+    router.push('/profile');
+    return null;
   }
 
   return <>{children}</>;

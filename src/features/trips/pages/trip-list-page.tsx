@@ -15,8 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Edit, Eye, MoreHorizontal, Trash, LayoutGrid, List, Calendar, LayoutPanelLeft } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PERMISSIONS } from '@/shared/permissions';
-import { RequirePermission } from '@/shared/permissions/require-permission';
+import { PERMISSION_KEYS } from '@/shared/permissions';
+import { Can } from '@/shared/permissions/can';
 import { tripNumberService } from '../services/trip-number.service';
 import { Trip } from '../domain/trip-types';
 import { TripCard } from '../components/trip-card';
@@ -132,11 +132,11 @@ export function TripListPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <RequirePermission roles={PERMISSIONS.TRIPS_EDIT as any}>
+              <Can permission={PERMISSION_KEYS.TRIPS_EDIT}>
                 <DropdownMenuItem onClick={() => router.push(`/trips/${item.id}/edit`)}>
                   <Edit className="mr-2 h-4 w-4" /> Edit
                 </DropdownMenuItem>
-              </RequirePermission>
+              </Can>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -160,7 +160,7 @@ export function TripListPage() {
         primaryAction={{
           label: 'New Trip',
           onClick: () => router.push('/trips/new'),
-          permission: PERMISSIONS.TRIPS_CREATE as any,
+          permission: PERMISSION_KEYS.TRIPS_CREATE as any,
         }}
         onRefresh={() => refetch()}
         searchValue={searchValue}

@@ -1,16 +1,153 @@
-import { Metadata } from 'next';
-import { AppPageContainer } from '@/components/layout/crud/app-page-container';
-import { ExecutiveDashboardPage } from '@/features/reports/pages/executive-dashboard-page';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Dashboard',
-  description: 'Operations overview and KPIs',
-};
+import { useState } from 'react';
+import { AppPageContainer } from '@/components/layout/crud/app-page-container';
+import { useExecutiveSummary } from '@/features/reports/hooks/use-executive-summary';
+import { useFleetSummary } from '@/features/reports/hooks/use-fleet-analytics';
+import { useTripList } from '@/features/trips/api';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Briefcase, Car, Activity, Users, AlertTriangle } from 'lucide-react';
+import { ReportDateFilter } from '@/features/reports/domain/reports-types';
+import { AppStatusBadge } from '@/components/shared/app-status-badge';
+import { TripStatusBadge } from '@/features/trips/components/trip-status-badge';
+import Link from 'next/link';
 
 export default function DashboardPage() {
+  // Use 'this_month' filter for the operational dashboard to show some data
+  const [filter] = useState<ReportDateFilter>({ period: 'this_month' });
+  const { data: summary, isLoading } = useExecutiveSummary(filter);
+  const { data: fleetData, isLoading: fleetLoading } = useFleetSummary(filter);
+  const { data: tripsData, isLoading: tripsLoading } = useTripList({ page: 1, page_size: 5 });
+
   return (
-    <AppPageContainer maxWidth="full" className="pb-8">
-      <ExecutiveDashboardPage />
+    <AppPageContainer maxWidth="full" className="pb-4 flex flex-col h-full gap-4">
+      {isLoading ? (
+        <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 shrink-0">
+          <Card className="border-l-4 border-l-blue-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-blue-500" />
+                Active Trips Today
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{summary?.active_trips || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Currently in progress</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-green-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Activity className="h-4 w-4 text-green-500" />
+                Completed Trips
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{summary?.completed_trips || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Successfully finished today</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-purple-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Car className="h-4 w-4 text-purple-500" />
+                Vehicles on Road
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{summary?.vehicles_running || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Out of {((summary?.vehicles_running || 0) + (summary?.vehicles_idle || 0))} total fleet</p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-l-4 border-l-orange-500">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-orange-500" />
+                Idle Vehicles
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{summary?.vehicles_idle || 0}</div>
+              <p className="text-xs text-muted-foreground mt-1">Ready for assignment</p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Operational widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
+         <Card className="flex flex-col">
+           <CardHeader className="shrink-0">
+             <CardTitle>Fleet Status</CardTitle>
+             <CardDescription>Live status of your vehicles</CardDescription>
+           </CardHeader>
+           <CardContent className="flex-1 overflow-y-auto no-scrollbar">
+             {fleetLoading ? (
+               <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+             ) : !fleetData || fleetData.length === 0 ? (
+               <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
+                 <Car className="h-12 w-12 opacity-20 mb-2" />
+                 <p className="text-sm">No vehicles found</p>
+               </div>
+             ) : (
+               <div className="space-y-4 pr-2">
+                 {fleetData.map(v => (
+                   <div key={v.vehicle_id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                     <div>
+                       <p className="font-medium text-sm">{v.reg_number}</p>
+                       <p className="text-xs text-muted-foreground">{v.vehicle_name || 'Unknown'}</p>
+                     </div>
+                     <AppStatusBadge status={v.status === 'running' || v.status === 'active' ? 'success' : 'inactive'} size="sm" showIcon={false}>
+                       {v.status === 'running' || v.status === 'active' ? 'Active' : 'Idle'}
+                     </AppStatusBadge>
+                   </div>
+                 ))}
+               </div>
+             )}
+           </CardContent>
+         </Card>
+         <Card className="flex flex-col">
+           <CardHeader className="shrink-0">
+             <CardTitle>Recent Trips</CardTitle>
+             <CardDescription>Latest trip activities</CardDescription>
+           </CardHeader>
+           <CardContent className="flex-1 overflow-y-auto no-scrollbar">
+             {tripsLoading ? (
+               <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+             ) : !tripsData?.items || tripsData.items.length === 0 ? (
+               <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
+                 <Briefcase className="h-12 w-12 opacity-20 mb-2" />
+                 <p className="text-sm">No recent trips</p>
+               </div>
+             ) : (
+               <div className="space-y-4 pr-2">
+                 {tripsData.items.map(trip => (
+                   <div key={trip.id} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+                     <div className="flex flex-col">
+                       <Link href={`/trips/${trip.id}`} className="font-medium text-sm hover:underline text-primary">
+                         {trip.trip_number || 'TRIP'}
+                       </Link>
+                       <p className="text-xs text-muted-foreground truncate w-48">
+                         {trip.customer?.name || 'Unknown Customer'}
+                       </p>
+                     </div>
+                     <div className="flex flex-col items-end gap-1">
+                       <TripStatusBadge status={trip.status} size="sm" />
+                       <p className="text-[10px] text-muted-foreground">{new Date(trip.start_date).toLocaleDateString()}</p>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
+           </CardContent>
+         </Card>
+      </div>
+
     </AppPageContainer>
   );
 }

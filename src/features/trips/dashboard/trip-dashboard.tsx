@@ -6,7 +6,7 @@ import { AppMetricCard } from '@/components/shared/app-metric-card';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Play, CheckCircle2, AlertTriangle, XCircle, Car, Users } from 'lucide-react';
-import { PERMISSIONS } from '@/shared/permissions';
+import { PERMISSION_KEYS } from '@/shared/permissions';
 import { useRouter } from 'next/navigation';
 
 export function TripDashboard() {
@@ -30,7 +30,7 @@ export function TripDashboard() {
         primaryAction={{
           label: 'New Trip',
           onClick: () => router.push('/trips/new'),
-          permission: PERMISSIONS.TRIPS_CREATE as any,
+          permission: PERMISSION_KEYS.TRIPS_CREATE as any,
         }}
         onRefresh={() => refetch()}
       />

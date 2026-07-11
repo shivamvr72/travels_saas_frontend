@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { useTripLifecycle } from '../hooks/use-trip-lifecycle';
-import { RequirePermission } from '@/shared/permissions/require-permission';
+import { Can } from '@/shared/permissions/can';
 import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
-import { PERMISSIONS } from '@/shared/permissions';
+import { PERMISSION_KEYS } from '@/shared/permissions';
 import { getActionDef } from '../domain/trip-actions';
 import { TripCancelDialog } from './trip-cancel-dialog';
 
@@ -62,17 +62,17 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
         const Icon = action.icon;
         
         // Map target status to required permission
-        let requiredPermission: any = PERMISSIONS.TRIPS_EDIT;
+        let requiredPermission: any = PERMISSION_KEYS.TRIPS_EDIT;
         if (action.targetStatus === 'in_progress') {
-          requiredPermission = PERMISSIONS.TRIPS_DISPATCH;
+          requiredPermission = PERMISSION_KEYS.TRIPS_DISPATCH;
         } else if (action.targetStatus === 'cancelled') {
-          requiredPermission = PERMISSIONS.TRIPS_CANCEL;
+          requiredPermission = PERMISSION_KEYS.TRIPS_CANCEL;
         } else if (action.targetStatus === 'billed' || action.targetStatus === 'paid') {
-          requiredPermission = PERMISSIONS.TRIPS_CLOSE;
+          requiredPermission = PERMISSION_KEYS.TRIPS_CLOSE;
         }
 
         return (
-          <RequirePermission key={action.targetStatus} roles={requiredPermission as any}>
+          <Can key={action.targetStatus} permission={requiredPermission}>
             <Button
               variant={action.variant}
               size="sm"
@@ -83,7 +83,7 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
               <Icon className="w-4 h-4" />
               {action.label}
             </Button>
-          </RequirePermission>
+          </Can>
         );
       })}
 

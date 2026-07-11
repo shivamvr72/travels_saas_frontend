@@ -14,7 +14,8 @@ import {
   BarChart2,
   TrendingUp,
   Receipt,
-  FileText
+  FileText,
+  ShieldAlert
 } from 'lucide-react';
 import { AppModule } from '../permissions';
 
@@ -78,7 +79,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Administration',
     items: [
-      { title: 'Company Settings', href: '/settings', icon: Settings, module: 'SETTINGS' },
+      { title: 'Administration', href: '/admin', icon: ShieldAlert, module: 'USERS' },
     ],
   },
 ];

@@ -36,10 +36,15 @@ export function ReportPieChart({
         </CardHeader>
       )}
       <CardContent>
-        <div style={{ height }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
+        {data.length === 0 ? (
+          <div className="flex items-center justify-center text-muted-foreground" style={{ height }}>
+            No data available for this period.
+          </div>
+        ) : (
+          <div style={{ height }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
@@ -54,7 +59,7 @@ export function ReportPieChart({
                 ))}
               </Pie>
               <Tooltip
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                 
                 // @ts-expect-error Recharts ValueType is broader than number|string at runtime
                 formatter={(value: number | string) => formatValue(Number(value))}
                 contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
@@ -63,6 +68,7 @@ export function ReportPieChart({
             </PieChart>
           </ResponsiveContainer>
         </div>
+        )}
       </CardContent>
     </Card>
   );

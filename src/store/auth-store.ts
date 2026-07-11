@@ -8,9 +8,13 @@ interface UserProfile {
   id: string;
   email: string;
   full_name: string;
+  name?: string;
+  phone?: string;
+  avatar_url?: string;
   is_active: boolean;
   role: Role;
   travel_company_id: string;
+  must_change_password?: boolean;
 }
 
 interface AuthState {
