@@ -151,6 +151,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     customer_id: metadata.customer_id || be.customer_booking_id || null,
     vehicle_id: be.vehicle_id,
     driver_id: be.driver_id,
+    route_id: firstLoc?.route_id || null,
     dispatcher_id: metadata.dispatcher_id || be.created_by,
     co_driver_id: metadata.co_driver_id || null,
 
@@ -273,6 +274,18 @@ export const tripApi = {
     
     let items = beItems.map(mapBackendToFrontendTrip);
 
+    if (params) {
+      if (params.status) items = items.filter(t => t.status === params.status);
+      if (params.trip_type) items = items.filter(t => t.trip_type === params.trip_type);
+      if (params.priority) items = items.filter(t => t.priority === params.priority);
+      if (params.customer_id) items = items.filter(t => t.customer_id === params.customer_id);
+      if (params.vehicle_id) items = items.filter(t => t.vehicle_id === params.vehicle_id);
+      if (params.driver_id) items = items.filter(t => t.driver_id === params.driver_id);
+      if (params.company_id) items = items.filter(t => t.company_id === params.company_id);
+      if (params.route_id) items = items.filter(t => t.route_id === params.route_id);
+      if (params.dispatcher_id) items = items.filter(t => t.dispatcher_id === params.dispatcher_id);
+    }
+
     if (searchQuery) {
       items = items.filter(t => {
         const formattedDate = t.start_date ? new Date(t.start_date).toLocaleDateString().toLowerCase() : '';
@@ -291,9 +304,11 @@ export const tripApi = {
       });
     }
 
+    const hasFilters = params && (params.status || params.trip_type || params.priority || params.customer_id || params.vehicle_id || params.driver_id || params.company_id || params.route_id || params.dispatcher_id);
+
     return {
       items,
-      total: searchQuery ? items.length : (payload.total || 0),
+      total: (searchQuery || hasFilters) ? items.length : (payload.total || 0),
       page: payload.page || 1,
       page_size: payload.page_size || 50,
     };

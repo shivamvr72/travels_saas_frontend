@@ -13,21 +13,28 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
   return (
     <AuthGuard>
-      <div className="flex h-screen bg-muted/40 overflow-hidden">
+      {/* Outer wrapper: fixed full-screen shell, no overflow */}
+      <div className="flex h-screen overflow-hidden bg-muted/40">
         <AppSidebar />
-        
-        <div 
+
+        {/* Right column: fixed height, no scrolling on the outer layout */}
+        <div
           className={cn(
-            "flex flex-1 flex-col transition-all duration-300 ease-in-out w-full h-full",
+            "flex flex-1 flex-col min-w-0 transition-all duration-300 ease-in-out h-full",
             isSidebarOpen ? "md:pl-64" : "md:pl-16"
           )}
         >
+          {/* Top nav — fixed at the top */}
           <AppTopNav />
-          <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 w-full max-w-7xl mx-auto overflow-y-auto min-h-0">
-            {children}
+
+          {/* Main content area — fills remaining space and contains its own scrollable sections */}
+          <main className="flex-1 flex flex-col min-h-0 w-full overflow-y-auto overflow-x-hidden">
+            <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 md:p-8 flex-1 flex flex-col min-h-0">
+              {children}
+            </div>
           </main>
         </div>
-        
+
         <AppCommandPalette />
       </div>
     </AuthGuard>

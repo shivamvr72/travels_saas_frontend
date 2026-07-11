@@ -62,10 +62,10 @@ export function AppDataTable<T>({
   }
 
   return (
-    <div className={cn("rounded-md border overflow-hidden", className)}>
-      <div className="overflow-x-auto">
+    <div className={cn("rounded-md border flex flex-col overflow-hidden", className)}>
+      <div className="flex-1 overflow-auto">
         <table className="w-full caption-bottom text-sm">
-          <thead className="[&_tr]:border-b bg-muted/50">
+          <thead className="[&_tr]:border-b bg-muted/50 sticky top-0 z-10 bg-background">
             <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
               {columns.map((col, i) => (
                 <th 

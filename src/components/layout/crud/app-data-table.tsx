@@ -238,7 +238,7 @@ export function AppDataTable<T>({
 
 
   return (
-    <div className={cn("w-full overflow-auto rounded-md border", className)}>
+    <div className={cn("w-full flex flex-col rounded-md border overflow-hidden", className)}>
       <Table>
         <TableHeader className={cn(stickyHeader && "sticky top-0 z-10 bg-background")}>
           {table.getHeaderGroups().map((headerGroup) => (

@@ -115,7 +115,7 @@ export function CrudList({ config }: CrudListProps) {
       : [];
 
   return (
-    <AppPageContainer>
+    <AppPageContainer className="flex flex-col h-full space-y-0 gap-4">
       <AppToolbar
         title={config.page?.title || config.entityNamePlural}
         description={config.page?.subtitle || `Manage your ${config.entityNamePlural.toLowerCase()}`}
@@ -138,7 +138,7 @@ export function CrudList({ config }: CrudListProps) {
       />
 
       {isFilterOpen && (config.list.filterComponent || filters) && (
-        <Card className="mb-4 bg-muted/30 border-muted">
+        <Card className="shrink-0 bg-muted/30 border-muted">
           <CardContent className="pt-6">
             {config.list.filterComponent ? config.list.filterComponent : (
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -158,8 +158,9 @@ export function CrudList({ config }: CrudListProps) {
         </Card>
       )}
 
-      <div className="mt-4 flex flex-col h-full space-y-4">
+      <div className="flex-1 flex flex-col min-h-0 space-y-4">
         <AppDataTable
+          className="flex-1 min-h-0"
           columns={columns}
           data={data?.data || data?.items || []}
           isLoading={isLoading}
@@ -181,21 +182,20 @@ export function CrudList({ config }: CrudListProps) {
           }}
         />
 
-        <AppPagination
-          page={data?.page || 1}
-          pageSize={data?.page_size || data?.size || 10}
-          total={data?.total || 0}
-          onPageChange={setPage}
-          onPageSizeChange={(size) => {
-             // toApiParams reads from hook state, we must update the hook state first or use router directly.
-             // Our useTableState doesn't expose setPageSize directly but sets it via URL.
-             // We can implement setPageSize in useTableState or just push to router.
-             const params = new URLSearchParams(window.location.search);
-             params.set('page_size', size.toString());
-             params.set('page', '1');
-             router.push(`${window.location.pathname}?${params.toString()}`);
-          }}
-        />
+        <div className="shrink-0">
+          <AppPagination
+            page={data?.page || 1}
+            pageSize={data?.page_size || data?.size || 10}
+            total={data?.total || 0}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+               const params = new URLSearchParams(window.location.search);
+               params.set('page_size', size.toString());
+               params.set('page', '1');
+               router.push(`${window.location.pathname}?${params.toString()}`);
+            }}
+          />
+        </div>
       </div>
     </AppPageContainer>
   );
