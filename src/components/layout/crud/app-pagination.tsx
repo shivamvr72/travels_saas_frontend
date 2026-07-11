@@ -42,8 +42,8 @@ export function AppPagination({
   const endItem = Math.min(page * pageSize, total);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 border-t border-border/40 text-sm text-muted-foreground">
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2 border-t border-border/40 text-xs text-muted-foreground shrink-0">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         {total > 0 ? (
           <>
             Showing <span className="font-medium text-foreground">{startItem}</span> to{' '}
@@ -55,20 +55,20 @@ export function AppPagination({
         )}
       </div>
 
-      <div className="flex items-center gap-6 lg:gap-8">
+      <div className="flex items-center gap-4 lg:gap-6">
         {onPageSizeChange && (
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium text-muted-foreground">Rows per page</p>
+            <p className="text-xs font-medium text-muted-foreground">Rows per page</p>
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => onPageSizeChange(Number(value))}
             >
-              <SelectTrigger className="h-8 w-20">
+              <SelectTrigger className="h-7 w-16 text-xs">
                 <SelectValue placeholder={pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
                 {pageSizeOptions.map((size) => (
-                  <SelectItem key={size} value={`${size}`}>
+                  <SelectItem key={size} value={`${size}`} className="text-xs">
                     {size}
                   </SelectItem>
                 ))}
@@ -77,46 +77,46 @@ export function AppPagination({
           </div>
         )}
 
-        <div className="flex w-28 items-center justify-center text-sm font-medium">
+        <div className="flex w-24 items-center justify-center text-xs font-medium">
           Page {page} of {totalPages}
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden h-7 w-7 p-0 lg:flex"
             onClick={() => onPageChange(1)}
             disabled={page <= 1}
           >
             <span className="sr-only">Go to first page</span>
-            <ChevronsLeft className="h-4 w-4" />
+            <ChevronsLeft className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0"
+            className="h-7 w-7 p-0"
             onClick={handlePrevious}
             disabled={page <= 1}
           >
             <span className="sr-only">Go to previous page</span>
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
-            className="h-8 w-8 p-0"
+            className="h-7 w-7 p-0"
             onClick={handleNext}
             disabled={page >= totalPages}
           >
             <span className="sr-only">Go to next page</span>
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
           </Button>
           <Button
             variant="outline"
-            className="hidden h-8 w-8 p-0 lg:flex"
+            className="hidden h-7 w-7 p-0 lg:flex"
             onClick={() => onPageChange(totalPages)}
             disabled={page >= totalPages}
           >
             <span className="sr-only">Go to last page</span>
-            <ChevronsRight className="h-4 w-4" />
+            <ChevronsRight className="h-3.5 w-3.5" />
           </Button>
         </div>
       </div>

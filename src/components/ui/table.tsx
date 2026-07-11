@@ -6,7 +6,7 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement> & { wrapperClassName?: string }
 >(({ className, wrapperClassName, ...props }, ref) => (
-  <div className={cn("relative w-full h-full overflow-auto", wrapperClassName)}>
+  <div className={cn("relative w-full h-full overflow-auto no-scrollbar", wrapperClassName)}>
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}

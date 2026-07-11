@@ -115,7 +115,7 @@ export function CrudList({ config }: CrudListProps) {
       : [];
 
   return (
-    <AppPageContainer className="flex flex-col h-full space-y-0 gap-4">
+    <AppPageContainer className="flex flex-col h-full gap-2">
       <AppToolbar
         title={config.page?.title || config.entityNamePlural}
         description={config.page?.subtitle || `Manage your ${config.entityNamePlural.toLowerCase()}`}
@@ -158,7 +158,7 @@ export function CrudList({ config }: CrudListProps) {
         </Card>
       )}
 
-      <div className="flex-1 flex flex-col min-h-0 space-y-4">
+      <div className="flex-1 flex flex-col min-h-0 gap-2">
         <AppDataTable
           className="flex-1 min-h-0"
           columns={columns}

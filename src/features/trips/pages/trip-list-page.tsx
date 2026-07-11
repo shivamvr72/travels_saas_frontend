@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useTripList, useDeleteTrip } from '../api';
 import { AppToolbar } from '@/components/layout/crud/app-toolbar';
 import { AppDataTable } from '@/components/layout/crud/app-data-table';
+import { AppPagination } from '@/components/layout/crud/app-pagination';
 import { TripStatusBadge } from '../components/trip-status-badge';
 import { TripFilterBar } from '../components/trip-filter-bar';
 import { useTripFilters } from '../hooks/use-trip-filters';
@@ -22,15 +23,15 @@ import { TripCard } from '../components/trip-card';
 
 export function TripListPage() {
   const router = useRouter();
-  
-  const { 
-    filters, 
-    searchValue, 
-    setSearchValue, 
-    updateFilter, 
-    resetFilters, 
-    activeFilterCount, 
-    queryParams 
+
+  const {
+    filters,
+    searchValue,
+    setSearchValue,
+    updateFilter,
+    resetFilters,
+    activeFilterCount,
+    queryParams
   } = useTripFilters();
 
   const [params, setParams] = useState({ page: 1, page_size: 10 });
@@ -147,8 +148,12 @@ export function TripListPage() {
     alert(`FE-4.2: Execute bulk action ${action} on ${selectedIds.size} items.`);
   };
 
+  const setPage = (page: number) => {
+    setParams(prev => ({ ...prev, page }));
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full gap-2">
       <AppToolbar
         title="Trips"
         description="Manage and dispatch your trips"
@@ -171,8 +176,8 @@ export function TripListPage() {
           { label: 'Cancel', onClick: () => handleBulkAction('cancel'), destructive: true },
         ]}
       />
-      
-      <div className="flex items-center justify-between">
+
+      <div className="flex items-center justify-between shrink-0">
         <Tabs value={viewMode} onValueChange={handleViewModeChange}>
           <TabsList>
             <TabsTrigger value="table"><List className="h-4 w-4 mr-2" /> Table</TabsTrigger>
@@ -183,7 +188,7 @@ export function TripListPage() {
         </Tabs>
       </div>
 
-      <TripFilterBar 
+      <TripFilterBar
         filters={filters}
         onUpdateFilter={updateFilter}
         onReset={resetFilters}
@@ -191,44 +196,73 @@ export function TripListPage() {
       />
 
       {viewMode === 'table' && (
-        <AppDataTable
-          columns={columns}
-          data={data?.items || []}
-          isLoading={isLoading}
-          selectable={true}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          onRowClick={(item) => router.push(`/trips/${item.id}`)}
-          sortBy={queryParams.order_by}
-          sortDir={queryParams.order_dir as 'asc' | 'desc'}
-          onSortChange={(sortBy, sortDir) => {
-            updateFilter('order_by', sortBy);
-            updateFilter('order_dir', sortDir);
-          }}
-        />
+        <div className="flex-1 flex flex-col min-h-0 gap-2">
+          <AppDataTable
+            className="flex-1 min-h-0"
+            columns={columns}
+            data={data?.items || []}
+            isLoading={isLoading}
+            selectable={true}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+            onRowClick={(item) => router.push(`/trips/${item.id}`)}
+            sortBy={queryParams.order_by}
+            sortDir={queryParams.order_dir as 'asc' | 'desc'}
+            onSortChange={(sortBy, sortDir) => {
+              updateFilter('order_by', sortBy);
+              updateFilter('order_dir', sortDir);
+            }}
+          />
+          <div className="shrink-0">
+            <AppPagination
+              page={data?.page || 1}
+              pageSize={data?.page_size || 10}
+              total={data?.total || 0}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => {
+                setParams(prev => ({ ...prev, page_size: size, page: 1 }));
+              }}
+            />
+          </div>
+        </div>
       )}
 
       {viewMode === 'card' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data?.items.map(trip => (
-            <TripCard 
-              key={trip.id} 
-              trip={trip} 
-              selectable={true}
-              isSelected={selectedIds.has(trip.id)}
-              onSelect={(checked) => {
-                const newIds = new Set(selectedIds);
-                if (checked) newIds.add(trip.id);
-                else newIds.delete(trip.id);
-                setSelectedIds(newIds);
+        <div className="flex-1 flex flex-col min-h-0 gap-2">
+          <div className="flex-1 overflow-y-auto pr-2 no-scrollbar">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
+              {data?.items.map(trip => (
+                <TripCard
+                  key={trip.id}
+                  trip={trip}
+                  selectable={true}
+                  isSelected={selectedIds.has(trip.id)}
+                  onSelect={(checked) => {
+                    const newIds = new Set(selectedIds);
+                    if (checked) newIds.add(trip.id);
+                    else newIds.delete(trip.id);
+                    setSelectedIds(newIds);
+                  }}
+                />
+              ))}
+              {(!data?.items || data.items.length === 0) && !isLoading && (
+                <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                  No trips found.
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="shrink-0">
+            <AppPagination
+              page={data?.page || 1}
+              pageSize={data?.page_size || 10}
+              total={data?.total || 0}
+              onPageChange={setPage}
+              onPageSizeChange={(size) => {
+                setParams(prev => ({ ...prev, page_size: size, page: 1 }));
               }}
             />
-          ))}
-          {(!data?.items || data.items.length === 0) && !isLoading && (
-            <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg">
-              No trips found.
-            </div>
-          )}
+          </div>
         </div>
       )}
     </div>

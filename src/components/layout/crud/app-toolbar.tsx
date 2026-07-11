@@ -67,7 +67,7 @@ export function AppToolbar({
   const hasBulkMode = selectedCount > 0;
 
   return (
-    <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/40 transition-all shrink-0", className)}>
+    <div className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40 transition-all shrink-0", className)}>
       
       {/* Left side: Search & Filters */}
       <div className="flex items-center gap-4 flex-1">
