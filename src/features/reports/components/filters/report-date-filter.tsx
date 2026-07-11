@@ -42,13 +42,12 @@ export function ReportDateFilterComponent({ value, onChange }: ReportDateFilterP
       {isCustom && (
         <div className="flex items-center gap-2 ml-2">
           <Popover>
-            {/* @ts-expect-error type compatibility issue */}
-            <PopoverTrigger asChild>
+            <PopoverTrigger render={
               <Button variant="outline" size="sm" className="h-8 gap-2">
                 <CalendarIcon className="h-4 w-4" />
                 {value.start_date ? format(new Date(value.start_date), 'PPP') : 'Start Date'}
               </Button>
-            </PopoverTrigger>
+            } />
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
@@ -59,13 +58,12 @@ export function ReportDateFilterComponent({ value, onChange }: ReportDateFilterP
           </Popover>
           <span className="text-muted-foreground">-</span>
           <Popover>
-            {/* @ts-expect-error type compatibility issue */}
-            <PopoverTrigger asChild>
+            <PopoverTrigger render={
               <Button variant="outline" size="sm" className="h-8 gap-2">
                 <CalendarIcon className="h-4 w-4" />
                 {value.end_date ? format(new Date(value.end_date), 'PPP') : 'End Date'}
               </Button>
-            </PopoverTrigger>
+            } />
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
