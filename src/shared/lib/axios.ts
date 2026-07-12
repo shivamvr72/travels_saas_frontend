@@ -41,7 +41,21 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
 };
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Transparently unwrap the StandardResponse envelope to avoid breaking existing frontend code
+    if (
+      response.data && 
+      typeof response.data === 'object' && 
+      'success' in response.data && 
+      'data' in response.data
+    ) {
+      if (response.data.success === false) {
+        return Promise.reject(new Error(response.data.message || 'API Error'));
+      }
+      response.data = response.data.data;
+    }
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
