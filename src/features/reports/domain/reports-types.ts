@@ -25,6 +25,8 @@ export interface ExecutiveSummary {
 export interface RevenueByPeriod {
   period_label: string;
   revenue: number;
+  expenses: number;
+  profit: number;
   trip_count: number;
   avg_per_trip: number;
 }

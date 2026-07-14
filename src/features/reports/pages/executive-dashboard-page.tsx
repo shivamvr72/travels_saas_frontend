@@ -28,18 +28,26 @@ export function ExecutiveDashboardPage() {
           <h1 className="text-2xl font-bold tracking-tight">Executive Dashboard</h1>
           <p className="text-muted-foreground text-sm">Key performance indicators and business overview.</p>
         </div>
-        <ReportDateFilterComponent value={filter} onChange={setFilter} />
+        <div className="flex items-center gap-3">
+          <ReportAlertsPanel />
+          <ReportDateFilterComponent value={filter} onChange={setFilter} />
+        </div>
       </div>
 
-      <ReportAlertsPanel />
-
-      <ReportKpiGrid>
+      <ReportKpiGrid className="lg:grid-cols-5">
         <ReportKpiCard
           title="Revenue"
           value={summary ? formatCurrency(summary.monthly_revenue) : 0}
           icon={<IndianRupee className="h-4 w-4" />}
           isLoading={isSummaryLoading}
           color="primary"
+        />
+        <ReportKpiCard
+          title="Expenses"
+          value={summary ? formatCurrency(summary.monthly_expenses) : 0}
+          icon={<IndianRupee className="h-4 w-4" />}
+          isLoading={isSummaryLoading}
+          color="destructive"
         />
         <ReportKpiCard
           title="Net Profit"
@@ -67,11 +75,12 @@ export function ExecutiveDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <ReportAreaChart
-            title="Revenue Trend"
-            description="Daily revenue over the selected period"
+            title="Cash Flow Trend"
+            description="Daily revenue and expenses over the selected period"
             data={revenueTrend || []}
             xKey="period_label"
             yKey="revenue"
+            secondaryYKey="expenses"
             formatY={(v: number) => `₹${(v / 1000).toFixed(1)}k`}
           />
         </div>

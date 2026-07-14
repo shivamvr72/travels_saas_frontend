@@ -10,12 +10,21 @@ export const PERIOD_PRESETS: { label: string; value: PeriodPreset }[] = [
 ];
 
 export const CHART_COLORS = [
-  'hsl(var(--primary))',
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  '#3b82f6', // Blue
+  '#ef4444', // Red
+  '#10b981', // Emerald
+  '#f59e0b', // Amber
+  '#8b5cf6', // Violet
+  '#ec4899', // Pink
+  '#14b8a6', // Teal
+  '#f97316', // Orange
+  '#6366f1', // Indigo
+  '#84cc16', // Lime
+  '#06b6d4', // Cyan
+  '#d946ef', // Fuchsia
+  '#eab308', // Yellow
+  '#64748b', // Slate
+  '#a855f7', // Purple
 ];
 
 export const EXPENSE_COLOR_MAP: Record<string, string> = {
