@@ -77,6 +77,8 @@ export function ReportAreaChart({
                 fillOpacity={1} 
                 fill="url(#colorY)" 
                 strokeWidth={2}
+                dot={data.length === 1 ? { r: 4, fill: color, strokeWidth: 2, stroke: 'hsl(var(--background))' } : false}
+                activeDot={{ r: 6, fill: color, strokeWidth: 2, stroke: 'hsl(var(--background))' }}
               />
             </AreaChart>
           </ResponsiveContainer>

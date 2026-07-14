@@ -52,21 +52,21 @@ export function AppCommandPalette() {
         <CommandEmpty>No results found.</CommandEmpty>
         
         <CommandGroup heading="Quick Actions">
-          <CommandItem onSelect={() => runCommand(() => router.push('/trips/create'))}>
+          <CommandItem onSelect={() => runCommand(() => router.push('/trips/new'))}>
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-500 mr-2">
               <FilePlus2 className="h-3.5 w-3.5" />
             </div>
             <span>Create Trip</span>
             <CommandShortcut>⌘T</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push('/expenses/add'))}>
+          <CommandItem onSelect={() => runCommand(() => router.push('/expenses/new'))}>
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-500 mr-2">
               <Receipt className="h-3.5 w-3.5" />
             </div>
             <span>Add Expense</span>
             <CommandShortcut>⌘E</CommandShortcut>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => router.push('/payments/receive'))}>
+          <CommandItem onSelect={() => runCommand(() => router.push('/payments/new'))}>
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 mr-2">
               <Banknote className="h-3.5 w-3.5" />
             </div>
