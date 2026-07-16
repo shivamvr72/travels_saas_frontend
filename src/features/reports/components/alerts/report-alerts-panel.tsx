@@ -16,15 +16,15 @@ export function ReportAlertsPanel() {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger render={
         <Button variant="outline" size="sm" className="relative gap-2 h-9">
           <Bell className="h-4 w-4" />
           <span>Alerts</span>
-          <Badge variant={criticalCount > 0 ? "destructive" : "warning"} className="ml-1 h-5 px-1.5 py-0 flex items-center justify-center text-xs">
+          <Badge variant={criticalCount > 0 ? "destructive" : "secondary"} className="ml-1 h-5 px-1.5 py-0 flex items-center justify-center text-xs">
             {alerts.length}
           </Badge>
         </Button>
-      </PopoverTrigger>
+      } />
       <PopoverContent align="end" className="w-[350px] p-0 shadow-lg">
         <div className="flex flex-col">
           <div className="border-b px-4 py-3 bg-muted/50">

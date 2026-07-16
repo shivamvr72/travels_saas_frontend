@@ -23,6 +23,9 @@ export const PERMISSION_KEYS = {
   // Company Admin
   COMPANY_ADMIN: 'company:admin',
   
+  // Dispatch
+  DISPATCH_VIEW: 'dispatch:view',
+  
   // Trips
   TRIPS_VIEW: 'trips:view',
   TRIPS_CREATE: 'trips:create',
@@ -59,6 +62,7 @@ export type PermissionKey = typeof PERMISSION_KEYS[keyof typeof PERMISSION_KEYS]
 export const ROLE_PERMISSION_MATRIX: Record<Role, string[]> = {
   admin: ['*'], // admin has all
   manager: [
+    'dispatch:*',
     'trips:*', 
     'customers:*', 
     'companies:*',
@@ -69,6 +73,7 @@ export const ROLE_PERMISSION_MATRIX: Record<Role, string[]> = {
     'reports:view'
   ],
   viewer: [
+    'dispatch:view',
     'trips:view', 
     'customers:view',
     'companies:view',
@@ -81,7 +86,7 @@ export const ROLE_PERMISSION_MATRIX: Record<Role, string[]> = {
 };
 
 // Legacy compatibility layer for existing code
-export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'FINANCE' | 'SETTINGS' | 'TRIPS_CREATE' | 'TRIPS_EDIT' | 'TRIPS_ASSIGN' | 'TRIPS_DISPATCH' | 'TRIPS_CANCEL' | 'TRIPS_CLOSE' | 'TRIPS_DELETE' | 'REPORTS' | 'USERS' | 'ROLES' | 'AUDIT';
+export type AppModule = 'COMPANIES' | 'CUSTOMERS' | 'DRIVERS' | 'VEHICLES' | 'ROUTES' | 'TRIPS' | 'DISPATCH' | 'FINANCE' | 'SETTINGS' | 'TRIPS_CREATE' | 'TRIPS_EDIT' | 'TRIPS_ASSIGN' | 'TRIPS_DISPATCH' | 'TRIPS_CANCEL' | 'TRIPS_CLOSE' | 'TRIPS_DELETE' | 'REPORTS' | 'USERS' | 'ROLES' | 'AUDIT';
 
 // We import the permission service lazily to avoid circular dependencies if needed, 
 // but since the service uses these constants, we provide the legacy wrappers here.

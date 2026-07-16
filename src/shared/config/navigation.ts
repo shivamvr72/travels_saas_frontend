@@ -44,7 +44,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Operations',
     items: [
-      { title: 'Dispatch', href: '/dispatch', icon: ClipboardList, module: 'TRIPS' },
+      { title: 'Dispatch Board', href: '/dispatch', icon: ClipboardList, module: 'DISPATCH' },
       { title: 'Trips', href: '/trips', icon: Briefcase, module: 'TRIPS' },
       { title: 'Companies', href: '/companies', icon: Building2, module: 'COMPANIES' },
       { title: 'Customers', href: '/customers', icon: Users, module: 'CUSTOMERS' },

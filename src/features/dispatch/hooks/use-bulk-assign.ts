@@ -18,8 +18,9 @@ export function useBulkAssign() {
       queryClient.invalidateQueries({ queryKey: dispatchKeys.all });
       queryClient.invalidateQueries({ queryKey: tripKeys.all });
     },
-    onError: (error: any) => {
-      const message = error?.response?.data?.detail || error?.message || 'Bulk assignment failed';
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { detail?: string } }, message?: string };
+      const message = err?.response?.data?.detail || err?.message || 'Bulk assignment failed';
       toast.error(message);
     }
   });

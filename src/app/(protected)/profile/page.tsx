@@ -287,9 +287,7 @@ export default function ProfilePage() {
               <CardDescription>Update your password to keep your account secure.</CardDescription>
             </div>
             <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline"><Lock className="w-4 h-4 mr-2" /> Change Password</Button>
-              </DialogTrigger>
+              <DialogTrigger render={<Button variant="outline"><Lock className="w-4 h-4 mr-2" /> Change Password</Button>} />
               <DialogContent className="sm:max-w-[425px]">
                 <form onSubmit={handlePasswordSubmit}>
                   <DialogHeader>

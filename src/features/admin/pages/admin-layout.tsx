@@ -1,4 +1,8 @@
-import { Outlet, NavLink } from 'react-router-dom';
+'use client';
+
+import { ReactNode } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Settings, Users, Shield, FileText } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Can } from '@/shared/permissions/can';
@@ -25,7 +29,9 @@ const ADMIN_NAVIGATION = [
   },
 ];
 
-export default function AdminLayout() {
+export default function AdminLayout({ children }: { children?: ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2 border-b pb-4">
@@ -39,28 +45,29 @@ export default function AdminLayout() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
         <Card className="col-span-1 p-2">
           <nav className="flex flex-col space-y-1">
-            {ADMIN_NAVIGATION.map((item) => (
-              <Can key={item.name} permission={item.permission}>
-                <NavLink
-                  to={item.href}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            {ADMIN_NAVIGATION.map((item) => {
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + '/');
+              return (
+                <Can key={item.name} permission={item.permission}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive
                         ? 'bg-indigo-50 text-indigo-700'
                         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                    }`
-                  }
-                >
-                  <item.icon className="h-5 w-5 shrink-0" />
-                  {item.name}
-                </NavLink>
-              </Can>
-            ))}
+                    }`}
+                  >
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    {item.name}
+                  </Link>
+                </Can>
+              );
+            })}
           </nav>
         </Card>
 
         <div className="col-span-1 md:col-span-3">
-          <Outlet />
+          {children}
         </div>
       </div>
     </div>

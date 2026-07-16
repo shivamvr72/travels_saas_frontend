@@ -7,6 +7,7 @@ import { AppStatusBadge } from '@/components/shared/app-status-badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { AssignTripDialog } from './assign-trip-dialog';
+import { BulkAssignDialog } from './bulk-assign-dialog';
 import { Can } from '@/shared/permissions/can';
 import { PERMISSION_KEYS } from '@/shared/permissions';
 
@@ -28,6 +29,7 @@ export function DispatchTripList({
   selectedTripIds = new Set(),
 }: DispatchTripListProps) {
   const [assignDialogTripId, setAssignDialogTripId] = useState<string | null>(null);
+  const [isBulkAssignOpen, setIsBulkAssignOpen] = useState(false);
 
   const toggleSelectAll = (checked: boolean) => {
     if (!onSelectionChange) return;
@@ -50,6 +52,7 @@ export function DispatchTripList({
 
   const allSelected = trips.length > 0 && trips.every(t => selectedTripIds.has(t.id));
   const someSelected = trips.length > 0 && trips.some(t => selectedTripIds.has(t.id)) && !allSelected;
+  const selectedTripsArray = trips.filter(t => selectedTripIds.has(t.id));
 
   return (
     <>
@@ -61,13 +64,26 @@ export function DispatchTripList({
         ) : (
           <div className="divide-y">
             {selectable && (
-              <div className="flex items-center px-4 py-3 bg-muted/50">
-                <Checkbox 
-                  checked={allSelected}
-                  onCheckedChange={toggleSelectAll}
-                  aria-label="Select all"
-                />
-                <span className="ml-3 text-sm font-medium">Select All</span>
+              <div className="flex items-center justify-between px-4 py-3 bg-muted/50">
+                <div className="flex items-center">
+                  <Checkbox 
+                    checked={allSelected}
+                    onCheckedChange={toggleSelectAll}
+                    aria-label="Select all"
+                  />
+                  <span className="ml-3 text-sm font-medium">Select All</span>
+                </div>
+                {selectedTripsArray.length > 0 && (
+                  <Can permission={PERMISSION_KEYS.TRIPS_ASSIGN}>
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => setIsBulkAssignOpen(true)}
+                    >
+                      Bulk Assign ({selectedTripsArray.length})
+                    </Button>
+                  </Can>
+                )}
               </div>
             )}
             
@@ -134,6 +150,12 @@ export function DispatchTripList({
         open={!!assignDialogTripId} 
         onOpenChange={(open) => !open && setAssignDialogTripId(null)}
         tripId={assignDialogTripId}
+      />
+      <BulkAssignDialog
+        open={isBulkAssignOpen}
+        onOpenChange={setIsBulkAssignOpen}
+        selectedTrips={selectedTripsArray}
+        onSuccess={() => onSelectionChange?.([])}
       />
     </>
   );

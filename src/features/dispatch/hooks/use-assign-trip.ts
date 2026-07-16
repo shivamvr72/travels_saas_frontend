@@ -19,10 +19,11 @@ export function useAssignTrip() {
       queryClient.invalidateQueries({ queryKey: dispatchKeys.all });
       queryClient.invalidateQueries({ queryKey: tripKeys.all });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // 409 and 422 errors might be parsed by standard api-factory interceptors, 
       // but we handle specifically if needed.
-      const message = error?.response?.data?.detail || error?.message || 'Failed to assign trip';
+      const err = error as { response?: { data?: { detail?: string } }, message?: string };
+      const message = err?.response?.data?.detail || err?.message || 'Failed to assign trip';
       toast.error(message);
     }
   });

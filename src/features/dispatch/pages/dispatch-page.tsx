@@ -78,11 +78,13 @@ export function DispatchPage() {
         }
       />
 
-      <DispatchBoardSummary 
+      <DispatchBoardSummary
+        pendingTripsCount={data?.pending_trips.length ?? 0}
+        assignedTripsCount={data?.assigned_trips.length ?? 0}
+        inProgressTripsCount={data?.in_progress_trips.length ?? 0}
         availableVehiclesCount={data?.available_vehicles_count ?? 0}
         availableDriversCount={data?.available_drivers_count ?? 0}
-        pendingTripsCount={data?.pending_trips.length ?? 0}
-        inProgressTripsCount={data?.in_progress_trips.length ?? 0}
+        isLoading={isLoading}
       />
 
       <div className="mt-8 space-y-6">
