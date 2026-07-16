@@ -77,5 +77,22 @@ export const LookupRegistry: Record<string, LookupConfig> = {
     defaultSortBy: 'full_name',
     staleTime: 5 * 60 * 1000,
     permissions: [], // Open or specific permission
+  },
+  'dispatch-available-vehicles': {
+    endpoint: '/api/v1/dispatch/vehicles/available',
+    displayField: 'reg_number',
+    formatDisplay: (item: any) => `${item.reg_number} • ${item.vehicle_name || ''} ${item.vehicle_type || ''}`.trim(),
+    searchFields: ['reg_number', 'vehicle_name', 'vehicle_type'],
+    defaultSortBy: 'reg_number',
+    staleTime: 5 * 60 * 1000,
+    permissions: ['TRIPS'], // We map to TRIPS for dispatch for now or add a new permission if needed
+  },
+  'dispatch-available-drivers': {
+    endpoint: '/api/v1/dispatch/drivers/available',
+    displayField: 'name',
+    searchFields: ['name', 'phone'],
+    defaultSortBy: 'name',
+    staleTime: 5 * 60 * 1000,
+    permissions: ['TRIPS'],
   }
 };

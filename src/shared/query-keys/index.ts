@@ -72,3 +72,10 @@ export const myCompanyKeys = {
   all: ['my-company'] as const,
   detail: () => [...myCompanyKeys.all, 'detail'] as const,
 };
+
+export const dispatchKeys = {
+  all: ['dispatch'] as const,
+  board: (date: string) => [...dispatchKeys.all, 'board', { date }] as const,
+  availableVehicles: () => [...dispatchKeys.all, 'vehicles', 'available'] as const,
+  availableDrivers: () => [...dispatchKeys.all, 'drivers', 'available'] as const,
+};

@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Receipt,
   FileText,
-  ShieldAlert
+  ShieldAlert,
+  ClipboardList
 } from 'lucide-react';
 import { AppModule } from '../permissions';
 
@@ -43,6 +44,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Operations',
     items: [
+      { title: 'Dispatch', href: '/dispatch', icon: ClipboardList, module: 'TRIPS' },
       { title: 'Trips', href: '/trips', icon: Briefcase, module: 'TRIPS' },
       { title: 'Companies', href: '/companies', icon: Building2, module: 'COMPANIES' },
       { title: 'Customers', href: '/customers', icon: Users, module: 'CUSTOMERS' },
