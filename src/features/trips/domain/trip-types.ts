@@ -9,11 +9,11 @@
 // ─── Enumerations ────────────────────────────────────────────────────────────
 
 export type TripStatus =
-  | 'pending'
-  | 'in_progress'
+  | 'draft'
+  | 'assigned'
+  | 'dispatched'
+  | 'started'
   | 'completed'
-  | 'billed'
-  | 'paid'
   | 'cancelled';
 
 export type TripType =
@@ -85,6 +85,7 @@ export interface Trip {
   priority: TripPriority;
   booking_reference?: string | null;
   remarks?: string | null;
+  cancellation_reason?: string | null;
 
   // Schedule
   start_date: string;                // ISO 8601

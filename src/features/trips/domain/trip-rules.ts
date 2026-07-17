@@ -14,7 +14,7 @@ export function validateTransition(trip: Trip, targetStatus: TripStatus): RuleVi
   const violations: RuleViolation[] = [];
 
   switch (targetStatus) {
-    case 'in_progress':
+    case 'dispatched':
       // To dispatch, must have both vehicle and driver assigned
       if (!trip.vehicle_id || !trip.driver_id) {
         violations.push({
@@ -25,30 +25,10 @@ export function validateTransition(trip: Trip, targetStatus: TripStatus): RuleVi
       }
       break;
 
+    case 'started':
     case 'completed':
-      // No strict resource rules — handled by UI
-      break;
-
-    case 'billed':
-      // Trip must be completed first (or reverting from paid)
-      if (trip.status !== 'completed' && trip.status !== 'paid') {
-        violations.push({
-          code: 'NOT_COMPLETED',
-          message: 'Trip must be completed before marking as billed.',
-          severity: 'error',
-        });
-      }
-      break;
-
-    case 'paid':
-      // Trip must be billed first
-      if (trip.status !== 'billed') {
-        violations.push({
-          code: 'NOT_BILLED',
-          message: 'Trip must be billed before marking as paid.',
-          severity: 'error',
-        });
-      }
+    case 'cancelled':
+      // No strict resource rules — handled by UI and Backend
       break;
   }
 

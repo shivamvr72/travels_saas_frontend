@@ -11,7 +11,7 @@ export const FinanceRules = {
    * Allowed statuses: 'completed', 'billed', 'paid'
    */
   canGenerateInvoice: (tripStatus: TripStatus): boolean => {
-    return ['completed', 'billed', 'paid'].includes(tripStatus);
+    return tripStatus === 'completed';
   },
 
   /**
@@ -36,7 +36,7 @@ export const FinanceRules = {
    * Constraint: Expenses cannot be added/deleted if financials are closed or trip is paid.
    */
   canModifyExpenses: (tripStatus: TripStatus): boolean => {
-    return tripStatus !== 'paid' && tripStatus !== 'cancelled';
+    return tripStatus !== 'cancelled';
   },
 
   /**

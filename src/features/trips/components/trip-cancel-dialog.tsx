@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -9,10 +8,21 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useTripTransition } from '../api';
+import { useCancelTrip } from '../api';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { tripCancelSchema, TripCancelValues } from '../schemas/trip-schema';
 
 interface TripCancelDialogProps {
   tripId: string;
@@ -25,41 +35,35 @@ export function TripCancelDialog({
   isOpen,
   onClose,
 }: TripCancelDialogProps) {
-  const [reason, setReason] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  
-  const transitionMutation = useTripTransition();
-  const queryClient = useQueryClient();
+  const cancelMutation = useCancelTrip();
+  const form = useForm<TripCancelValues>({
+    resolver: zodResolver(tripCancelSchema),
+    defaultValues: { reason: '' },
+  });
 
-  const handleCancelTrip = () => {
-    if (reason.length < 10) {
-      setError('Please provide a reason of at least 10 characters.');
-      return;
-    }
-
-    transitionMutation.mutate(
-      { id: tripId, action: 'cancelled', payload: { reason } },
+  const onSubmit = (values: TripCancelValues) => {
+    cancelMutation.mutate(
+      { id: tripId, payload: { cancellation_reason: values.reason } },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['trips', tripId] });
-          queryClient.invalidateQueries({ queryKey: ['trips'] });
           onClose();
-          setReason('');
-          setError(null);
+          form.reset();
         },
         onError: (err: unknown) => {
           const errorResponse = err as { response?: { data?: { detail?: string } } };
-          setError(errorResponse?.response?.data?.detail || 'Failed to cancel the trip. Please try again.');
+          form.setError('reason', {
+            type: 'manual',
+            message: errorResponse?.response?.data?.detail || 'Failed to cancel the trip. Please try again.',
+          });
         }
       }
     );
   };
 
   const handleClose = () => {
-    if (!transitionMutation.isPending && !error) {
+    if (!cancelMutation.isPending) {
       onClose();
-      setReason('');
-      setError(null);
+      form.reset();
     }
   };
 
@@ -73,45 +77,50 @@ export function TripCancelDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="py-4 space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            {form.formState.errors.root && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{form.formState.errors.root.message}</AlertDescription>
+              </Alert>
+            )}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Cancellation Reason <span className="text-destructive">*</span>
-            </label>
-            <Textarea
-              placeholder="Provide a detailed reason for cancellation..."
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value);
-                if (error) setError(null);
-              }}
-              rows={4}
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cancellation Reason <span className="text-destructive">*</span></FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide a detailed reason for cancellation..."
+                      rows={4}
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-muted-foreground">
+                    Minimum 10 characters required.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <p className="text-xs text-muted-foreground">
-              Minimum 10 characters required.
-            </p>
-          </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={transitionMutation.isPending}>
-            Keep Trip
-          </Button>
-          <Button 
-            onClick={handleCancelTrip} 
-            disabled={reason.length < 10 || transitionMutation.isPending}
-            variant="destructive"
-          >
-            {transitionMutation.isPending ? 'Cancelling...' : 'Cancel Trip'}
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleClose} disabled={cancelMutation.isPending}>
+                Keep Trip
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={cancelMutation.isPending}
+                variant="destructive"
+              >
+                {cancelMutation.isPending ? 'Cancelling...' : 'Cancel Trip'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

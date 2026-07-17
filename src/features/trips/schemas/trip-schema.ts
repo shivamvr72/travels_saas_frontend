@@ -82,3 +82,20 @@ export const addNoteSchema = z.object({
     .max(1000, 'Note cannot exceed 1000 characters'),
 });
 export type AddNoteValues = z.infer<typeof addNoteSchema>;
+
+export const dispatchTripSchema = z.object({
+  confirmation_notes: z.string().max(500).nullable().optional(),
+});
+export type DispatchTripValues = z.infer<typeof dispatchTripSchema>;
+
+export const startTripSchema = z.object({
+  actual_start_time: z.string().nullable().optional(),
+  reporting_address: z.string().max(200).nullable().optional(),
+});
+export type StartTripValues = z.infer<typeof startTripSchema>;
+
+export const completeTripSchema = z.object({
+  actual_end_time: z.string().nullable().optional(),
+  total_km: z.coerce.number().int().positive().nullable().optional(),
+});
+export type CompleteTripValues = z.infer<typeof completeTripSchema>;

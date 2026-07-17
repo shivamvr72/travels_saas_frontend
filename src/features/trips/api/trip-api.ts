@@ -116,14 +116,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   const lastLoc = be.locations && be.locations.length > 0 ? be.locations[be.locations.length - 1] : undefined;
 
   // Backend status maps 1:1 to frontend status — use directly
-  const mappedStatus: TripStatus = (
-    be.status === 'pending'
-    || be.status === 'in_progress'
-    || be.status === 'completed'
-    || be.status === 'billed'
-    || be.status === 'paid'
-    || be.status === 'cancelled'
-  ) ? (be.status as TripStatus) : 'pending';
+  const mappedStatus = be.status as TripStatus;
 
   const metadata = getTripMetadata(be.id);
   const relations = resolveTripRelations(be, metadata.customer_id);
@@ -133,6 +126,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     trip_number: `TRP-${be.id.substring(0, 8).toUpperCase()}`,
     trip_type: metadata.trip_type || 'One Way',
     status: mappedStatus,
+    cancellation_reason: (be as any).cancellation_reason ?? null,
     priority: metadata.priority || 'Normal',
     booking_reference: be.customer_booking_id || '',
     remarks: be.notes || '',
@@ -493,23 +487,11 @@ export const tripApi = {
   },
 
   // ─── Activity Feed ───────────────────────────────────────────────────
-  getActivityFeed: async (id: string): Promise<ActivityFeedResponse> => {
-    return getLocalActivity(id);
-  },
+  // (Activity Feed is now directly queried from backend in hooks)
 
   // ─── Dashboard Stats ─────────────────────────────────────────────────
   getDashboardStats: async (): Promise<TripDashboardStats> => {
-    return {
-      trips_today: 4,
-      running_trips: 1,
-      completed_today: 2,
-      delayed_trips: 0,
-      cancelled_today: 1,
-      vehicle_utilization_pct: 75,
-      drivers_available: 3,
-      drivers_total: 5,
-      upcoming_trips_count: 2,
-    };
+    return apiClient.get('/api/v1/trips/dashboard/stats').then(r => r.data as TripDashboardStats);
   },
 
   // ─── Documents ───────────────────────────────────────────────────────

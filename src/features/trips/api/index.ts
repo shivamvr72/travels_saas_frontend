@@ -12,6 +12,7 @@ import {
   TripCreate,
   TripUpdate,
   TripDocumentUpload,
+  ActivityFeedResponse,
 } from '../domain/trip-types';
 
 // Re-export domain types as the public contract
@@ -47,10 +48,12 @@ export const useTripDetail = (id: string) => {
   });
 };
 
+import { apiClient } from '@/shared/lib/axios';
+
 export const useTripActivityFeed = (id: string) => {
   return useQuery({
     queryKey: tripQueryKeys.activity(id),
-    queryFn: () => tripApi.getActivityFeed(id),
+    queryFn: () => apiClient.get(`/api/v1/trips/${id}/activity`).then(r => r.data as ActivityFeedResponse),
     enabled: !!id,
     ...CacheProfiles.Operational,
   });
@@ -107,6 +110,14 @@ export const useDeleteTrip = () => {
   });
 };
 
+import { 
+  tripLifecycleApi, 
+  DispatchTripPayload, 
+  StartTripPayload, 
+  CompleteTripPayload, 
+  CancelTripPayload 
+} from './trip-lifecycle-api';
+
 export const useTripTransition = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -114,6 +125,62 @@ export const useTripTransition = () => {
       tripApi.transition(id, action, payload),
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+    },
+  });
+};
+
+export const useDispatchTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: DispatchTripPayload }) =>
+      tripLifecycleApi.dispatch(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(tripQueryKeys.detail(variables.id), data);
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+    },
+  });
+};
+
+export const useStartTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: StartTripPayload }) =>
+      tripLifecycleApi.start(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(tripQueryKeys.detail(variables.id), data);
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+    },
+  });
+};
+
+export const useCompleteTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: CompleteTripPayload }) =>
+      tripLifecycleApi.complete(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(tripQueryKeys.detail(variables.id), data);
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+    },
+  });
+};
+
+export const useCancelTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: CancelTripPayload }) =>
+      tripLifecycleApi.cancel(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(tripQueryKeys.detail(variables.id), data);
       queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
       queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });

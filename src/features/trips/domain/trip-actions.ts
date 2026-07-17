@@ -10,19 +10,15 @@ export interface TripActionDef {
 }
 
 export const TRIP_ACTIONS_MAP: Record<TripStatus, TripActionDef> = {
-  pending: { targetStatus: 'pending', label: 'Revert to Pending', icon: FileCheck, variant: 'outline', requiresConfirmation: false },
-  in_progress: { targetStatus: 'in_progress', label: 'Dispatch Trip', icon: Send, variant: 'default', requiresConfirmation: false },
+  draft: { targetStatus: 'draft', label: 'Draft', icon: FileCheck, variant: 'outline', requiresConfirmation: false },
+  assigned: { targetStatus: 'assigned', label: 'Assigned', icon: Users, variant: 'outline', requiresConfirmation: false },
+  dispatched: { targetStatus: 'dispatched', label: 'Dispatch Trip', icon: Send, variant: 'default', requiresConfirmation: true },
+  started: { targetStatus: 'started', label: 'Start Trip', icon: PlayCircle, variant: 'default', requiresConfirmation: true },
   completed: { targetStatus: 'completed', label: 'Complete Trip', icon: CheckCircle2, variant: 'default', requiresConfirmation: true },
-  billed: { targetStatus: 'billed', label: 'Mark as Billed', icon: Edit3, variant: 'secondary', requiresConfirmation: true },
-  paid: { targetStatus: 'paid', label: 'Mark as Paid', icon: CheckCircle2, variant: 'default', requiresConfirmation: true },
   cancelled: { targetStatus: 'cancelled', label: 'Cancel Trip', icon: Ban, variant: 'destructive', requiresConfirmation: true },
 };
 
 export function getActionDef(target: TripStatus, currentStatus?: TripStatus): TripActionDef {
   const def = { ...TRIP_ACTIONS_MAP[target] };
-  if (currentStatus === 'paid' && target === 'billed') {
-    def.label = 'Revert to Billed';
-    def.variant = 'outline';
-  }
   return def;
 }

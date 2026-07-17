@@ -25,6 +25,11 @@ export const PERMISSION_KEYS = {
   
   // Dispatch
   DISPATCH_VIEW: 'dispatch:view',
+  DISPATCH_ASSIGN: 'dispatch:assign',
+  
+  // Trip Events
+  TRIP_EVENT_CREATE: 'trip:event:create',
+  TRIP_CANCEL: 'trip:cancel',
   
   // Trips
   TRIPS_VIEW: 'trips:view',

@@ -18,7 +18,7 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
   const [isSettled, setIsSettled] = useState(false);
 
   useEffect(() => {
-    if (trip.status === 'billed' || trip.status === 'paid') {
+    if (trip.status === 'completed') {
       import('@/features/finance/services/payment.service').then(({ PaymentService }) => {
         PaymentService.getPaymentDetails(trip.id)
           .then(details => { if (details) setIsSettled(details.is_settled); })
@@ -57,19 +57,16 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
   return (
     <div className="flex items-center space-x-2">
       {availableActions
-        .filter(action => !(action.targetStatus === 'paid' && isSettled))
         .map((action) => {
         const Icon = action.icon;
         
-        // Map target status to required permission
-        let requiredPermission: any = PERMISSION_KEYS.TRIPS_EDIT;
-        if (action.targetStatus === 'in_progress') {
-          requiredPermission = PERMISSION_KEYS.TRIPS_DISPATCH;
-        } else if (action.targetStatus === 'cancelled') {
-          requiredPermission = PERMISSION_KEYS.TRIPS_CANCEL;
-        } else if (action.targetStatus === 'billed' || action.targetStatus === 'paid') {
-          requiredPermission = PERMISSION_KEYS.TRIPS_CLOSE;
-        }
+        const permissionMap: Partial<Record<TripStatus, string>> = {
+          dispatched: PERMISSION_KEYS.DISPATCH_ASSIGN,
+          started:    PERMISSION_KEYS.TRIP_EVENT_CREATE,
+          completed:  PERMISSION_KEYS.TRIP_EVENT_CREATE,
+          cancelled:  PERMISSION_KEYS.TRIP_CANCEL,
+        };
+        const requiredPermission = permissionMap[action.targetStatus] ?? PERMISSION_KEYS.TRIPS_EDIT;
 
         return (
           <Can key={action.targetStatus} permission={requiredPermission}>

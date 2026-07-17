@@ -49,6 +49,7 @@ export const STATUS_CONFIG_MAP: Record<string, StatusConfig> = {
   planned: { variant: 'upcoming', label: 'Planned', icon: CalendarCheck },
   assigned: { variant: 'upcoming', label: 'Assigned', icon: Users },
   dispatched: { variant: 'warning', label: 'Dispatched', icon: Send },
+  started: { variant: 'active', label: 'In Progress', icon: PlayCircle },
   in_progress: { variant: 'active', label: 'In Progress', icon: PlayCircle },
   completed: { variant: 'completed', label: 'Completed', icon: CheckCircle2 },
   closed: { variant: 'completed', label: 'Closed', icon: Lock },

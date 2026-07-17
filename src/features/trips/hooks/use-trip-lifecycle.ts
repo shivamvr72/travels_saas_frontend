@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { tripLifecycleService } from '../services/trip-lifecycle.service';
-import { useTripTransition, tripQueryKeys } from '../api';
+import { useDispatchTrip, useStartTrip, useCompleteTrip, useCancelTrip, tripQueryKeys } from '../api';
 import { getActionDef } from '../domain/trip-actions';
 import { toast } from 'sonner';
 import { isTerminalState } from '../domain/trip-status';
@@ -9,7 +9,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { tripApi } from '../api/trip-api';
 
 export function useTripLifecycle(trip: Trip | undefined | null) {
-  const transition = useTripTransition();
+  const dispatchMutation = useDispatchTrip();
+  const startMutation = useStartTrip();
+  const completeMutation = useCompleteTrip();
+  const cancelMutation = useCancelTrip();
   const queryClient = useQueryClient();
 
   // ─── Computations ────────────────────────────────────────────────────────
@@ -35,7 +38,16 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
 
   // ─── Execution ────────────────────────────────────────────────────────────
   
-  const execute = async (target: TripStatus, payload?: { reason?: string; notes?: string }) => {
+  const isPending =
+    dispatchMutation.isPending ||
+    startMutation.isPending ||
+    completeMutation.isPending ||
+    cancelMutation.isPending;
+
+  const execute = async (
+    target: TripStatus,
+    payload?: { reason?: string; notes?: string; actual_start_time?: string; actual_end_time?: string; total_km?: number; reporting_address?: string }
+  ) => {
     if (!trip) {
       toast.error('Trip data is missing.');
       return;
@@ -65,13 +77,49 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
     }
 
     try {
-      await transition.mutateAsync({ id: currentTrip.id, action: target, payload });
-      toast.success(`Trip status updated to ${tripLifecycleService.getActionLabel(target)}`);
-    } catch (error: any) {
-      // Handle known API error formats
-      const errorDetail = error.response?.data?.detail || error.message || 'An error occurred during transition.';
-      toast.error(`Transition failed: ${errorDetail}`);
-      throw error; // Re-throw if component needs to handle (e.g. keeping dialog open)
+      switch (target) {
+        case 'dispatched':
+          await dispatchMutation.mutateAsync({
+            id: currentTrip.id,
+            payload: { confirmation_notes: payload?.notes ?? null },
+          });
+          toast.success('Trip dispatched successfully.');
+          break;
+        case 'started':
+          await startMutation.mutateAsync({
+            id: currentTrip.id,
+            payload: {
+              actual_start_time: payload?.actual_start_time ?? null,
+              reporting_address: payload?.reporting_address ?? null,
+            },
+          });
+          toast.success('Trip started successfully.');
+          break;
+        case 'completed':
+          await completeMutation.mutateAsync({
+            id: currentTrip.id,
+            payload: {
+              actual_end_time: payload?.actual_end_time ?? null,
+              total_km: payload?.total_km ?? null,
+            },
+          });
+          toast.success('Trip completed successfully.');
+          break;
+        case 'cancelled':
+          await cancelMutation.mutateAsync({
+            id: currentTrip.id,
+            payload: { cancellation_reason: payload?.reason ?? '' },
+          });
+          toast.success('Trip cancelled.');
+          break;
+        default:
+          toast.error(`Action for status "${target}" is not supported.`);
+      }
+    } catch (error: unknown) {
+      const detail = (error as { response?: { data?: { detail?: string } } })
+        ?.response?.data?.detail || 'An error occurred during transition.';
+      toast.error(`Action failed: ${detail}`);
+      throw error;
     }
   };
 
@@ -81,6 +129,6 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
     availableActions,
     isTerminal,
     execute,
-    isPending: transition.isPending,
+    isPending,
   };
 }
