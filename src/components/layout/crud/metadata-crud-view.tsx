@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, ReactNode } from 'react';
 import '@/shared/config/init-features';
 import { featureRegistry, FeatureKey } from '@/shared/config/feature-registry';
 import { CrudList } from './crud-list';
@@ -16,9 +16,10 @@ interface MetadataCrudViewProps {
   view: 'list' | 'form' | 'details';
   id?: string;
   isEditing?: boolean;
+  extensions?: { label: string; content: ReactNode }[];
 }
 
-export function MetadataCrudView({ feature, view, id, isEditing }: MetadataCrudViewProps) {
+export function MetadataCrudView({ feature, view, id, isEditing, extensions }: MetadataCrudViewProps) {
   const config = useMemo(() => {
     try {
       return featureRegistry.get(feature);
@@ -55,7 +56,7 @@ export function MetadataCrudView({ feature, view, id, isEditing }: MetadataCrudV
     
     case 'details':
       if (!id) throw new Error('Details view requires an id');
-      return <CrudDetails config={config} id={id} />;
+      return <CrudDetails config={config} id={id} extensions={extensions} />;
       
     default:
       return null;

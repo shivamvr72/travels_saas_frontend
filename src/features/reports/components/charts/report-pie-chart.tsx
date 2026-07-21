@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { CHART_COLORS } from '../../domain/reports-constants';
 
 interface ReportPieChartProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   data: any[];
   nameKey: string;
   valueKey: string;

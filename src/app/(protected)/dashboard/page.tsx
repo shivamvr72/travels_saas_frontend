@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AppPageContainer } from '@/components/layout/crud/app-page-container';
 import { useExecutiveSummary } from '@/features/reports/hooks/use-executive-summary';
 import { useFleetSummary } from '@/features/reports/hooks/use-fleet-analytics';
+import { useFleetSummary as useFleetHealthSummary } from '@/shared/hooks/use-generic-engines';
 import { useTripList } from '@/features/trips/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Briefcase, Car, Activity, Users, AlertTriangle } from 'lucide-react';
@@ -18,6 +19,7 @@ export default function DashboardPage() {
   const { data: summary, isLoading } = useExecutiveSummary(filter);
   const { data: fleetData, isLoading: fleetLoading } = useFleetSummary(filter);
   const { data: tripsData, isLoading: tripsLoading } = useTripList({ page: 1, page_size: 5 });
+  const { data: healthData, isLoading: healthLoading } = useFleetHealthSummary();
 
   return (
     <AppPageContainer maxWidth="full" className="pb-4 flex flex-col h-full gap-4">
@@ -111,7 +113,47 @@ export default function DashboardPage() {
              )}
            </CardContent>
          </Card>
-         <Card className="flex flex-col">
+
+         <Card className="flex flex-col lg:col-span-2">
+           <CardHeader className="shrink-0">
+             <CardTitle>Fleet Health & Compliance</CardTitle>
+             <CardDescription>System-wide engine health metrics</CardDescription>
+           </CardHeader>
+           <CardContent>
+             {healthLoading ? (
+               <div className="flex h-[100px] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+             ) : (
+               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
+                   <span className="text-sm text-muted-foreground">Available Vehicles</span>
+                   <span className="text-2xl font-bold">{healthData?.vehicles_available || 0}</span>
+                 </div>
+                 <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
+                   <span className="text-sm text-muted-foreground">Available Drivers</span>
+                   <span className="text-2xl font-bold">{healthData?.drivers_available || 0}</span>
+                 </div>
+                 <div className="flex flex-col p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
+                   <span className="text-sm font-medium">Expiring Documents</span>
+                   <span className="text-2xl font-bold">{healthData?.documents_expiring_soon || 0}</span>
+                 </div>
+                 <div className="flex flex-col p-4 bg-orange-500/10 text-orange-600 rounded-lg border border-orange-500/20">
+                   <span className="text-sm font-medium">Pending Verifications</span>
+                   <span className="text-2xl font-bold">{healthData?.documents_awaiting_verification || 0}</span>
+                 </div>
+                 <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
+                   <span className="text-sm text-muted-foreground">Unread Notifications</span>
+                   <span className="text-2xl font-bold">{healthData?.unread_notifications || 0}</span>
+                 </div>
+                 <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
+                   <span className="text-sm text-muted-foreground">Blocked Resources</span>
+                   <span className="text-2xl font-bold">{healthData?.blocked_resources || 0}</span>
+                 </div>
+               </div>
+             )}
+           </CardContent>
+         </Card>
+
+         <Card className="flex flex-col lg:col-span-1">
            <CardHeader className="shrink-0">
              <CardTitle>Recent Trips</CardTitle>
              <CardDescription>Latest trip activities</CardDescription>

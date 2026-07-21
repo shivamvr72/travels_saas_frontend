@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Download, FileText, FileSpreadsheet } from 'lucide-react';
 
 interface ReportExportToolbarProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   data: any[];
   columns: { header: string; key: string }[];
   filename: string;

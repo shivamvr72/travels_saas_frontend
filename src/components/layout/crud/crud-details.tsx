@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 'use client';
 
 import { ReactNode } from 'react';
@@ -13,12 +13,14 @@ import { formatDate, formatDateTime, formatCurrency, formatPercentage } from '@/
 import { AppStatusBadge } from '@/components/shared/app-status-badge';
 import { useConfirmDialog } from '@/shared/hooks';
 import { AppConfirmDialog } from '@/components/shared';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface CrudDetailsProps {
   config: CrudModuleConfig<unknown, unknown, unknown, unknown>;
   id: string;
   children?: (data: Record<string, any>) => ReactNode;
   extraActions?: (data: Record<string, any>) => ActionDef[];
+  extensions?: { label: string; content: ReactNode }[];
 }
 
 function renderFieldValue(field: { name: string, type?: string, label?: string, renderDetail?: (data: Record<string, any>) => ReactNode }, data: Record<string, any>) {
@@ -36,7 +38,7 @@ function renderFieldValue(field: { name: string, type?: string, label?: string, 
   return String(value);
 }
 
-export function CrudDetails({ config, id, children, extraActions }: CrudDetailsProps) {
+export function CrudDetails({ config, id, children, extraActions, extensions }: CrudDetailsProps) {
   const router = useRouter();
   const { openDialog, ...confirmDialog } = useConfirmDialog();
 
@@ -151,6 +153,25 @@ export function CrudDetails({ config, id, children, extraActions }: CrudDetailsP
           </div>
         )}
       </div>
+
+      {extensions && extensions.length > 0 && (
+        <div className="mt-6">
+          <Tabs defaultValue={extensions[0].label}>
+            <TabsList className="mb-4">
+              {extensions.map(ext => (
+                <TabsTrigger key={ext.label} value={ext.label}>
+                  {ext.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {extensions.map(ext => (
+              <TabsContent key={ext.label} value={ext.label}>
+                {ext.content}
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      )}
 
       <AppConfirmDialog
         isOpen={confirmDialog.isOpen}

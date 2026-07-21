@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 interface ReportAreaChartProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   data: any[];
   xKey: string;
   yKey: string;

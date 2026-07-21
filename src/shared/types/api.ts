@@ -24,6 +24,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Liveness Probe
+         * @description Liveness probe for Kubernetes to know the app hasn't deadlocked.
+         */
+        get: operations["liveness_probe_api_v1_live_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Readiness Probe
+         * @description Readiness probe for Kubernetes to know the app is connected to the DB.
+         */
+        get: operations["readiness_probe_api_v1_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Version Probe
+         * @description Returns the deployed version of the API.
+         */
+        get: operations["version_probe_api_v1_version_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/register": {
         parameters: {
             query?: never;
@@ -127,7 +187,31 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Update Me
+         * @description Update the current authenticated user's profile.
+         */
+        patch: operations["update_me_api_v1_auth_me_patch"];
+        trace?: never;
+    };
+    "/api/v1/auth/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Me Password
+         * @description Update the current user's password.
+         */
+        patch: operations["update_me_password_api_v1_auth_me_password_patch"];
         trace?: never;
     };
     "/api/v1/auth/check-slug": {
@@ -468,6 +552,162 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/documents/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Documents
+         * @description List documents for the current tenant. Can filter by entity_type and entity_id.
+         */
+        get: operations["list_documents_api_v1_documents__get"];
+        put?: never;
+        /**
+         * Upload Document
+         * @description Upload a new document record. (Admin/Manager only)
+         */
+        post: operations["upload_document_api_v1_documents__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Document
+         * @description Update a document (e.g. status).
+         */
+        put: operations["update_document_api_v1_documents__document_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/documents/{document_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download Document
+         * @description Download the actual bytes of the document.
+         */
+        get: operations["download_document_api_v1_documents__document_id__download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/availability/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Unavailability
+         * @description List unavailability blocks for resources.
+         */
+        get: operations["list_unavailability_api_v1_availability__get"];
+        put?: never;
+        /**
+         * Create Unavailability
+         * @description Create a new unavailability block.
+         */
+        post: operations["create_unavailability_api_v1_availability__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/availability/{block_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Update Unavailability
+         * @description Update an unavailability block.
+         */
+        put: operations["update_unavailability_api_v1_availability__block_id__put"];
+        post?: never;
+        /**
+         * Delete Unavailability
+         * @description Delete an unavailability block.
+         */
+        delete: operations["delete_unavailability_api_v1_availability__block_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Notifications
+         * @description List notifications for the current user.
+         */
+        get: operations["list_notifications_api_v1_notifications__get"];
+        put?: never;
+        /**
+         * Create Notification
+         * @description Create a new notification (usually via system events, this is for testing or manual broadcast).
+         */
+        post: operations["create_notification_api_v1_notifications__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Mark As Read
+         * @description Mark a notification as read.
+         */
+        put: operations["mark_as_read_api_v1_notifications__notification_id__read_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/routes/": {
         parameters: {
             query?: never;
@@ -588,7 +828,7 @@ export interface paths {
         patch: operations["update_trip_status_api_v1_trips__trip_id__status_patch"];
         trace?: never;
     };
-    "/api/v1/trips/{trip_id}/assign-vehicle": {
+    "/api/v1/trips/{trip_id}/dispatch": {
         parameters: {
             query?: never;
             header?: never;
@@ -597,18 +837,18 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /**
+         * Dispatch Trip
+         * @description Dispatch an assigned trip.
+         */
+        post: operations["dispatch_trip_api_v1_trips__trip_id__dispatch_post"];
         delete?: never;
         options?: never;
         head?: never;
-        /**
-         * Assign Vehicle
-         * @description Assign a vehicle to the trip.
-         */
-        patch: operations["assign_vehicle_api_v1_trips__trip_id__assign_vehicle_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/v1/trips/{trip_id}/assign-driver": {
+    "/api/v1/trips/{trip_id}/start": {
         parameters: {
             query?: never;
             header?: never;
@@ -617,18 +857,18 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /**
+         * Start Trip
+         * @description Start a dispatched trip.
+         */
+        post: operations["start_trip_api_v1_trips__trip_id__start_post"];
         delete?: never;
         options?: never;
         head?: never;
-        /**
-         * Assign Driver
-         * @description Assign a driver to the trip.
-         */
-        patch: operations["assign_driver_api_v1_trips__trip_id__assign_driver_patch"];
+        patch?: never;
         trace?: never;
     };
-    "/api/v1/trips/{trip_id}/assign-external-hiring": {
+    "/api/v1/trips/{trip_id}/complete": {
         parameters: {
             query?: never;
             header?: never;
@@ -637,15 +877,35 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post?: never;
+        /**
+         * Complete Trip
+         * @description Complete a started trip.
+         */
+        post: operations["complete_trip_api_v1_trips__trip_id__complete_post"];
         delete?: never;
         options?: never;
         head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
-         * Assign External Hiring
-         * @description Assign external hiring context to the trip.
+         * Cancel Trip
+         * @description Cancel a trip from any non-terminal status.
          */
-        patch: operations["assign_external_hiring_api_v1_trips__trip_id__assign_external_hiring_patch"];
+        post: operations["cancel_trip_api_v1_trips__trip_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/trips/{trip_id}/locations": {
@@ -687,6 +947,395 @@ export interface paths {
          * @description Delete a specific location entry from the trip.
          */
         delete: operations["delete_trip_location_api_v1_trips__trip_id__locations__location_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Trip Billing
+         * @description Get or auto-create a billing record for a trip.
+         */
+        get: operations["get_trip_billing_api_v1_trips__trip_id__billing_get"];
+        /**
+         * Update Trip Billing
+         * @description Update draft invoice amounts and recalculate totals.
+         */
+        put: operations["update_trip_billing_api_v1_trips__trip_id__billing_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/billing/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finalize Trip Billing
+         * @description Finalize billing and generate invoice number.
+         */
+        post: operations["finalize_trip_billing_api_v1_trips__trip_id__billing_finalize_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/billing/revert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Revert Trip Billing
+         * @description Revert a finalized invoice back to draft status.
+         */
+        post: operations["revert_trip_billing_api_v1_trips__trip_id__billing_revert_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/billing/sync-expenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sync Trip Expenses To Billing
+         * @description Sync toll and parking expenses to draft invoice.
+         */
+        post: operations["sync_trip_expenses_to_billing_api_v1_trips__trip_id__billing_sync_expenses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Trip Payment
+         * @description Get trip payment details including transactions.
+         */
+        get: operations["get_trip_payment_api_v1_trips__trip_id__payment_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/payment/record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Trip Payment
+         * @description Record a new payment transaction against a trip.
+         */
+        post: operations["record_trip_payment_api_v1_trips__trip_id__payment_record_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/payment/clear": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Clear Trip Payments
+         * @description Clear all payment transactions and reset balance.
+         */
+        delete: operations["clear_trip_payments_api_v1_trips__trip_id__payment_clear_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Trip Activity */
+        get: operations["get_trip_activity_api_v1_trips__trip_id__activity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/settlement/billing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Calculate Trip Billing
+         * @description Calculate or update existing billing.
+         */
+        post: operations["calculate_trip_billing_api_v1_trips__trip_id__settlement_billing_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/settlement/expenses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Trip Expense
+         * @description Record a trip expense.
+         */
+        post: operations["record_trip_expense_api_v1_trips__trip_id__settlement_expenses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/settlement/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Trip Payment Settlement
+         * @description Record a payment transaction.
+         */
+        post: operations["record_trip_payment_settlement_api_v1_trips__trip_id__settlement_payments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/settlement/settle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Settle Trip Endpoint
+         * @description Finalize and lock trip.
+         */
+        post: operations["settle_trip_endpoint_api_v1_trips__trip_id__settlement_settle_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/settlement-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Settlement Summary
+         * @description Returns billing, expenses, and payments.
+         */
+        get: operations["get_settlement_summary_api_v1_trips__trip_id__settlement_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/activity/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Activities
+         * @description List activity feed events.
+         */
+        get: operations["list_activities_api_v1_activity__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/fleet/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fleet Summary
+         * @description Get aggregated fleet health metrics for dashboard.
+         */
+        get: operations["get_fleet_summary_api_v1_fleet_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/board": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Dispatch Board */
+        get: operations["get_dispatch_board_api_v1_dispatch_board_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/vehicles/available": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Available Vehicles */
+        get: operations["get_available_vehicles_api_v1_dispatch_vehicles_available_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/drivers/available": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Available Drivers */
+        get: operations["get_available_drivers_api_v1_dispatch_drivers_available_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/trips/{trip_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign Trip */
+        post: operations["assign_trip_api_v1_dispatch_trips__trip_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/trips/bulk-assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bulk Assign Trips
+         * @description Atomically assign vehicles and/or drivers to multiple trips. Operates under a single unit of work with SAVEPOINT isolation for partial success. Maximum of 50 items allowed per request. Returns HTTP 200 even on partial failures. Failures are reported in the results array with specific error codes.
+         */
+        post: operations["bulk_assign_trips_api_v1_dispatch_trips_bulk_assign_post"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -756,8 +1405,26 @@ export interface paths {
         /** List Trip Expenses */
         get: operations["list_trip_expenses_api_v1_trips__trip_id__expenses_get"];
         put?: never;
-        post?: never;
+        /** Create Trip Expense */
+        post: operations["create_trip_expense_api_v1_trips__trip_id__expenses_post"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/trips/{trip_id}/expenses/{expense_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Trip Expense */
+        delete: operations["delete_trip_expense_api_v1_trips__trip_id__expenses__expense_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1068,6 +1735,159 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/analytics/executive-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Executive Summary */
+        get: operations["get_executive_summary_api_v1_analytics_executive_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/revenue/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Revenue Daily */
+        get: operations["get_revenue_daily_api_v1_analytics_revenue_daily_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/revenue/monthly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Revenue Monthly */
+        get: operations["get_revenue_monthly_api_v1_analytics_revenue_monthly_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/expenses/breakdown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Expense Breakdown */
+        get: operations["get_expense_breakdown_api_v1_analytics_expenses_breakdown_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/fleet/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Fleet Summary */
+        get: operations["get_fleet_summary_api_v1_analytics_fleet_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Alerts */
+        get: operations["get_alerts_api_v1_analytics_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/drivers/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Drivers Summary */
+        get: operations["get_drivers_summary_api_v1_analytics_drivers_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/customers/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Customers Summary */
+        get: operations["get_customers_summary_api_v1_analytics_customers_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/analytics/registers/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Invoice Register */
+        get: operations["get_invoice_register_api_v1_analytics_registers_invoices_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/payments": {
         parameters: {
             query?: never;
@@ -1156,15 +1976,494 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Users
+         * @description List all users in the tenant.
+         */
+        get: operations["list_users_api_v1_admin_users_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get User
+         * @description Get a specific user by ID.
+         */
+        get: operations["get_user_api_v1_admin_users__user_id__get"];
+        /**
+         * Update User
+         * @description Update user details, role, and status.
+         */
+        put: operations["update_user_api_v1_admin_users__user_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{user_id}/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Password
+         * @description Admin resets a user's password.
+         */
+        post: operations["reset_password_api_v1_admin_users__user_id__reset_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Settings */
+        get: operations["list_settings_api_v1_admin_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Setting */
+        put: operations["update_setting_api_v1_admin_settings__key__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/number-sequences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Sequences */
+        get: operations["list_sequences_api_v1_admin_settings_number_sequences_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/number-sequences/{entity_type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update Sequence */
+        put: operations["update_sequence_api_v1_admin_settings_number_sequences__entity_type__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/security-policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Security Policy */
+        get: operations["get_security_policy_api_v1_admin_settings_security_policy_get"];
+        /** Update Security Policy */
+        put: operations["update_security_policy_api_v1_admin_settings_security_policy_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/audit-logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Audit Logs */
+        get: operations["list_audit_logs_api_v1_admin_audit_logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActivityResponse */
+        ActivityResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Entity Type */
+            entity_type: string;
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Event Type */
+            event_type: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Actor Id */
+            actor_id: string | null;
+            /** Actor Role */
+            actor_role: string | null;
+            /** Metadata Data */
+            metadata_data: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** AlertItem */
+        AlertItem: {
+            /** Type */
+            type: string;
+            /**
+             * Severity
+             * @enum {string}
+             */
+            severity: "info" | "warning" | "critical";
+            /** Message */
+            message: string;
+            /** Entity Id */
+            entity_id?: string | null;
+            /** Entity Name */
+            entity_name?: string | null;
+        };
+        /**
+         * AssignTripRequest
+         * @description Request payload for the single-trip assignment endpoint.
+         */
+        AssignTripRequest: {
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Driver Id */
+            driver_id?: string | null;
+            /** Scheduled Start Time */
+            scheduled_start_time?: string | null;
+            /** Scheduled End Time */
+            scheduled_end_time?: string | null;
+            /** Estimated Duration Hrs */
+            estimated_duration_hrs?: number | null;
+        };
         /** AuthResponse */
         AuthResponse: {
             user: components["schemas"]["UserInResponse"];
             travel_company: components["schemas"]["TravelCompanyInResponse"];
             tokens: components["schemas"]["TokenResponse"];
+        };
+        /** AvailabilityCreate */
+        AvailabilityCreate: {
+            /** Resource Type */
+            resource_type: string;
+            /**
+             * Resource Id
+             * Format: uuid
+             */
+            resource_id: string;
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * End Time
+             * Format: date-time
+             */
+            end_time: string;
+            /** Reason */
+            reason: string;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** AvailabilityResponse */
+        AvailabilityResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Resource Type */
+            resource_type: string;
+            /**
+             * Resource Id
+             * Format: uuid
+             */
+            resource_id: string;
+            /**
+             * Start Time
+             * Format: date-time
+             */
+            start_time: string;
+            /**
+             * End Time
+             * Format: date-time
+             */
+            end_time: string;
+            /** Reason */
+            reason: string;
+            /** Status */
+            status: string;
+            /** Notes */
+            notes: string | null;
+            /** Created By Id */
+            created_by_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AvailabilityUpdate */
+        AvailabilityUpdate: {
+            /** Start Time */
+            start_time?: string | null;
+            /** End Time */
+            end_time?: string | null;
+            /** Reason */
+            reason?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /**
+         * AvailableDriverRead
+         * @description A driver returned by GET /dispatch/drivers/available.
+         *
+         *     Only fully dispatchable drivers appear here:
+         *     status == AVAILABLE, license_expiry non-null and non-expired.
+         *     No violation fields are exposed.
+         */
+        AvailableDriverRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Phone */
+            phone?: string | null;
+            /** License Expiry */
+            license_expiry?: string | null;
+        };
+        /**
+         * AvailableVehicleRead
+         * @description A vehicle returned by GET /dispatch/vehicles/available.
+         *
+         *     Only fully dispatchable vehicles appear here:
+         *     status == AVAILABLE, is_active, all four roadworthy documents non-expired.
+         *     No violation fields are exposed.
+         */
+        AvailableVehicleRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reg Number */
+            reg_number: string;
+            /** Vehicle Name */
+            vehicle_name?: string | null;
+            /** Vehicle Type */
+            vehicle_type?: string | null;
+            /** Seating Capacity */
+            seating_capacity?: number | null;
+            /** Ownership Type */
+            ownership_type?: string | null;
+            /** Insurance Expiry */
+            insurance_expiry?: string | null;
+            /** Fitness Expiry */
+            fitness_expiry?: string | null;
+            /** Permit Expiry */
+            permit_expiry?: string | null;
+            /** Rc Expiry */
+            rc_expiry?: string | null;
+        };
+        /** Body_upload_document_api_v1_documents__post */
+        Body_upload_document_api_v1_documents__post: {
+            /** Entity Type */
+            entity_type: string;
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Document Category */
+            document_category: string;
+            /** Document Number */
+            document_number?: string | null;
+            /** Issue Date */
+            issue_date?: string | null;
+            /** Expiry Date */
+            expiry_date?: string | null;
+            /** Metadata Data */
+            metadata_data?: string | null;
+            /** File */
+            file: string;
+        };
+        /**
+         * BulkAssignItem
+         * @description A single assignment entry in a bulk assignment request.
+         *
+         *     When both scheduled_start_time and scheduled_end_time are provided,
+         *     time-window conflict detection is performed for this item.
+         *     If either is absent, overlap checking is skipped.
+         */
+        BulkAssignItem: {
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Driver Id */
+            driver_id?: string | null;
+            /** Scheduled Start Time */
+            scheduled_start_time?: string | null;
+            /** Scheduled End Time */
+            scheduled_end_time?: string | null;
+            /** Estimated Duration Hrs */
+            estimated_duration_hrs?: number | null;
+        };
+        /**
+         * BulkAssignItemResult
+         * @description Per-item result within a BulkAssignResponse.
+         *
+         *     success=True:  The trip was assigned and committed.
+         *     success=False: The assignment failed; error_code and error_message describe why.
+         */
+        BulkAssignItemResult: {
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Success */
+            success: boolean;
+            /** Error Code */
+            error_code?: string | null;
+            /** Error Message */
+            error_message?: string | null;
+        };
+        /**
+         * BulkAssignRequest
+         * @description Request payload for the bulk-assign endpoint.
+         *
+         *     Maximum of 50 items enforced at schema boundary before any service call.
+         */
+        BulkAssignRequest: {
+            /**
+             * Assignments
+             * @description 1-50 assignment items
+             */
+            assignments: components["schemas"]["BulkAssignItem"][];
+        };
+        /**
+         * BulkAssignResponse
+         * @description Response for POST /dispatch/trips/bulk-assign.
+         *
+         *     HTTP 200 is returned even on partial failure.
+         *     Per-item failures are described in the results list, not as HTTP error codes.
+         */
+        BulkAssignResponse: {
+            /** Total */
+            total: number;
+            /** Succeeded */
+            succeeded: number;
+            /** Failed */
+            failed: number;
+            /** Results */
+            results: components["schemas"]["BulkAssignItemResult"][];
+        };
+        /** CancelTripRequest */
+        CancelTripRequest: {
+            /** Cancellation Reason */
+            cancellation_reason: string;
         };
         /** CheckSlugResponse */
         CheckSlugResponse: {
@@ -1245,6 +2544,13 @@ export interface components {
             city?: string | null;
             /** State */
             state?: string | null;
+        };
+        /** CompleteTripRequest */
+        CompleteTripRequest: {
+            /** Actual End Time */
+            actual_end_time?: string | null;
+            /** Total Km */
+            total_km?: number | null;
         };
         /** CustomerCreate */
         CustomerCreate: {
@@ -1340,6 +2646,135 @@ export interface components {
             /** Id Proof Number */
             id_proof_number?: string | null;
         };
+        /**
+         * DispatchBoardRead
+         * @description Full dispatch board response, grouped by trip state.
+         */
+        DispatchBoardRead: {
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Available Vehicles Count */
+            available_vehicles_count: number;
+            /** Available Drivers Count */
+            available_drivers_count: number;
+            /** Pending Trips */
+            pending_trips: components["schemas"]["TripDispatchSummary"][];
+            /** Assigned Trips */
+            assigned_trips: components["schemas"]["TripDispatchSummary"][];
+            /** In Progress Trips */
+            in_progress_trips: components["schemas"]["TripDispatchSummary"][];
+        };
+        /** DispatchTripRequest */
+        DispatchTripRequest: {
+            /** Confirmation Notes */
+            confirmation_notes?: string | null;
+        };
+        /** DocumentResponse */
+        DocumentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Entity Type */
+            entity_type: string;
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Document Category */
+            document_category: string;
+            /** Document Number */
+            document_number: string | null;
+            /** Issue Date */
+            issue_date: string | null;
+            /** Expiry Date */
+            expiry_date: string | null;
+            /** Storage Provider */
+            storage_provider: string | null;
+            /** Bucket */
+            bucket: string | null;
+            /** Object Key */
+            object_key: string | null;
+            /** Original Filename */
+            original_filename: string | null;
+            /** Mime Type */
+            mime_type: string | null;
+            /** File Size Bytes */
+            file_size_bytes: number | null;
+            /** Checksum */
+            checksum: string | null;
+            /** Version */
+            version: number;
+            /** Is Latest */
+            is_latest: boolean;
+            /** Status */
+            status: string;
+            /** Uploaded By Id */
+            uploaded_by_id: string | null;
+            /** Verified By Id */
+            verified_by_id: string | null;
+            /** Confirmed By Id */
+            confirmed_by_id: string | null;
+            /** Metadata Data */
+            metadata_data: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** DocumentUpdate */
+        DocumentUpdate: {
+            /** Document Number */
+            document_number?: string | null;
+            /** Issue Date */
+            issue_date?: string | null;
+            /** Expiry Date */
+            expiry_date?: string | null;
+            /** Status */
+            status?: string | null;
+            /** Metadata Data */
+            metadata_data?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** DriverAnalyticsResponse */
+        DriverAnalyticsResponse: {
+            /**
+             * Driver Id
+             * Format: uuid
+             */
+            driver_id: string;
+            /** Driver Name */
+            driver_name: string;
+            /** Trips Completed */
+            trips_completed: number;
+            /** Revenue Generated */
+            revenue_generated: number;
+            /** Avg Trip Duration Hours */
+            avg_trip_duration_hours?: number | null;
+            /** Current Assignment */
+            current_assignment?: string | null;
+            /** Ranking */
+            ranking: number;
+        };
         /** DriverCreate */
         DriverCreate: {
             /** Name */
@@ -1420,6 +2855,46 @@ export interface components {
             /** Joining Date */
             joining_date?: string | null;
         };
+        /** ExecutiveSummaryResponse */
+        ExecutiveSummaryResponse: {
+            /** Today Revenue */
+            today_revenue: number;
+            /** Monthly Revenue */
+            monthly_revenue: number;
+            /** Outstanding Receivables */
+            outstanding_receivables: number;
+            /** Active Trips */
+            active_trips: number;
+            /** Completed Trips */
+            completed_trips: number;
+            /** Total Trips Period */
+            total_trips_period: number;
+            /** Fleet Utilization Pct */
+            fleet_utilization_pct: number;
+            /** Vehicles Running */
+            vehicles_running: number;
+            /** Vehicles Idle */
+            vehicles_idle: number;
+            /** Collection Rate Pct */
+            collection_rate_pct: number;
+            /** Net Profit */
+            net_profit: number;
+            /** Monthly Expenses */
+            monthly_expenses: number;
+            /** Avg Trip Value */
+            avg_trip_value: number;
+        };
+        /** ExpenseBreakdownResponse */
+        ExpenseBreakdownResponse: {
+            /** Expense Type */
+            expense_type: string;
+            /** Total */
+            total: number;
+            /** Count */
+            count: number;
+            /** Pct Of Total */
+            pct_of_total: number;
+        };
         /** ExpenseSummaryResponse */
         ExpenseSummaryResponse: {
             /** Total Amount */
@@ -1435,7 +2910,7 @@ export interface components {
          * ExpenseType
          * @enum {string}
          */
-        ExpenseType: "fuel" | "service" | "tyre" | "repair" | "insurance" | "tax" | "permit" | "cleaning" | "external_hire" | "toll" | "parking" | "other";
+        ExpenseType: "fuel" | "service" | "tyre" | "repair" | "insurance" | "tax" | "permit" | "cleaning" | "external_hire" | "toll" | "parking" | "driver_allowance" | "food" | "accommodation" | "police" | "other";
         /** ExternalVehicleHiringCreate */
         ExternalVehicleHiringCreate: {
             provider_type: components["schemas"]["ProviderType"];
@@ -1708,6 +3183,136 @@ export interface components {
             /** Margin Pct */
             margin_pct: number | null;
         };
+        /** NotificationCreate */
+        NotificationCreate: {
+            /** User Id */
+            user_id?: string | null;
+            /** Title */
+            title: string;
+            /** Message */
+            message: string;
+            /** Notification Type */
+            notification_type: string;
+            /** Reference Type */
+            reference_type?: string | null;
+            /** Reference Id */
+            reference_id?: string | null;
+            /** Delivery Channels */
+            delivery_channels?: {
+                [key: string]: unknown;
+            } | null;
+            /** Metadata Data */
+            metadata_data?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** NotificationResponse */
+        NotificationResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** User Id */
+            user_id: string | null;
+            /** Title */
+            title: string;
+            /** Message */
+            message: string;
+            /** Notification Type */
+            notification_type: string;
+            /** Reference Type */
+            reference_type: string | null;
+            /** Reference Id */
+            reference_id: string | null;
+            /** Is Read */
+            is_read: boolean;
+            /** Is Archived */
+            is_archived: boolean;
+            /** Status */
+            status: string;
+            /** Delivery Channels */
+            delivery_channels: {
+                [key: string]: unknown;
+            } | null;
+            /** Metadata Data */
+            metadata_data: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** NumberSequenceResponse */
+        NumberSequenceResponse: {
+            /** Entity Type */
+            entity_type: string;
+            /** Prefix */
+            prefix: string;
+            /** Suffix */
+            suffix?: string | null;
+            /**
+             * Include Year
+             * @default true
+             */
+            include_year: boolean;
+            /**
+             * Padding Digits
+             * @default 6
+             */
+            padding_digits: number;
+            /**
+             * Reset Annually
+             * @default true
+             */
+            reset_annually: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Current Value */
+            current_value: number;
+            /** Last Reset Year */
+            last_reset_year?: number | null;
+            /** Format Preview */
+            format_preview: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** NumberSequenceUpdate */
+        NumberSequenceUpdate: {
+            /** Prefix */
+            prefix?: string | null;
+            /** Suffix */
+            suffix?: string | null;
+            /** Include Year */
+            include_year?: boolean | null;
+            /** Padding Digits */
+            padding_digits?: number | null;
+            /** Reset Annually */
+            reset_annually?: boolean | null;
+        };
         /** OutstandingBalanceResponse */
         OutstandingBalanceResponse: {
             /**
@@ -1725,6 +3330,32 @@ export interface components {
             total_allocated: number;
             /** Outstanding Balance */
             outstanding_balance: number;
+        };
+        /** PaginatedResponse[ActivityResponse] */
+        PaginatedResponse_ActivityResponse_: {
+            /** Data */
+            data: components["schemas"]["ActivityResponse"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total Pages */
+            total_pages: number;
+        };
+        /** PaginatedResponse[AvailabilityResponse] */
+        PaginatedResponse_AvailabilityResponse_: {
+            /** Data */
+            data: components["schemas"]["AvailabilityResponse"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total Pages */
+            total_pages: number;
         };
         /** PaginatedResponse[CompanyResponse] */
         PaginatedResponse_CompanyResponse_: {
@@ -1752,6 +3383,19 @@ export interface components {
             /** Total Pages */
             total_pages: number;
         };
+        /** PaginatedResponse[DocumentResponse] */
+        PaginatedResponse_DocumentResponse_: {
+            /** Data */
+            data: components["schemas"]["DocumentResponse"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total Pages */
+            total_pages: number;
+        };
         /** PaginatedResponse[DriverResponse] */
         PaginatedResponse_DriverResponse_: {
             /** Data */
@@ -1769,6 +3413,19 @@ export interface components {
         PaginatedResponse_ExternalVehicleHiringResponse_: {
             /** Data */
             data: components["schemas"]["ExternalVehicleHiringResponse"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+            /** Total Pages */
+            total_pages: number;
+        };
+        /** PaginatedResponse[NotificationResponse] */
+        PaginatedResponse_NotificationResponse_: {
+            /** Data */
+            data: components["schemas"]["NotificationResponse"][];
             /** Total */
             total: number;
             /** Page */
@@ -1894,6 +3551,11 @@ export interface components {
              */
             created_at: string;
         };
+        /**
+         * PaymentMode
+         * @enum {string}
+         */
+        PaymentMode: "cash" | "upi" | "bank" | "cheque";
         /** PaymentReceivedCreate */
         PaymentReceivedCreate: {
             /**
@@ -2091,6 +3753,27 @@ export interface components {
             /** Phone */
             phone?: string | null;
         };
+        /** RevenueByPeriodResponse */
+        RevenueByPeriodResponse: {
+            /** Period Label */
+            period_label: string;
+            /** Revenue */
+            revenue: number;
+            /**
+             * Expenses
+             * @default 0
+             */
+            expenses: number;
+            /**
+             * Profit
+             * @default 0
+             */
+            profit: number;
+            /** Trip Count */
+            trip_count: number;
+            /** Avg Per Trip */
+            avg_per_trip: number;
+        };
         /** RouteCreate */
         RouteCreate: {
             /** From Location */
@@ -2103,6 +3786,11 @@ export interface components {
             hours_occupied?: number | string | null;
             /** Notes */
             notes?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
         };
         /** RouteProfitabilityResponse */
         RouteProfitabilityResponse: {
@@ -2174,6 +3862,173 @@ export interface components {
             hours_occupied?: number | string | null;
             /** Notes */
             notes?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /** SecurityPolicyResponse */
+        SecurityPolicyResponse: {
+            /**
+             * Min Password Length
+             * @default 8
+             */
+            min_password_length: number;
+            /**
+             * Require Uppercase
+             * @default true
+             */
+            require_uppercase: boolean;
+            /**
+             * Require Lowercase
+             * @default true
+             */
+            require_lowercase: boolean;
+            /**
+             * Require Digits
+             * @default true
+             */
+            require_digits: boolean;
+            /**
+             * Require Special
+             * @default false
+             */
+            require_special: boolean;
+            /**
+             * Password Expiry Days
+             * @default 0
+             */
+            password_expiry_days: number;
+            /**
+             * Max Failed Attempts
+             * @default 5
+             */
+            max_failed_attempts: number;
+            /**
+             * Session Timeout Minutes
+             * @default 480
+             */
+            session_timeout_minutes: number;
+            /**
+             * Remember Me Days
+             * @default 7
+             */
+            remember_me_days: number;
+            /**
+             * Two Factor Enabled
+             * @default false
+             */
+            two_factor_enabled: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** SecurityPolicyUpdate */
+        SecurityPolicyUpdate: {
+            /** Min Password Length */
+            min_password_length?: number | null;
+            /** Require Uppercase */
+            require_uppercase?: boolean | null;
+            /** Require Lowercase */
+            require_lowercase?: boolean | null;
+            /** Require Digits */
+            require_digits?: boolean | null;
+            /** Require Special */
+            require_special?: boolean | null;
+            /** Password Expiry Days */
+            password_expiry_days?: number | null;
+            /** Max Failed Attempts */
+            max_failed_attempts?: number | null;
+            /** Session Timeout Minutes */
+            session_timeout_minutes?: number | null;
+            /** Remember Me Days */
+            remember_me_days?: number | null;
+            /** Two Factor Enabled */
+            two_factor_enabled?: boolean | null;
+        };
+        /** SettlementSummaryResponse */
+        SettlementSummaryResponse: {
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Status */
+            status: string;
+            billing?: components["schemas"]["app__schemas__settlement__TripBillingResponse"] | null;
+            /**
+             * Expenses
+             * @default []
+             */
+            expenses: components["schemas"]["TripExpenseResponse"][];
+            payment_summary?: components["schemas"]["TripPaymentSummaryResponse"] | null;
+            /**
+             * Transactions
+             * @default []
+             */
+            transactions: components["schemas"]["app__schemas__settlement__TripPaymentTransactionResponse"][];
+            /** Payment Status */
+            payment_status: string;
+        };
+        /** StartTripRequest */
+        StartTripRequest: {
+            /** Actual Start Time */
+            actual_start_time?: string | null;
+            /** Reporting Address */
+            reporting_address?: string | null;
+        };
+        /** SystemSettingResponse */
+        SystemSettingResponse: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: string;
+            /** Category */
+            category: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Updated By */
+            updated_by?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** SystemSettingUpdate */
+        SystemSettingUpdate: {
+            /** Value */
+            value?: string | null;
+            /** Category */
+            category?: string | null;
         };
         /** TokenResponse */
         TokenResponse: {
@@ -2191,6 +4046,24 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+        };
+        /** TopEntityResponse */
+        TopEntityResponse: {
+            /**
+             * Entity Id
+             * Format: uuid
+             */
+            entity_id: string;
+            /** Entity Name */
+            entity_name: string;
+            /** Total Revenue */
+            total_revenue: number;
+            /** Total Trips */
+            total_trips: number;
+            /** Net Profit */
+            net_profit: number;
+            /** Margin Pct */
+            margin_pct?: number | null;
         };
         /** TravelCompanyInResponse */
         TravelCompanyInResponse: {
@@ -2301,26 +4174,91 @@ export interface components {
             /** Is Active */
             is_active?: boolean | null;
         };
-        /** TripAssignDriverRequest */
-        TripAssignDriverRequest: {
+        /** TripBillingRequest */
+        TripBillingRequest: {
+            /** Rate Type */
+            rate_type: string;
+            /** Base Rate */
+            base_rate?: number | string | null;
             /**
-             * Driver Id
-             * Format: uuid
+             * Included Km
+             * @default 80
              */
-            driver_id: string;
-        };
-        /** TripAssignExternalHiringRequest */
-        TripAssignExternalHiringRequest: {
-            /** External Hiring Id */
-            external_hiring_id?: string | null;
-        };
-        /** TripAssignVehicleRequest */
-        TripAssignVehicleRequest: {
+            included_km: number;
             /**
-             * Vehicle Id
-             * Format: uuid
+             * Included Hrs
+             * @default 8
              */
-            vehicle_id: string;
+            included_hrs: number;
+            /** Extra Km */
+            extra_km?: number | null;
+            /** Extra Km Rate */
+            extra_km_rate?: number | string | null;
+            /** Extra Hrs */
+            extra_hrs?: number | string | null;
+            /** Extra Hr Rate */
+            extra_hr_rate?: number | string | null;
+            /**
+             * Night Charge
+             * @default 0.00
+             */
+            night_charge: number | string;
+            /**
+             * Driver Meal
+             * @default 0.00
+             */
+            driver_meal: number | string;
+            /**
+             * Toll Tax
+             * @default 0.00
+             */
+            toll_tax: number | string;
+            /**
+             * Parking Charge
+             * @default 0.00
+             */
+            parking_charge: number | string;
+            /**
+             * Other Charges
+             * @default 0.00
+             */
+            other_charges: number | string;
+            /**
+             * Gst Percent
+             * @default 0.00
+             */
+            gst_percent: number | string;
+        };
+        /** TripBillingUpdate */
+        TripBillingUpdate: {
+            /** Rate Type */
+            rate_type?: string | null;
+            /** Base Rate */
+            base_rate?: number | null;
+            /** Included Km */
+            included_km?: number | null;
+            /** Included Hrs */
+            included_hrs?: number | null;
+            /** Extra Km */
+            extra_km?: number | null;
+            /** Extra Km Rate */
+            extra_km_rate?: number | null;
+            /** Extra Hrs */
+            extra_hrs?: number | null;
+            /** Extra Hr Rate */
+            extra_hr_rate?: number | null;
+            /** Night Charge */
+            night_charge?: number | null;
+            /** Driver Meal */
+            driver_meal?: number | null;
+            /** Toll Tax */
+            toll_tax?: number | null;
+            /** Parking Charge */
+            parking_charge?: number | null;
+            /** Other Charges */
+            other_charges?: number | null;
+            /** Gst Percent */
+            gst_percent?: number | null;
         };
         /** TripCreate */
         TripCreate: {
@@ -2341,18 +4279,109 @@ export interface components {
             reporting_address?: string | null;
             /** Notes */
             notes?: string | null;
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Driver Id */
+            driver_id?: string | null;
+            /** External Hiring Id */
+            external_hiring_id?: string | null;
+        };
+        /**
+         * TripDispatchSummary
+         * @description A single trip row on the dispatch board.
+         */
+        TripDispatchSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Date
+             * Format: date
+             */
+            trip_date: string;
+            /** Status */
+            status: string;
+            /** Scheduled Start Time */
+            scheduled_start_time?: string | null;
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Vehicle Reg Number */
+            vehicle_reg_number?: string | null;
+            /** Driver Id */
+            driver_id?: string | null;
+            /** Driver Name */
+            driver_name?: string | null;
+        };
+        /** TripExpenseCreate */
+        TripExpenseCreate: {
+            /**
+             * Expense Date
+             * Format: date
+             */
+            expense_date: string;
+            expense_type: components["schemas"]["ExpenseType"];
+            /** Amount */
+            amount: number;
+            payment_mode?: components["schemas"]["PaymentMode"] | null;
+            /** Vendor Name */
+            vendor_name?: string | null;
+            /** Receipt Url */
+            receipt_url?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** TripExpenseRequest */
+        TripExpenseRequest: {
+            /**
+             * Expense Date
+             * Format: date
+             */
+            expense_date: string;
+            /** Expense Type */
+            expense_type: string;
+            /** Amount */
+            amount: number | string;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Receipt Url */
+            receipt_url?: string | null;
+        };
+        /** TripExpenseResponse */
+        TripExpenseResponse: {
+            /**
+             * Expense Date
+             * Format: date
+             */
+            expense_date: string;
+            /** Expense Type */
+            expense_type: string;
+            /** Amount */
+            amount: string;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Receipt Url */
+            receipt_url?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
             /**
              * Vehicle Id
              * Format: uuid
              */
             vehicle_id: string;
-            /**
-             * Driver Id
-             * Format: uuid
-             */
-            driver_id: string;
-            /** External Hiring Id */
-            external_hiring_id?: string | null;
         };
         /** TripLocationCreate */
         TripLocationCreate: {
@@ -2432,6 +4461,115 @@ export interface components {
             /** Total Hours */
             total_hours?: number | null;
         };
+        /** TripPaymentResponse */
+        TripPaymentResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /**
+             * Advance Payment
+             * @default 0
+             */
+            advance_payment: number;
+            /** Total Payment */
+            total_payment: number;
+            /**
+             * Other Payment
+             * @default 0
+             */
+            other_payment: number;
+            /** Balance Due */
+            balance_due: number;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Payment Date */
+            payment_date?: string | null;
+            /** Reference No */
+            reference_no?: string | null;
+            /**
+             * Is Settled
+             * @default false
+             */
+            is_settled: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Transactions
+             * @default []
+             */
+            transactions: components["schemas"]["app__schemas__payment__TripPaymentTransactionResponse"][];
+        };
+        /** TripPaymentSummaryResponse */
+        TripPaymentSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Advance Payment */
+            advance_payment: string;
+            /** Total Payment */
+            total_payment: string;
+            /** Other Payment */
+            other_payment: string;
+            /** Balance Due */
+            balance_due: string;
+            /** Is Settled */
+            is_settled: boolean;
+        };
+        /** TripPaymentTransactionCreate */
+        TripPaymentTransactionCreate: {
+            /** Amount */
+            amount: number;
+            /**
+             * Payment Date
+             * Format: date
+             */
+            payment_date: string;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Reference No */
+            reference_no?: string | null;
+        };
+        /** TripPaymentTransactionRequest */
+        TripPaymentTransactionRequest: {
+            /** Amount */
+            amount: number | string;
+            /**
+             * Payment Date
+             * Format: date
+             */
+            payment_date: string;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Reference No */
+            reference_no?: string | null;
+        };
         /** TripProfitabilityResponse */
         TripProfitabilityResponse: {
             /**
@@ -2502,16 +4640,10 @@ export interface components {
              * Format: uuid
              */
             travel_company_id: string;
-            /**
-             * Vehicle Id
-             * Format: uuid
-             */
-            vehicle_id: string;
-            /**
-             * Driver Id
-             * Format: uuid
-             */
-            driver_id: string;
+            /** Vehicle Id */
+            vehicle_id: string | null;
+            /** Driver Id */
+            driver_id: string | null;
             /** External Hiring Id */
             external_hiring_id: string | null;
             /** Status */
@@ -2528,11 +4660,21 @@ export interface components {
              * Format: date-time
              */
             updated_at: string;
+            /** Scheduled Start Time */
+            scheduled_start_time?: string | null;
+            /** Scheduled End Time */
+            scheduled_end_time?: string | null;
+            /** Estimated Duration Hrs */
+            estimated_duration_hrs?: number | null;
+            /** Passenger Count */
+            passenger_count?: number | null;
             /**
              * Locations
              * @default []
              */
             locations: components["schemas"]["TripLocationResponse"][];
+            /** Cancellation Reason */
+            cancellation_reason?: string | null;
         };
         /** TripStatusUpdate */
         TripStatusUpdate: {
@@ -2559,6 +4701,21 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** UserAdminUpdate */
+        UserAdminUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Phone */
+            phone?: string | null;
+            role?: components["schemas"]["UserRole"] | null;
+            /** Is Active */
+            is_active?: boolean | null;
+            /** Avatar Url */
+            avatar_url?: string | null;
+            status?: components["schemas"]["UserStatus"] | null;
+            /** Must Change Password */
+            must_change_password?: boolean | null;
+        };
         /** UserInResponse */
         UserInResponse: {
             /** Id */
@@ -2569,9 +4726,85 @@ export interface components {
             email: string;
             /** Role */
             role: string;
+            /** Avatar Url */
+            avatar_url?: string | null;
             /** Travel Company Id */
             travel_company_id: string;
         };
+        /** UserPasswordReset */
+        UserPasswordReset: {
+            /** New Password */
+            new_password: string;
+            /**
+             * Force Password Change
+             * @default true
+             */
+            force_password_change: boolean;
+        };
+        /** UserResponse */
+        UserResponse: {
+            /** Name */
+            name: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Phone */
+            phone?: string | null;
+            /** Date Of Birth */
+            date_of_birth?: string | null;
+            /** @default viewer */
+            role: components["schemas"]["UserRole"];
+            /** Id */
+            id: string;
+            /** Travel Company Id */
+            travel_company_id: string;
+            /** Is Active */
+            is_active: boolean;
+            status: components["schemas"]["UserStatus"];
+            /** Avatar Url */
+            avatar_url?: string | null;
+            /** Must Change Password */
+            must_change_password: boolean;
+            /** Failed Login Attempts */
+            failed_login_attempts: number;
+            /** Locked At */
+            locked_at?: string | null;
+            /** Last Login At */
+            last_login_at?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * UserRole
+         * @enum {string}
+         */
+        UserRole: "admin" | "manager" | "viewer";
+        /** UserSelfUpdate */
+        UserSelfUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Avatar Url */
+            avatar_url?: string | null;
+        };
+        /** UserSelfUpdatePassword */
+        UserSelfUpdatePassword: {
+            /** Current Password */
+            current_password: string;
+            /** New Password */
+            new_password: string;
+        };
+        /**
+         * UserStatus
+         * @enum {string}
+         */
+        UserStatus: "active" | "inactive" | "locked" | "force_password_change";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -2633,6 +4866,7 @@ export interface components {
             expense_type: components["schemas"]["ExpenseType"];
             /** Amount */
             amount: number;
+            payment_mode?: components["schemas"]["PaymentMode"] | null;
             /** Trip Id */
             trip_id?: string | null;
             /**
@@ -2661,6 +4895,7 @@ export interface components {
             expense_type: components["schemas"]["ExpenseType"];
             /** Amount */
             amount: number;
+            payment_mode?: components["schemas"]["PaymentMode"] | null;
             /** Trip Id */
             trip_id?: string | null;
             /**
@@ -2703,6 +4938,7 @@ export interface components {
             expense_type?: components["schemas"]["ExpenseType"] | null;
             /** Amount */
             amount?: number | null;
+            payment_mode?: components["schemas"]["PaymentMode"] | null;
             /** Trip Id */
             trip_id?: string | null;
             /** Vehicle Id */
@@ -2879,6 +5115,276 @@ export interface components {
             /** Trips */
             trips: components["schemas"]["TripResponse"][];
         };
+        /** FleetSummaryResponse */
+        app__schemas__analytics__FleetSummaryResponse: {
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            /** Reg Number */
+            reg_number: string;
+            /** Vehicle Name */
+            vehicle_name?: string | null;
+            /** Trips */
+            trips: number;
+            /** Revenue */
+            revenue: number;
+            /** Expenses */
+            expenses: number;
+            /** Profit */
+            profit: number;
+            /** Utilization Pct */
+            utilization_pct: number;
+            /** Status */
+            status: string;
+        };
+        /** TripBillingResponse */
+        app__schemas__billing__TripBillingResponse: {
+            /** Rate Type */
+            rate_type: string;
+            /** Base Rate */
+            base_rate?: number | null;
+            /**
+             * Included Km
+             * @default 80
+             */
+            included_km: number;
+            /**
+             * Included Hrs
+             * @default 8
+             */
+            included_hrs: number;
+            /** Extra Km */
+            extra_km?: number | null;
+            /** Extra Km Rate */
+            extra_km_rate?: number | null;
+            /** Extra Km Amount */
+            extra_km_amount?: number | null;
+            /** Extra Hrs */
+            extra_hrs?: number | null;
+            /** Extra Hr Rate */
+            extra_hr_rate?: number | null;
+            /** Extra Hr Amount */
+            extra_hr_amount?: number | null;
+            /**
+             * Night Charge
+             * @default 0
+             */
+            night_charge: number;
+            /**
+             * Driver Meal
+             * @default 0
+             */
+            driver_meal: number;
+            /**
+             * Toll Tax
+             * @default 0
+             */
+            toll_tax: number;
+            /**
+             * Parking Charge
+             * @default 0
+             */
+            parking_charge: number;
+            /**
+             * Other Charges
+             * @default 0
+             */
+            other_charges: number;
+            /** Subtotal */
+            subtotal?: number | null;
+            /**
+             * Gst Percent
+             * @default 0
+             */
+            gst_percent: number;
+            /**
+             * Gst Amount
+             * @default 0
+             */
+            gst_amount: number;
+            /**
+             * Total Amount
+             * @default 0
+             */
+            total_amount: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Vehicle Rate Id */
+            vehicle_rate_id?: string | null;
+            /** Invoice Id */
+            invoice_id?: string | null;
+            /** Invoice Image Url */
+            invoice_image_url?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** FleetSummaryResponse */
+        app__schemas__fleet__FleetSummaryResponse: {
+            /** Vehicles Available */
+            vehicles_available: number;
+            /** Vehicles On Trip */
+            vehicles_on_trip: number;
+            /** Vehicles In Maintenance */
+            vehicles_in_maintenance: number;
+            /** Drivers Available */
+            drivers_available: number;
+            /** Drivers On Leave */
+            drivers_on_leave: number;
+            /** Unread Notifications */
+            unread_notifications: number;
+            /** Documents Awaiting Verification */
+            documents_awaiting_verification: number;
+            /** Documents Expiring Soon */
+            documents_expiring_soon: number;
+            /** Blocked Resources */
+            blocked_resources: number;
+        };
+        /** TripPaymentTransactionResponse */
+        app__schemas__payment__TripPaymentTransactionResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Amount */
+            amount: number;
+            /**
+             * Payment Date
+             * Format: date
+             */
+            payment_date: string;
+            /** Payment Mode */
+            payment_mode: string | null;
+            /** Reference No */
+            reference_no: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** TripBillingResponse */
+        app__schemas__settlement__TripBillingResponse: {
+            /** Rate Type */
+            rate_type: string;
+            /** Base Rate */
+            base_rate?: string | null;
+            /**
+             * Included Km
+             * @default 80
+             */
+            included_km: number;
+            /**
+             * Included Hrs
+             * @default 8
+             */
+            included_hrs: number;
+            /** Extra Km */
+            extra_km?: number | null;
+            /** Extra Km Rate */
+            extra_km_rate?: string | null;
+            /** Extra Hrs */
+            extra_hrs?: string | null;
+            /** Extra Hr Rate */
+            extra_hr_rate?: string | null;
+            /**
+             * Night Charge
+             * @default 0.00
+             */
+            night_charge: string;
+            /**
+             * Driver Meal
+             * @default 0.00
+             */
+            driver_meal: string;
+            /**
+             * Toll Tax
+             * @default 0.00
+             */
+            toll_tax: string;
+            /**
+             * Parking Charge
+             * @default 0.00
+             */
+            parking_charge: string;
+            /**
+             * Other Charges
+             * @default 0.00
+             */
+            other_charges: string;
+            /**
+             * Gst Percent
+             * @default 0.00
+             */
+            gst_percent: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+            /** Extra Km Amount */
+            extra_km_amount?: string | null;
+            /** Extra Hr Amount */
+            extra_hr_amount?: string | null;
+            /** Subtotal */
+            subtotal?: string | null;
+            /** Gst Amount */
+            gst_amount: string;
+            /** Total Amount */
+            total_amount: string;
+        };
+        /** TripPaymentTransactionResponse */
+        app__schemas__settlement__TripPaymentTransactionResponse: {
+            /** Amount */
+            amount: string;
+            /**
+             * Payment Date
+             * Format: date
+             */
+            payment_date: string;
+            /** Payment Mode */
+            payment_mode?: string | null;
+            /** Reference No */
+            reference_no?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trip Id
+             * Format: uuid
+             */
+            trip_id: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -2889,6 +5395,66 @@ export interface components {
 export type $defs = Record<string, never>;
 export interface operations {
     health_check_api_v1_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    liveness_probe_api_v1_live_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    readiness_probe_api_v1_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    version_probe_api_v1_version_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -3045,6 +5611,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserInResponse"];
+                };
+            };
+        };
+    };
+    update_me_api_v1_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserSelfUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_me_password_api_v1_auth_me_password_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserSelfUpdatePassword"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -3962,9 +6594,391 @@ export interface operations {
             };
         };
     };
+    list_documents_api_v1_documents__get: {
+        parameters: {
+            query?: {
+                entity_type?: string | null;
+                entity_id?: string | null;
+                page?: number;
+                page_size?: number;
+                search?: string | null;
+                order_by?: string;
+                order_dir?: string;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_DocumentResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_document_api_v1_documents__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_document_api_v1_documents__post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_document_api_v1_documents__document_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DocumentUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_document_api_v1_documents__document_id__download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_unavailability_api_v1_availability__get: {
+        parameters: {
+            query?: {
+                resource_type?: string | null;
+                resource_id?: string | null;
+                page?: number;
+                page_size?: number;
+                search?: string | null;
+                order_by?: string;
+                order_dir?: string;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_AvailabilityResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_unavailability_api_v1_availability__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvailabilityCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_unavailability_api_v1_availability__block_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvailabilityUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_unavailability_api_v1_availability__block_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                block_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_notifications_api_v1_notifications__get: {
+        parameters: {
+            query?: {
+                is_read?: boolean | null;
+                page?: number;
+                page_size?: number;
+                search?: string | null;
+                order_by?: string;
+                order_dir?: string;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_NotificationResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_notification_api_v1_notifications__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_as_read_api_v1_notifications__notification_id__read_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_routes_api_v1_routes__get: {
         parameters: {
             query?: {
+                /** @description Filter active routes only */
+                active_only?: boolean;
                 page?: number;
                 page_size?: number;
                 search?: string | null;
@@ -4300,7 +7314,7 @@ export interface operations {
             };
         };
     };
-    assign_vehicle_api_v1_trips__trip_id__assign_vehicle_patch: {
+    dispatch_trip_api_v1_trips__trip_id__dispatch_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -4311,7 +7325,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TripAssignVehicleRequest"];
+                "application/json": components["schemas"]["DispatchTripRequest"];
             };
         };
         responses: {
@@ -4335,7 +7349,7 @@ export interface operations {
             };
         };
     };
-    assign_driver_api_v1_trips__trip_id__assign_driver_patch: {
+    start_trip_api_v1_trips__trip_id__start_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -4346,7 +7360,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TripAssignDriverRequest"];
+                "application/json": components["schemas"]["StartTripRequest"];
             };
         };
         responses: {
@@ -4370,7 +7384,7 @@ export interface operations {
             };
         };
     };
-    assign_external_hiring_api_v1_trips__trip_id__assign_external_hiring_patch: {
+    complete_trip_api_v1_trips__trip_id__complete_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -4381,7 +7395,42 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["TripAssignExternalHiringRequest"];
+                "application/json": components["schemas"]["CompleteTripRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_trip_api_v1_trips__trip_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelTripRequest"];
             };
         };
         responses: {
@@ -4495,6 +7544,658 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trip_billing_api_v1_trips__trip_id__billing_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__billing__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_trip_billing_api_v1_trips__trip_id__billing_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripBillingUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__billing__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    finalize_trip_billing_api_v1_trips__trip_id__billing_finalize_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__billing__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revert_trip_billing_api_v1_trips__trip_id__billing_revert_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__billing__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sync_trip_expenses_to_billing_api_v1_trips__trip_id__billing_sync_expenses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__billing__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trip_payment_api_v1_trips__trip_id__payment_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripPaymentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_trip_payment_api_v1_trips__trip_id__payment_record_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripPaymentTransactionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripPaymentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    clear_trip_payments_api_v1_trips__trip_id__payment_clear_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripPaymentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trip_activity_api_v1_trips__trip_id__activity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    calculate_trip_billing_api_v1_trips__trip_id__settlement_billing_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripBillingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__settlement__TripBillingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_trip_expense_api_v1_trips__trip_id__settlement_expenses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripExpenseRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripExpenseResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_trip_payment_settlement_api_v1_trips__trip_id__settlement_payments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripPaymentTransactionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__settlement__TripPaymentTransactionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    settle_trip_endpoint_api_v1_trips__trip_id__settlement_settle_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_settlement_summary_api_v1_trips__trip_id__settlement_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettlementSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_activities_api_v1_activity__get: {
+        parameters: {
+            query?: {
+                entity_type?: string | null;
+                entity_id?: string | null;
+                page?: number;
+                page_size?: number;
+                search?: string | null;
+                order_by?: string;
+                order_dir?: string;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedResponse_ActivityResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fleet_summary_api_v1_fleet_summary_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__fleet__FleetSummaryResponse"];
+                };
+            };
+        };
+    };
+    get_dispatch_board_api_v1_dispatch_board_get: {
+        parameters: {
+            query?: {
+                date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchBoardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available_vehicles_api_v1_dispatch_vehicles_available_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailableVehicleRead"][];
+                };
+            };
+        };
+    };
+    get_available_drivers_api_v1_dispatch_drivers_available_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailableDriverRead"][];
+                };
+            };
+        };
+    };
+    assign_trip_api_v1_dispatch_trips__trip_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignTripRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bulk_assign_trips_api_v1_dispatch_trips_bulk_assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkAssignRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BulkAssignResponse"];
                 };
             };
             /** @description Validation Error */
@@ -4726,6 +8427,73 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["VehicleExpenseResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_trip_expense_api_v1_trips__trip_id__expenses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TripExpenseCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleExpenseResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_trip_expense_api_v1_trips__trip_id__expenses__expense_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+                expense_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -5405,6 +9173,285 @@ export interface operations {
             };
         };
     };
+    get_executive_summary_api_v1_analytics_executive_summary_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExecutiveSummaryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_revenue_daily_api_v1_analytics_revenue_daily_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevenueByPeriodResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_revenue_monthly_api_v1_analytics_revenue_monthly_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevenueByPeriodResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_expense_breakdown_api_v1_analytics_expenses_breakdown_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpenseBreakdownResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fleet_summary_api_v1_analytics_fleet_summary_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__analytics__FleetSummaryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_alerts_api_v1_analytics_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertItem"][];
+                };
+            };
+        };
+    };
+    get_drivers_summary_api_v1_analytics_drivers_summary_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DriverAnalyticsResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_customers_summary_api_v1_analytics_customers_summary_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TopEntityResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_invoice_register_api_v1_analytics_registers_invoices_get: {
+        parameters: {
+            query?: {
+                start_date?: string | null;
+                end_date?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_payments_api_v1_payments_get: {
         parameters: {
             query?: {
@@ -5668,6 +9715,322 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_api_v1_admin_users_get: {
+        parameters: {
+            query?: {
+                /** @description Search by name or email */
+                search?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_user_api_v1_admin_users__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_api_v1_admin_users__user_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserAdminUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_password_api_v1_admin_users__user_id__reset_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPasswordReset"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_settings_api_v1_admin_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemSettingResponse"][];
+                };
+            };
+        };
+    };
+    update_setting_api_v1_admin_settings__key__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SystemSettingUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemSettingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_sequences_api_v1_admin_settings_number_sequences_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NumberSequenceResponse"][];
+                };
+            };
+        };
+    };
+    update_sequence_api_v1_admin_settings_number_sequences__entity_type__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entity_type: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NumberSequenceUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NumberSequenceResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_security_policy_api_v1_admin_settings_security_policy_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SecurityPolicyResponse"];
+                };
+            };
+        };
+    };
+    update_security_policy_api_v1_admin_settings_security_policy_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SecurityPolicyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SecurityPolicyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_audit_logs_api_v1_admin_audit_logs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
