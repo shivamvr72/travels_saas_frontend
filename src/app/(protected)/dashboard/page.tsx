@@ -82,40 +82,9 @@ export default function DashboardPage() {
       )}
 
       {/* Operational widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 min-h-0">
-         <Card className="flex flex-col">
-           <CardHeader className="shrink-0">
-             <CardTitle>Fleet Status</CardTitle>
-             <CardDescription>Live status of your vehicles</CardDescription>
-           </CardHeader>
-           <CardContent className="flex-1 overflow-y-auto no-scrollbar">
-             {fleetLoading ? (
-               <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-             ) : !fleetData || fleetData.length === 0 ? (
-               <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
-                 <Car className="h-12 w-12 opacity-20 mb-2" />
-                 <p className="text-sm">No vehicles found</p>
-               </div>
-             ) : (
-               <div className="space-y-4 pr-2">
-                 {fleetData.map(v => (
-                   <div key={v.vehicle_id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
-                     <div>
-                       <p className="font-medium text-sm">{v.reg_number}</p>
-                       <p className="text-xs text-muted-foreground">{v.vehicle_name || 'Unknown'}</p>
-                     </div>
-                     <AppStatusBadge status={v.status === 'running' || v.status === 'active' ? 'success' : 'inactive'} size="sm" showIcon={false}>
-                       {v.status === 'running' || v.status === 'active' ? 'Active' : 'Idle'}
-                     </AppStatusBadge>
-                   </div>
-                 ))}
-               </div>
-             )}
-           </CardContent>
-         </Card>
-
-         <Card className="flex flex-col lg:col-span-2">
-           <CardHeader className="shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+         <Card className="lg:col-span-2">
+           <CardHeader>
              <CardTitle>Fleet Health & Compliance</CardTitle>
              <CardDescription>System-wide engine health metrics</CardDescription>
            </CardHeader>
@@ -123,7 +92,7 @@ export default function DashboardPage() {
              {healthLoading ? (
                <div className="flex h-[100px] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
              ) : (
-               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                  <div className="flex flex-col p-4 bg-muted/50 rounded-lg">
                    <span className="text-sm text-muted-foreground">Available Vehicles</span>
                    <span className="text-2xl font-bold">{healthData?.vehicles_available || 0}</span>
@@ -153,16 +122,47 @@ export default function DashboardPage() {
            </CardContent>
          </Card>
 
-         <Card className="flex flex-col lg:col-span-1">
-           <CardHeader className="shrink-0">
+         <Card>
+           <CardHeader>
+             <CardTitle>Fleet Status</CardTitle>
+             <CardDescription>Live status of your vehicles</CardDescription>
+           </CardHeader>
+           <CardContent className="max-h-[400px] overflow-y-auto no-scrollbar">
+             {fleetLoading ? (
+               <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+             ) : !fleetData || fleetData.length === 0 ? (
+               <div className="flex h-32 flex-col items-center justify-center text-muted-foreground">
+                 <Car className="h-12 w-12 opacity-20 mb-2" />
+                 <p className="text-sm">No vehicles found</p>
+               </div>
+             ) : (
+               <div className="space-y-4 pr-2">
+                 {fleetData.map(v => (
+                   <div key={v.vehicle_id} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0">
+                     <div>
+                       <p className="font-medium text-sm">{v.reg_number}</p>
+                       <p className="text-xs text-muted-foreground">{v.vehicle_name || 'Unknown'}</p>
+                     </div>
+                     <AppStatusBadge status={v.status === 'running' || v.status === 'active' ? 'success' : 'inactive'} size="sm" showIcon={false}>
+                       {v.status === 'running' || v.status === 'active' ? 'Active' : 'Idle'}
+                     </AppStatusBadge>
+                   </div>
+                 ))}
+               </div>
+             )}
+           </CardContent>
+         </Card>
+
+         <Card>
+           <CardHeader>
              <CardTitle>Recent Trips</CardTitle>
              <CardDescription>Latest trip activities</CardDescription>
            </CardHeader>
-           <CardContent className="flex-1 overflow-y-auto no-scrollbar">
+           <CardContent className="max-h-[400px] overflow-y-auto no-scrollbar">
              {tripsLoading ? (
-               <div className="flex h-full items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+               <div className="flex h-32 items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
              ) : !tripsData?.items || tripsData.items.length === 0 ? (
-               <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
+               <div className="flex h-32 flex-col items-center justify-center text-muted-foreground">
                  <Briefcase className="h-12 w-12 opacity-20 mb-2" />
                  <p className="text-sm">No recent trips</p>
                </div>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                      </div>
                      <div className="flex flex-col items-end gap-1">
                        <TripStatusBadge status={trip.status} size="sm" />
-                       <p className="text-[10px] text-muted-foreground">{new Date(trip.start_date).toLocaleDateString()}</p>
+                       <p className="text-[10px] text-muted-foreground">{trip.start_date ? new Date(trip.start_date).toLocaleDateString() : 'N/A'}</p>
                      </div>
                    </div>
                  ))}

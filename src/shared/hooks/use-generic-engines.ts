@@ -23,7 +23,7 @@ export function useActivity(entityType: string, entityId: string) {
   return useQuery({
     queryKey: ['activity', entityType, entityId],
     queryFn: async () => {
-      const { data } = await api.get<PaginatedActivity>('/activity/', {
+      const { data } = await api.get<PaginatedActivity>('/api/v1/activity/', {
         params: { entity_type: entityType, entity_id: entityId }
       });
       return data;
@@ -36,7 +36,7 @@ export function useFleetSummary() {
   return useQuery({
     queryKey: ['fleet', 'summary'],
     queryFn: async () => {
-      const { data } = await api.get<FleetSummaryResponse>('/fleet/summary');
+      const { data } = await api.get<FleetSummaryResponse>('/api/v1/fleet/summary');
       return data;
     },
   });
@@ -48,14 +48,14 @@ export function useNotifications() {
   const query = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const { data } = await api.get<NotificationResponse[]>('/notifications/');
+      const { data } = await api.get<NotificationResponse[]>('/api/v1/notifications/');
       return data;
     },
   });
 
   const markAsRead = useMutation({
     mutationFn: async (id: string) => {
-      await api.post(`/notifications/${id}/read`);
+      await api.post(`/api/v1/notifications/${id}/read`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -64,7 +64,7 @@ export function useNotifications() {
 
   const markAllAsRead = useMutation({
     mutationFn: async () => {
-      await api.post('/notifications/read-all');
+      await api.post('/api/v1/notifications/read-all');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
@@ -80,7 +80,7 @@ export function useAvailability(entityType: string, entityId: string) {
   const query = useQuery({
     queryKey: ['availability', entityType, entityId],
     queryFn: async () => {
-      const { data } = await api.get<AvailabilityResponse[]>('/availability/', {
+      const { data } = await api.get<AvailabilityResponse[]>('/api/v1/availability/', {
         params: { entity_type: entityType, entity_id: entityId }
       });
       return data;
@@ -90,7 +90,7 @@ export function useAvailability(entityType: string, entityId: string) {
 
   const addBlock = useMutation({
     mutationFn: async (payload: any) => {
-      const { data } = await api.post('/availability/', payload);
+      const { data } = await api.post('/api/v1/availability/', payload);
       return data;
     },
     onSuccess: () => {
@@ -100,7 +100,7 @@ export function useAvailability(entityType: string, entityId: string) {
 
   const deleteBlock = useMutation({
     mutationFn: async (blockId: string) => {
-      await api.delete(`/availability/${blockId}`);
+      await api.delete(`/api/v1/availability/${blockId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['availability', entityType, entityId] });
