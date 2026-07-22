@@ -34,6 +34,7 @@ interface AssignTripDialogProps {
 
 export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialogProps) {
   const assignMutation = useAssignTrip();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const form = useForm<AssignTripRequest>({
     resolver: zodResolver(AssignTripRequestSchema),
@@ -53,6 +54,7 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
 
   const onSubmit = (data: AssignTripRequest) => {
     if (!tripId) return;
+    setErrorMsg(null);
     
     assignMutation.mutate(
       { tripId, data },
@@ -60,6 +62,9 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
         onSuccess: () => {
           handleClose();
         },
+        onError: (err: any) => {
+          setErrorMsg(err.response?.data?.detail || err.message || "An error occurred during assignment.");
+        }
       }
     );
   };
@@ -73,6 +78,12 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
             Select a vehicle and/or driver to assign to this trip.
           </DialogDescription>
         </DialogHeader>
+
+        {errorMsg && (
+          <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm mb-4">
+            {errorMsg}
+          </div>
+        )}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

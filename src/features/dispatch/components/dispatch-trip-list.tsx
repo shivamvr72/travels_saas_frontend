@@ -125,6 +125,26 @@ export function DispatchTripList({
                           <span className="font-medium text-foreground">Driver:</span> {trip.driver_name}
                         </div>
                       )}
+                      {trip.customer_name && (
+                        <div>
+                          <span className="font-medium text-foreground">Customer:</span> {trip.customer_name}
+                        </div>
+                      )}
+                      {trip.trip_type && (
+                        <div>
+                          <span className="font-medium text-foreground">Type:</span> {trip.trip_type}
+                        </div>
+                      )}
+                      {trip.priority && (
+                        <div>
+                          <span className="font-medium text-foreground">Priority:</span> {trip.priority}
+                        </div>
+                      )}
+                      {trip.reporting_address && (
+                        <div className="col-span-full">
+                          <span className="font-medium text-foreground">Route/Address:</span> {trip.reporting_address}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

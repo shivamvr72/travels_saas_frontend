@@ -54,29 +54,7 @@ export async function refreshLookupsIfNeeded() {
   }
 }
 
-// ─── Local Storage Client Metadata (Client-only fields not in Backend DB) ───
-interface TripMetadata {
-  customer_id?: string | null;
-  trip_type?: TripType;
-  priority?: TripPriority;
-  co_driver_id?: string | null;
-  dispatcher_id?: string | null;
-}
-
-export const getTripMetadata = (tripId: string): TripMetadata => {
-  if (typeof window === 'undefined') return {};
-  const stored = localStorage.getItem(`trip_metadata_${tripId}`);
-  if (stored) {
-    try { return JSON.parse(stored); } catch (e) { return {}; }
-  }
-  return {};
-};
-
-export const saveTripMetadata = (tripId: string, metadata: TripMetadata) => {
-  if (typeof window === 'undefined') return;
-  const existing = getTripMetadata(tripId);
-  localStorage.setItem(`trip_metadata_${tripId}`, JSON.stringify({ ...existing, ...metadata }));
-};
+// ─── Local cache lookup has been preserved ─────────────────────────────────────
 
 function resolveTripRelations(be: BETrip, customerId?: string | null) {
   const vehicle = cachedVehicles?.find(v => v.id === be.vehicle_id);
@@ -118,23 +96,22 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   // Backend status maps 1:1 to frontend status — use directly
   const mappedStatus = be.status as TripStatus;
 
-  const metadata = getTripMetadata(be.id);
-  const relations = resolveTripRelations(be, metadata.customer_id);
+  const relations = resolveTripRelations(be, be.customer_booking_id);
 
   return {
     id: be.id,
     trip_number: `TRP-${be.id.substring(0, 8).toUpperCase()}`,
-    trip_type: metadata.trip_type || 'One Way',
+    trip_type: (be as any).trip_type || 'One Way',
     status: mappedStatus,
     cancellation_reason: (be as any).cancellation_reason ?? null,
-    priority: metadata.priority || 'Normal',
+    priority: (be as any).priority || 'Normal',
     booking_reference: be.customer_booking_id || '',
     remarks: be.notes || '',
 
     start_date: be.trip_date,
-    expected_end_date: null,
-    actual_start_date: null,
-    actual_end_date: null,
+    expected_end_date: be.scheduled_end_time || null,
+    actual_start_date: be.actual_start_time || null,
+    actual_end_date: be.actual_end_time || null,
 
     origin: firstLoc?.from_location || be.reporting_address || '',
     destination: lastLoc?.to_location || '',
@@ -142,12 +119,12 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     estimated_duration_mins: firstLoc?.total_hours ? Math.round(Number(firstLoc.total_hours) * 60) : null,
 
     company_id: be.company_id,
-    customer_id: metadata.customer_id || be.customer_booking_id || null,
+    customer_id: be.customer_booking_id || null,
     vehicle_id: be.vehicle_id,
     driver_id: be.driver_id,
     route_id: firstLoc?.route_id || null,
-    dispatcher_id: metadata.dispatcher_id || be.created_by,
-    co_driver_id: metadata.co_driver_id || null,
+    dispatcher_id: be.created_by,
+    co_driver_id: null,
 
     ...relations,
 
@@ -156,79 +133,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   };
 }
 
-// ─── Local Storage Mocks for Document & Activity features (Not in Backend DB) ─────
-const getLocalDocuments = (tripId: string): TripDocument[] => {
-  if (typeof window === 'undefined') return [];
-  const stored = localStorage.getItem(`trip_docs_${tripId}`);
-  if (stored) {
-    try { return JSON.parse(stored); } catch (e) { return []; }
-  }
-  const mockDocs: TripDocument[] = [
-    {
-      id: 'doc-1',
-      trip_id: tripId,
-      category: 'permit',
-      file_name: 'state_permit_2026.pdf',
-      file_url: '#',
-      file_size_bytes: 1024 * 1024 * 1.5,
-      mime_type: 'application/pdf',
-      notes: 'Verified state permit for outstation travel',
-      uploaded_by: 'System Dispatcher',
-      uploaded_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    }
-  ];
-  localStorage.setItem(`trip_docs_${tripId}`, JSON.stringify(mockDocs));
-  return mockDocs;
-};
-
-const saveLocalDocuments = (tripId: string, docs: TripDocument[]) => {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem(`trip_docs_${tripId}`, JSON.stringify(docs));
-};
-
-const getLocalActivity = (tripId: string): ActivityFeedResponse => {
-  if (typeof window === 'undefined') return { events: [], total: 0 };
-  const stored = localStorage.getItem(`trip_activity_${tripId}`);
-  if (stored) {
-    try { return JSON.parse(stored); } catch (e) { return { events: [], total: 0 }; }
-  }
-  const mockEvents: ActivityFeedResponse = {
-    events: [
-      {
-        id: 'event-2',
-        event_type: 'details_updated',
-        title: 'Trip Details Updated',
-        description: 'Updated trip priority to High.',
-        actor: 'System Admin',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: 'event-1',
-        event_type: 'trip_created',
-        title: 'Trip Created',
-        description: 'Trip was created and saved as Draft.',
-        actor: 'System Admin',
-        timestamp: new Date(Date.now() - 86400000).toISOString(),
-      }
-    ],
-    total: 2
-  };
-  localStorage.setItem(`trip_activity_${tripId}`, JSON.stringify(mockEvents));
-  return mockEvents;
-};
-
-const addLocalActivityEvent = (tripId: string, event: Omit<ActivityFeedEvent, 'id' | 'timestamp'>) => {
-  if (typeof window === 'undefined') return;
-  const feed = getLocalActivity(tripId);
-  const newEvent: ActivityFeedEvent = {
-    ...event,
-    id: `event-${Math.random().toString(36).substring(2, 9)}`,
-    timestamp: new Date().toISOString(),
-  };
-  feed.events.unshift(newEvent);
-  feed.total = feed.events.length;
-  localStorage.setItem(`trip_activity_${tripId}`, JSON.stringify(feed));
-};
+// ─── Local document and activity mocks removed ─────────────────────────────
 
 export const tripApi = {
   // ─── CRUD ─────────────────────────────────────────────────────────────
@@ -257,52 +162,16 @@ export const tripApi = {
     delete backendParams.date_from;
     delete backendParams.date_to;
     
-    // We will do search filtering on the client side since many fields (like priority, driver name, route)
-    // are resolved client-side or from local storage.
-    const searchQuery = params?.search?.toLowerCase().trim();
-    delete backendParams.search;
-
+    // Backend handles filtering directly
     const r = await apiClient.get('/api/v1/trips', { params: backendParams });
     const payload = r.data;
     const beItems = (payload.data || payload.items || []) as BETrip[];
     
-    let items = beItems.map(mapBackendToFrontendTrip);
-
-    if (params) {
-      if (params.status) items = items.filter(t => t.status === params.status);
-      if (params.trip_type) items = items.filter(t => t.trip_type === params.trip_type);
-      if (params.priority) items = items.filter(t => t.priority === params.priority);
-      if (params.customer_id) items = items.filter(t => t.customer_id === params.customer_id);
-      if (params.vehicle_id) items = items.filter(t => t.vehicle_id === params.vehicle_id);
-      if (params.driver_id) items = items.filter(t => t.driver_id === params.driver_id);
-      if (params.company_id) items = items.filter(t => t.company_id === params.company_id);
-      if (params.route_id) items = items.filter(t => t.route_id === params.route_id);
-      if (params.dispatcher_id) items = items.filter(t => t.dispatcher_id === params.dispatcher_id);
-    }
-
-    if (searchQuery) {
-      items = items.filter(t => {
-        const formattedDate = t.start_date ? new Date(t.start_date).toLocaleDateString().toLowerCase() : '';
-        return (
-          (t.trip_number || '').toLowerCase().includes(searchQuery) ||
-          (t.customer?.name || '').toLowerCase().includes(searchQuery) ||
-          (t.origin || '').toLowerCase().includes(searchQuery) ||
-          (t.destination || '').toLowerCase().includes(searchQuery) ||
-          (t.vehicle?.license_plate || '').toLowerCase().includes(searchQuery) ||
-          (t.driver?.name || '').toLowerCase().includes(searchQuery) ||
-          (t.status || '').toLowerCase().includes(searchQuery) ||
-          (t.priority || '').toLowerCase().includes(searchQuery) ||
-          (t.start_date || '').toLowerCase().includes(searchQuery) ||
-          formattedDate.includes(searchQuery)
-        );
-      });
-    }
-
-    const hasFilters = params && (params.status || params.trip_type || params.priority || params.customer_id || params.vehicle_id || params.driver_id || params.company_id || params.route_id || params.dispatcher_id);
+    const items = beItems.map(mapBackendToFrontendTrip);
 
     return {
       items,
-      total: (searchQuery || hasFilters) ? items.length : (payload.total || 0),
+      total: payload.total || 0,
       page: payload.page || 1,
       page_size: payload.page_size || 50,
     };
@@ -327,21 +196,13 @@ export const tripApi = {
       company_id: uuid(data.company_id),
       notes: data.remarks?.trim() || null,
       reporting_address: data.origin?.trim() || null,
-      // engaged_by is a plain text field, not a customer FK — leave null unless populated by future feature
+      trip_type: data.trip_type || 'One Way',
+      priority: data.priority || 'Normal',
       engaged_by: null,
     };
 
     // 2. Call backend to create trip core
     const beTrip = await apiClient.post('/api/v1/trips/', backendPayload).then((r) => r.data as BETrip);
-
-    // 3. Save local client-only metadata (since backend DB model lacks these columns)
-    saveTripMetadata(beTrip.id, {
-      customer_id: data.customer_id || null,
-      trip_type: data.trip_type || 'One Way',
-      priority: data.priority || 'Normal',
-      co_driver_id: data.co_driver_id || null,
-      dispatcher_id: data.dispatcher_id || null,
-    });
 
     // 4. If locations (origin, destination) are filled, add trip location
     if (data.origin && data.destination) {
@@ -358,13 +219,6 @@ export const tripApi = {
       }
     }
 
-    addLocalActivityEvent(beTrip.id, {
-      event_type: 'trip_created',
-      title: 'Trip Dispatched',
-      description: 'Trip details were created successfully.',
-      actor: 'Dispatcher',
-    });
-
     // 5. Fetch and return full details
     const fullBeTrip = await apiClient.get(`/api/v1/trips/${beTrip.id}`).then((r) => r.data as BETrip);
     return mapBackendToFrontendTrip(fullBeTrip);
@@ -380,22 +234,13 @@ export const tripApi = {
     if (data.company_id !== undefined) backendPayload.company_id = uuid(data.company_id);
     if (data.remarks !== undefined) backendPayload.notes = data.remarks?.trim() || null;
     if (data.origin !== undefined) backendPayload.reporting_address = data.origin?.trim() || null;
-    
-    // engaged_by on backend is a plain text field (varchar 150), not customer FK — keep null
+    if (data.trip_type !== undefined) backendPayload.trip_type = data.trip_type;
+    if (data.priority !== undefined) backendPayload.priority = data.priority;
     backendPayload.engaged_by = null;
 
     if (Object.keys(backendPayload).length > 0) {
       await apiClient.put(`/api/v1/trips/${id}`, backendPayload);
     }
-
-    // Update local client-only metadata
-    saveTripMetadata(id, {
-      customer_id: data.customer_id !== undefined ? (data.customer_id || null) : undefined,
-      trip_type: data.trip_type !== undefined ? data.trip_type : undefined,
-      priority: data.priority !== undefined ? data.priority : undefined,
-      co_driver_id: data.co_driver_id !== undefined ? (data.co_driver_id || null) : undefined,
-      dispatcher_id: data.dispatcher_id !== undefined ? (data.dispatcher_id || null) : undefined,
-    });
 
     // 2. Map route updates to location API if locations exist
     if (data.origin || data.destination) {
@@ -424,13 +269,6 @@ export const tripApi = {
       }
     }
 
-    addLocalActivityEvent(id, {
-      event_type: 'details_updated',
-      title: 'Details Updated',
-      description: 'Trip core details were modified.',
-      actor: 'Dispatcher',
-    });
-
     const updatedBeTrip = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
     return mapBackendToFrontendTrip(updatedBeTrip);
   },
@@ -441,16 +279,18 @@ export const tripApi = {
   // ─── Lifecycle Actions ───────────────────────────────────────────────
   transition: async (id: string, action: string, payload?: TripTransitionPayload): Promise<Trip> => {
     await refreshLookupsIfNeeded();
-    const targetStatus = action;
-
-    const res = await apiClient.patch(`/api/v1/trips/${id}/status`, { status: targetStatus }).then((r) => r.data as BETrip);
-
-    addLocalActivityEvent(id, {
-      event_type: `trip_${action}` as any,
-      title: `Status: ${action}`,
-      description: payload?.reason ? `Reason: ${payload.reason}` : `Trip transitioned to ${targetStatus}`,
-      actor: 'Dispatcher',
-    });
+    let res;
+    if (action === 'draft' || action === 'unassigned') {
+      res = await apiClient.post(`/api/v1/trips/${id}/unassign`).then((r) => r.data as BETrip);
+    } else if (action === 'dispatched') {
+      res = await apiClient.post(`/api/v1/trips/${id}/dispatch`, { confirmation_notes: payload?.notes }).then((r) => r.data as BETrip);
+    } else if (action === 'started') {
+      res = await apiClient.post(`/api/v1/trips/${id}/start`, {}).then((r) => r.data as BETrip);
+    } else if (action === 'completed') {
+      res = await apiClient.post(`/api/v1/trips/${id}/complete`, {}).then((r) => r.data as BETrip);
+    } else {
+      res = await apiClient.patch(`/api/v1/trips/${id}/status`, { status: action, reason: payload?.reason }).then((r) => r.data as BETrip);
+    }
 
     return mapBackendToFrontendTrip(res);
   },
@@ -465,21 +305,9 @@ export const tripApi = {
 
     if (vehicleId) {
       await apiClient.patch(`/api/v1/trips/${id}/assign-vehicle`, { vehicle_id: vehicleId });
-      addLocalActivityEvent(id, {
-        event_type: 'vehicle_assigned',
-        title: 'Vehicle Assigned',
-        description: 'New vehicle was assigned to this trip.',
-        actor: 'Dispatcher',
-      });
     }
     if (driverId) {
       await apiClient.patch(`/api/v1/trips/${id}/assign-driver`, { driver_id: driverId });
-      addLocalActivityEvent(id, {
-        event_type: 'driver_assigned',
-        title: 'Driver Assigned',
-        description: 'Primary driver was assigned to this trip.',
-        actor: 'Dispatcher',
-      });
     }
 
     const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
@@ -494,54 +322,26 @@ export const tripApi = {
     return apiClient.get('/api/v1/trips/dashboard/stats').then(r => r.data as TripDashboardStats);
   },
 
-  // ─── Documents ───────────────────────────────────────────────────────
   getDocuments: async (id: string): Promise<{ items: TripDocument[] }> => {
-    return { items: getLocalDocuments(id) };
+    return apiClient.get(`/api/v1/documents?entity_type=TRIP&entity_id=${id}`).then(r => ({ items: r.data.items || r.data.data || [] }));
   },
 
   uploadDocument: async (id: string, payload: TripDocumentUpload): Promise<TripDocument> => {
-    const docs = getLocalDocuments(id);
-    const newDoc: TripDocument = {
-      id: `doc-${Math.random().toString(36).substring(2, 9)}`,
-      trip_id: id,
-      category: payload.category,
-      file_name: payload.file.name,
-      file_url: '#',
-      file_size_bytes: payload.file.size,
-      mime_type: payload.file.type,
-      notes: payload.notes || '',
-      uploaded_by: 'Dispatcher',
-      uploaded_at: new Date().toISOString(),
-    };
-    docs.unshift(newDoc);
-    saveLocalDocuments(id, docs);
+    const formData = new FormData();
+    formData.append('file', payload.file);
+    formData.append('document_category', payload.category);
+    formData.append('entity_type', 'TRIP');
+    formData.append('entity_id', id);
+    if (payload.notes) formData.append('notes', payload.notes);
 
-    addLocalActivityEvent(id, {
-      event_type: 'document_uploaded',
-      title: 'Document Uploaded',
-      description: `Uploaded file: ${payload.file.name}`,
-      actor: 'Dispatcher',
+    const res = await apiClient.post(`/api/v1/documents/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
-
-    return newDoc;
+    return res.data;
   },
   
   deleteDocument: async (id: string, docId: string): Promise<{ message: string }> => {
-    let docs = getLocalDocuments(id);
-    const docToDelete = docs.find(d => d.id === docId);
-    docs = docs.filter((d) => d.id !== docId);
-    saveLocalDocuments(id, docs);
-
-    if (docToDelete) {
-      addLocalActivityEvent(id, {
-        event_type: 'details_updated',
-        title: 'Document Deleted',
-        description: `Deleted file: ${docToDelete.file_name}`,
-        actor: 'Dispatcher',
-      });
-    }
-
-    return { message: 'Document deleted successfully' };
+    return apiClient.delete(`/api/v1/documents/${docId}`).then(r => r.data);
   },
 
   // ─── Bulk Operations ─────────────────────────────────────────────────
@@ -618,11 +418,12 @@ export const tripApi = {
     apiClient.post('/api/v1/trips/bulk/export', payload, { responseType: 'blob' }).then((r) => r.data),
 
   addNote: async (id: string, note: string): Promise<void> => {
-    addLocalActivityEvent(id, {
-      event_type: 'note_added',
+    await apiClient.post('/api/v1/activity', {
+      entity_type: 'TRIP',
+      entity_id: id,
+      event_type: 'NOTE_ADDED',
       title: 'Dispatcher Note',
-      description: note,
-      actor: 'Dispatcher',
+      description: note
     });
   },
 };

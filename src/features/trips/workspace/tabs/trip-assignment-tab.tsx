@@ -7,12 +7,17 @@ import { Car, User, Users } from 'lucide-react';
 import { TripAssignmentDialog } from '../../components/trip-assignment-dialog';
 import { ResourceType } from '../../services/resource-availability.service';
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { tripApi } from '../../api/trip-api';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface TripAssignmentTabProps {
   trip: Trip;
 }
 
 export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
+  const queryClient = useQueryClient();
   const [dialogState, setDialogState] = useState<{
     isOpen: boolean;
     resourceType: ResourceType;
@@ -25,6 +30,18 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
   const handleOpenDialog = (resourceType: ResourceType, currentId?: string | null) => {
     setDialogState({ isOpen: true, resourceType, currentId });
   };
+  
+  const unassignMutation = useMutation({
+    mutationFn: () => tripApi.transition(trip.id, 'unassigned'),
+    onSuccess: () => {
+      toast.success('Trip unassigned successfully');
+      queryClient.invalidateQueries({ queryKey: ['trips'] });
+      queryClient.invalidateQueries({ queryKey: ['trip', trip.id] });
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.detail || 'Failed to unassign trip');
+    }
+  });
   
   const renderAssignmentCard = (title: string, icon: React.ReactNode, value: string | undefined, type: ResourceType, currentId?: string | null) => (
     <Card>
@@ -48,8 +65,25 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {renderAssignmentCard('Vehicle', <Car className="h-4 w-4" />, trip.vehicle?.license_plate, 'vehicle', trip.vehicle_id)}
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <Can permission={PERMISSION_KEYS.TRIPS_ASSIGN}>
+          {trip.status === 'assigned' && (
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              onClick={() => unassignMutation.mutate()}
+              disabled={unassignMutation.isPending}
+            >
+              {unassignMutation.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Unassign Trip
+            </Button>
+          )}
+        </Can>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {renderAssignmentCard('Vehicle', <Car className="h-4 w-4" />, trip.vehicle?.license_plate, 'vehicle', trip.vehicle_id)}
       {renderAssignmentCard('Primary Driver', <User className="h-4 w-4" />, trip.driver?.name, 'driver', trip.driver_id)}
       {renderAssignmentCard('Co-Driver', <Users className="h-4 w-4" />, trip.co_driver?.name, 'co_driver', trip.co_driver_id)}
       {renderAssignmentCard('Dispatcher', <User className="h-4 w-4" />, trip.dispatcher?.full_name, 'dispatcher' as any, trip.dispatcher_id)}
@@ -63,6 +97,7 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
         startDate={trip.start_date}
         endDate={trip.expected_end_date}
       />
+      </div>
     </div>
   );
 }
