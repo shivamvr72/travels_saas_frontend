@@ -34,6 +34,10 @@ export const TripDispatchSummarySchema = z.object({
   vehicle_reg_number: z.string().nullable().optional(),
   driver_id: z.string().uuid().nullable().optional(),
   driver_name: z.string().nullable().optional(),
+  customer_name: z.string().nullable().optional(),
+  trip_type: z.string().nullable().optional(),
+  priority: z.string().nullable().optional(),
+  reporting_address: z.string().nullable().optional(),
 });
 export type TripDispatchSummary = z.infer<typeof TripDispatchSummarySchema>;
 

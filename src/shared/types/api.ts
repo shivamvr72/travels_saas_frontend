@@ -828,6 +828,26 @@ export interface paths {
         patch: operations["update_trip_status_api_v1_trips__trip_id__status_patch"];
         trace?: never;
     };
+    "/api/v1/trips/{trip_id}/unassign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Unassign Trip
+         * @description Unassign vehicle and driver from a trip.
+         */
+        post: operations["unassign_trip_api_v1_trips__trip_id__unassign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/trips/{trip_id}/dispatch": {
         parameters: {
             query?: never;
@@ -4279,6 +4299,13 @@ export interface components {
             reporting_address?: string | null;
             /** Notes */
             notes?: string | null;
+            /** Trip Type */
+            trip_type?: string | null;
+            /**
+             * Priority
+             * @default normal
+             */
+            priority: string;
             /** Vehicle Id */
             vehicle_id?: string | null;
             /** Driver Id */
@@ -4313,6 +4340,14 @@ export interface components {
             driver_id?: string | null;
             /** Driver Name */
             driver_name?: string | null;
+            /** Trip Type */
+            trip_type?: string | null;
+            /** Priority */
+            priority?: string | null;
+            /** Customer Name */
+            customer_name?: string | null;
+            /** Reporting Address */
+            reporting_address?: string | null;
         };
         /** TripExpenseCreate */
         TripExpenseCreate: {
@@ -4630,6 +4665,13 @@ export interface components {
             reporting_address?: string | null;
             /** Notes */
             notes?: string | null;
+            /** Trip Type */
+            trip_type?: string | null;
+            /**
+             * Priority
+             * @default normal
+             */
+            priority: string;
             /**
              * Id
              * Format: uuid
@@ -4664,6 +4706,10 @@ export interface components {
             scheduled_start_time?: string | null;
             /** Scheduled End Time */
             scheduled_end_time?: string | null;
+            /** Actual Start Time */
+            actual_start_time?: string | null;
+            /** Actual End Time */
+            actual_end_time?: string | null;
             /** Estimated Duration Hrs */
             estimated_duration_hrs?: number | null;
             /** Passenger Count */
@@ -4700,6 +4746,10 @@ export interface components {
             reporting_address?: string | null;
             /** Notes */
             notes?: string | null;
+            /** Trip Type */
+            trip_type?: string | null;
+            /** Priority */
+            priority?: string | null;
         };
         /** UserAdminUpdate */
         UserAdminUpdate: {
@@ -7293,6 +7343,37 @@ export interface operations {
                 "application/json": components["schemas"]["TripStatusUpdate"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TripResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unassign_trip_api_v1_trips__trip_id__unassign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                trip_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {

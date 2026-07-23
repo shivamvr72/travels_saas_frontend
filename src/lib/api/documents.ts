@@ -1,6 +1,6 @@
 import { createCrudApi } from '@/shared/lib/api-factory';
 import { components } from '@/shared/types/api';
-import apiClient from '@/shared/lib/api-client';
+import { apiClient } from '@/shared/lib/axios';
 
 export type Document = components['schemas']['DocumentResponse'];
 export type DocumentUpdate = components['schemas']['DocumentUpdate'];
