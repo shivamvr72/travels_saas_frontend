@@ -7,6 +7,7 @@ import {
   Briefcase,
   Wallet,
   Settings,
+  Wrench,
   PieChart,
   UserCircle,
   Bus,
@@ -56,6 +57,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     items: [
       { title: 'Vehicles', href: '/vehicles', icon: Car, module: 'VEHICLES' },
       { title: 'Drivers', href: '/drivers', icon: UserCircle, module: 'DRIVERS' },
+      { title: 'Maintenance', href: '/fleet/maintenance', icon: Wrench, module: 'VEHICLES' },
       { title: 'Expenses', href: '/expenses', icon: Wallet, module: 'FINANCE' },
     ],
   },
