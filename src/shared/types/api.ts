@@ -356,6 +356,110 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/bookings/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Bookings */
+        get: operations["get_bookings_api_v1_bookings__get"];
+        put?: never;
+        /** Create Booking */
+        post: operations["create_booking_api_v1_bookings__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Booking */
+        get: operations["get_booking_api_v1_bookings__id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Booking */
+        patch: operations["update_booking_api_v1_bookings__id__patch"];
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Quote Booking */
+        post: operations["quote_booking_api_v1_bookings__id__quote_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Booking */
+        post: operations["confirm_booking_api_v1_bookings__id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Booking */
+        post: operations["cancel_booking_api_v1_bookings__id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/convert": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Convert To Trip */
+        post: operations["convert_to_trip_api_v1_bookings__id__convert_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/drivers/": {
         parameters: {
             query?: never;
@@ -1267,6 +1371,229 @@ export interface paths {
         get: operations["get_fleet_summary_api_v1_fleet_summary_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Maintenance Jobs */
+        get: operations["list_maintenance_jobs_api_v1_maintenance_get"];
+        put?: never;
+        /** Create Maintenance Job */
+        post: operations["create_maintenance_job_api_v1_maintenance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Maintenance Job */
+        get: operations["get_maintenance_job_api_v1_maintenance__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Maintenance Job */
+        patch: operations["update_maintenance_job_api_v1_maintenance__job_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Start Maintenance Job */
+        post: operations["start_maintenance_job_api_v1_maintenance__job_id__start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/hold": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Hold Maintenance Job */
+        post: operations["hold_maintenance_job_api_v1_maintenance__job_id__hold_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resume Maintenance Job */
+        post: operations["resume_maintenance_job_api_v1_maintenance__job_id__resume_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Complete Maintenance Job */
+        post: operations["complete_maintenance_job_api_v1_maintenance__job_id__complete_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Maintenance Job */
+        post: operations["cancel_maintenance_job_api_v1_maintenance__job_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Maintenance Item */
+        post: operations["add_maintenance_item_api_v1_maintenance__job_id__items_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Maintenance Item */
+        delete: operations["remove_maintenance_item_api_v1_maintenance__job_id__items__item_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/{job_id}/expense": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Maintenance Expense */
+        get: operations["get_maintenance_expense_api_v1_maintenance__job_id__expense_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/rules/upcoming": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Upcoming Rules */
+        get: operations["get_upcoming_rules_api_v1_maintenance_rules_upcoming_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/rules/{rule_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rule */
+        get: operations["get_rule_api_v1_maintenance_rules__rule_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/maintenance/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Rule */
+        post: operations["create_rule_api_v1_maintenance_rules_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2405,6 +2732,127 @@ export interface components {
             /** File */
             file: string;
         };
+        /** BookingCreate */
+        BookingCreate: {
+            /** Company Id */
+            company_id?: string | null;
+            /** Company Gst Dept Id */
+            company_gst_dept_id?: string | null;
+            /** Customer Id */
+            customer_id?: string | null;
+            /**
+             * Booking Source
+             * @default other
+             */
+            booking_source: string;
+            /** Vehicle Type Required */
+            vehicle_type_required?: string | null;
+            /** Pickup Location */
+            pickup_location?: string | null;
+            /** Drop Location */
+            drop_location?: string | null;
+            /**
+             * Booking Date
+             * Format: date
+             */
+            booking_date: string;
+            /** Pickup Time */
+            pickup_time?: string | null;
+            /** Drop Time */
+            drop_time?: string | null;
+            /** No Of Passengers */
+            no_of_passengers?: number | null;
+            /** Special Requests */
+            special_requests?: string | null;
+            /** Quoted Amount */
+            quoted_amount?: number | null;
+        };
+        /** BookingResponse */
+        BookingResponse: {
+            /** Company Id */
+            company_id?: string | null;
+            /** Company Gst Dept Id */
+            company_gst_dept_id?: string | null;
+            /** Customer Id */
+            customer_id?: string | null;
+            /**
+             * Booking Source
+             * @default other
+             */
+            booking_source: string;
+            /** Vehicle Type Required */
+            vehicle_type_required?: string | null;
+            /** Pickup Location */
+            pickup_location?: string | null;
+            /** Drop Location */
+            drop_location?: string | null;
+            /**
+             * Booking Date
+             * Format: date
+             */
+            booking_date: string;
+            /** Pickup Time */
+            pickup_time?: string | null;
+            /** Drop Time */
+            drop_time?: string | null;
+            /** No Of Passengers */
+            no_of_passengers?: number | null;
+            /** Special Requests */
+            special_requests?: string | null;
+            /** Quoted Amount */
+            quoted_amount?: number | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Travel Company Id
+             * Format: uuid
+             */
+            travel_company_id: string;
+            /** Booking Number */
+            booking_number: string;
+            /** Status */
+            status: string;
+            /** Company */
+            company?: {
+                [key: string]: unknown;
+            } | null;
+            /** Customer */
+            customer?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** BookingUpdate */
+        BookingUpdate: {
+            /** Company Id */
+            company_id?: string | null;
+            /** Company Gst Dept Id */
+            company_gst_dept_id?: string | null;
+            /** Customer Id */
+            customer_id?: string | null;
+            /** Booking Source */
+            booking_source?: string | null;
+            /** Vehicle Type Required */
+            vehicle_type_required?: string | null;
+            /** Pickup Location */
+            pickup_location?: string | null;
+            /** Drop Location */
+            drop_location?: string | null;
+            /** Booking Date */
+            booking_date?: string | null;
+            /** Pickup Time */
+            pickup_time?: string | null;
+            /** Drop Time */
+            drop_time?: string | null;
+            /** No Of Passengers */
+            no_of_passengers?: number | null;
+            /** Special Requests */
+            special_requests?: string | null;
+            /** Quoted Amount */
+            quoted_amount?: number | null;
+        };
         /**
          * BulkAssignItem
          * @description A single assignment entry in a bulk assignment request.
@@ -3165,6 +3613,11 @@ export interface components {
          * @enum {string}
          */
         HiringRateType: "per_day" | "per_km" | "per_trip" | "fixed";
+        /**
+         * JobSource
+         * @enum {string}
+         */
+        JobSource: "scheduled" | "preventive" | "breakdown" | "accident" | "compliance" | "inspection" | "other";
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -3175,6 +3628,82 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** MaintenanceCancelRequest */
+        MaintenanceCancelRequest: {
+            /** Cancellation Reason */
+            cancellation_reason: string;
+        };
+        /** MaintenanceHoldRequest */
+        MaintenanceHoldRequest: {
+            /** Hold Reason */
+            hold_reason: string;
+        };
+        /** MaintenanceJobItemCreate */
+        MaintenanceJobItemCreate: {
+            /** Item Name */
+            item_name: string;
+            /** Item Type */
+            item_type: string;
+            /**
+             * Quantity
+             * @default 1.0
+             */
+            quantity: number | string;
+            /** Unit Cost */
+            unit_cost: number | string;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** MaintenanceJobItemRead */
+        MaintenanceJobItemRead: {
+            /** Item Name */
+            item_name: string;
+            /** Item Type */
+            item_type: string;
+            /**
+             * Quantity
+             * @default 1.0
+             */
+            quantity: string;
+            /** Unit Cost */
+            unit_cost: string;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /** Notes */
+            notes?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Maintenance Job Id
+             * Format: uuid
+             */
+            maintenance_job_id: string;
+            /** Line Total */
+            line_total: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /**
+         * MaintenanceStatus
+         * @enum {string}
+         */
+        MaintenanceStatus: "scheduled" | "in_progress" | "on_hold" | "completed" | "cancelled";
         /** MessageResponse */
         MessageResponse: {
             /** Message */
@@ -3675,6 +4204,58 @@ export interface components {
             reference_no?: string | null;
             /** Notes */
             notes?: string | null;
+        };
+        /** PreventiveMaintenanceRuleCreate */
+        PreventiveMaintenanceRuleCreate: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Vehicle Type */
+            vehicle_type?: string | null;
+            /** Time Interval Days */
+            time_interval_days?: number | null;
+            /** Km Interval */
+            km_interval?: number | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /** PreventiveMaintenanceRuleRead */
+        PreventiveMaintenanceRuleRead: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Vehicle Id */
+            vehicle_id?: string | null;
+            /** Vehicle Type */
+            vehicle_type?: string | null;
+            /** Time Interval Days */
+            time_interval_days?: number | null;
+            /** Km Interval */
+            km_interval?: number | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Updated At */
+            updated_at?: string | null;
         };
         /**
          * ProviderType
@@ -4751,6 +5332,25 @@ export interface components {
             /** Priority */
             priority?: string | null;
         };
+        /** UpcomingMaintenanceRule */
+        UpcomingMaintenanceRule: {
+            rule: components["schemas"]["PreventiveMaintenanceRuleRead"];
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            /** Vehicle Reg Number */
+            vehicle_reg_number: string;
+            /** Due Date */
+            due_date?: string | null;
+            /** Due Km */
+            due_km?: number | null;
+            /** Current Km */
+            current_km?: number | null;
+            /** Is Due */
+            is_due: boolean;
+        };
         /** UserAdminUpdate */
         UserAdminUpdate: {
             /** Name */
@@ -5001,6 +5601,118 @@ export interface components {
             vendor_name?: string | null;
             /** Receipt Url */
             receipt_url?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** VehicleMaintenanceJobCreate */
+        VehicleMaintenanceJobCreate: {
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            job_source: components["schemas"]["JobSource"];
+            /** Category */
+            category: string;
+            /**
+             * Priority
+             * @default medium
+             */
+            priority: string;
+            /** Workshop Name */
+            workshop_name?: string | null;
+            /**
+             * Scheduled Date
+             * Format: date
+             */
+            scheduled_date: string;
+            /** Expected Completion Time */
+            expected_completion_time?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Source Reference Type */
+            source_reference_type?: string | null;
+            /** Source Reference Id */
+            source_reference_id?: string | null;
+        };
+        /** VehicleMaintenanceJobRead */
+        VehicleMaintenanceJobRead: {
+            /**
+             * Vehicle Id
+             * Format: uuid
+             */
+            vehicle_id: string;
+            job_source: components["schemas"]["JobSource"];
+            /** Category */
+            category: string;
+            /**
+             * Priority
+             * @default medium
+             */
+            priority: string;
+            /** Workshop Name */
+            workshop_name?: string | null;
+            /**
+             * Scheduled Date
+             * Format: date
+             */
+            scheduled_date: string;
+            /** Expected Completion Time */
+            expected_completion_time?: string | null;
+            /** Notes */
+            notes?: string | null;
+            /** Source Reference Type */
+            source_reference_type?: string | null;
+            /** Source Reference Id */
+            source_reference_id?: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Job Number */
+            job_number: string;
+            status: components["schemas"]["MaintenanceStatus"];
+            /** Start Time */
+            start_time?: string | null;
+            /** Actual Completion Time */
+            actual_completion_time?: string | null;
+            /** Actual Cost */
+            actual_cost: string;
+            /** Override Cost */
+            override_cost?: string | null;
+            /** Cancellation Reason */
+            cancellation_reason?: string | null;
+            /** Hold Reason */
+            hold_reason?: string | null;
+            /** Availability Block Id */
+            availability_block_id?: string | null;
+            /**
+             * Items
+             * @default []
+             */
+            items: components["schemas"]["MaintenanceJobItemRead"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /** VehicleMaintenanceJobUpdate */
+        VehicleMaintenanceJobUpdate: {
+            job_source?: components["schemas"]["JobSource"] | null;
+            /** Category */
+            category?: string | null;
+            /** Priority */
+            priority?: string | null;
+            /** Workshop Name */
+            workshop_name?: string | null;
+            /** Scheduled Date */
+            scheduled_date?: string | null;
+            /** Expected Completion Time */
+            expected_completion_time?: string | null;
             /** Notes */
             notes?: string | null;
         };
@@ -6067,6 +6779,267 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_bookings_api_v1_bookings__get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                search?: string | null;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_booking_api_v1_bookings__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_booking_api_v1_bookings__id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_booking_api_v1_bookings__id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    quote_booking_api_v1_bookings__id__quote_post: {
+        parameters: {
+            query: {
+                quoted_amount: number;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_booking_api_v1_bookings__id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_booking_api_v1_bookings__id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    convert_to_trip_api_v1_bookings__id__convert_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -8147,6 +9120,481 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["app__schemas__fleet__FleetSummaryResponse"];
+                };
+            };
+        };
+    };
+    list_maintenance_jobs_api_v1_maintenance_get: {
+        parameters: {
+            query?: {
+                job_source?: string | null;
+                status?: string | null;
+                vehicle_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_maintenance_job_api_v1_maintenance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleMaintenanceJobCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_maintenance_job_api_v1_maintenance__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_maintenance_job_api_v1_maintenance__job_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VehicleMaintenanceJobUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_maintenance_job_api_v1_maintenance__job_id__start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    hold_maintenance_job_api_v1_maintenance__job_id__hold_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceHoldRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resume_maintenance_job_api_v1_maintenance__job_id__resume_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    complete_maintenance_job_api_v1_maintenance__job_id__complete_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_maintenance_job_api_v1_maintenance__job_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceCancelRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleMaintenanceJobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_maintenance_item_api_v1_maintenance__job_id__items_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceJobItemCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaintenanceJobItemRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_maintenance_item_api_v1_maintenance__job_id__items__item_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_maintenance_expense_api_v1_maintenance__job_id__expense_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_upcoming_rules_api_v1_maintenance_rules_upcoming_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpcomingMaintenanceRule"][];
+                };
+            };
+        };
+    };
+    get_rule_api_v1_maintenance_rules__rule_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreventiveMaintenanceRuleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_rule_api_v1_maintenance_rules_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreventiveMaintenanceRuleCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreventiveMaintenanceRuleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
