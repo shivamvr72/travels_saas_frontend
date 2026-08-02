@@ -9,6 +9,7 @@ interface TenantTheme {
 interface TenantProfile {
   id: string;
   name: string;
+  travel_name?: string;
   slug: string;
   logo_url?: string;
   theme?: TenantTheme;
@@ -17,7 +18,7 @@ interface TenantProfile {
 interface TenantState {
   tenant: TenantProfile | null;
   hasHydrated: boolean;
-  setTenant: (tenant: TenantProfile) => void;
+  setTenant: (tenant: any) => void;
   clearTenant: () => void;
   setHasHydrated: (state: boolean) => void;
 }
@@ -27,7 +28,17 @@ export const useTenantStore = create<TenantState>()(
     (set) => ({
       tenant: null,
       hasHydrated: false,
-      setTenant: (tenant) => set({ tenant }),
+      setTenant: (tenantData) => {
+        if (!tenantData) return set({ tenant: null });
+        const name = tenantData.travel_name || tenantData.name || '';
+        set({
+          tenant: {
+            ...tenantData,
+            name,
+            travel_name: tenantData.travel_name || name,
+          },
+        });
+      },
       clearTenant: () => set({ tenant: null }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
     }),

@@ -1,8 +1,10 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { AuthGuard } from '@/features/auth/components/auth-guard';
 import { useUiStore } from '@/store/ui-store';
+import { useTenantStore } from '@/store/tenant-store';
+import { apiClient } from '@/shared/lib/axios';
 import { cn } from '@/shared/lib/utils';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppTopNav } from '@/components/layout/app-top-nav';
@@ -10,6 +12,20 @@ import { AppCommandPalette } from '@/components/layout/app-command-palette';
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   const { isSidebarOpen } = useUiStore();
+  const { setTenant } = useTenantStore();
+
+  useEffect(() => {
+    apiClient
+      .get('/api/v1/my-company')
+      .then((res) => {
+        if (res.data) {
+          setTenant(res.data);
+        }
+      })
+      .catch(() => {
+        // Silent catch if user lacks permissions or offline
+      });
+  }, [setTenant]);
 
   return (
     <AuthGuard>

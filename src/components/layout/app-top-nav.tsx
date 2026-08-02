@@ -54,9 +54,9 @@ export function AppTopNav() {
         </Button>
 
         <div className="flex items-center gap-2">
-          {tenant?.name && (
+          {(tenant?.name || tenant?.travel_name) && (
             <Badge variant="secondary" className="hidden md:inline-flex mr-2">
-              {tenant.name}
+              {tenant.name || tenant.travel_name}
             </Badge>
           )}
           

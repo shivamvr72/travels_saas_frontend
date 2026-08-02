@@ -41,7 +41,7 @@ function SidebarContent() {
             "font-bold text-lg whitespace-nowrap transition-all duration-300",
             !isSidebarOpen ? "opacity-0 md:hidden" : "opacity-100"
           )}>
-            {tenant?.name || 'SVR Travels'}
+            {tenant?.name || tenant?.travel_name || 'SVR Travels'}
           </span>
         </Link>
       </div>
