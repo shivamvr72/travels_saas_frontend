@@ -27,9 +27,10 @@ export const FinanceRules = {
    * Constraint: Payments require an existing invoice that is not cancelled.
    * Draft invoices cannot be paid. Must be at least Generated.
    */
-  canReceivePayment: (invoice?: Invoice | null): boolean => {
+  canReceivePayment: (invoice?: Invoice | null, paymentDetails?: TripPaymentDetails | null): boolean => {
     if (!invoice) return false;
-    return ['Generated', 'Sent', 'Partially Paid'].includes(invoice.status);
+    if (paymentDetails && paymentDetails.balance_due <= 0) return false;
+    return ['Generated', 'Sent', 'Partially Paid', 'Paid'].includes(invoice.status);
   },
 
   /**

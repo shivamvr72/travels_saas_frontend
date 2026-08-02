@@ -73,7 +73,7 @@ export function TripPaymentsTab({ trip }: TripPaymentsTabProps) {
     }
   };
 
-  const canReceivePayment = FinanceRules.canReceivePayment(invoice);
+  const canReceivePayment = FinanceRules.canReceivePayment(invoice, paymentDetails);
 
   if (isLoading) return <AppLoadingState />;
 
