@@ -17,6 +17,16 @@ apiClient.interceptors.request.use(
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    
+    // Normalize url to prevent duplicate /api/v1 since it's now guaranteed in baseURL
+    if (config.url?.startsWith('/api/v1')) {
+      config.url = config.url.replace('/api/v1', '');
+    }
+    // Also strip trailing slash on endpoints to prevent redirect loops (e.g. 307 Temporary Redirects)
+    if (config.url?.endsWith('/')) {
+      config.url = config.url.slice(0, -1);
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
