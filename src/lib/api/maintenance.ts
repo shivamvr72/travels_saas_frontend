@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from '@/shared/lib/axios';
 
 export interface MaintenanceJobItem {
   id: string;
