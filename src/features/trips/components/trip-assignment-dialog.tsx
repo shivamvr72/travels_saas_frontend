@@ -108,8 +108,9 @@ export function TripAssignmentDialog({
         queryClient.invalidateQueries({ queryKey: ['trips', tripId] });
         queryClient.invalidateQueries({ queryKey: ['trips'] });
         onClose();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to create or assign external driver", error);
+        toast.error(error.message || "Failed to assign driver");
       }
     } else {
       if (!selectedId) return;

@@ -295,7 +295,6 @@ export const tripApi = {
     return mapBackendToFrontendTrip(res);
   },
 
-  // ─── Assignment ──────────────────────────────────────────────────────
   assign: async (id: string, assignment: TripAssignPayload): Promise<Trip> => {
     await refreshLookupsIfNeeded();
     const uuid = (v: string | null | undefined) => (v && v.trim() !== '' ? v : null);
@@ -303,12 +302,11 @@ export const tripApi = {
     const vehicleId = uuid(assignment.vehicle_id);
     const driverId = uuid(assignment.driver_id);
 
-    if (vehicleId) {
-      await apiClient.patch(`/api/v1/trips/${id}/assign-vehicle`, { vehicle_id: vehicleId });
-    }
-    if (driverId) {
-      await apiClient.patch(`/api/v1/trips/${id}/assign-driver`, { driver_id: driverId });
-    }
+    // Call the correct dispatch assignment endpoint
+    await apiClient.post(`/api/v1/dispatch/trips/${id}/assign`, {
+      vehicle_id: vehicleId,
+      driver_id: driverId
+    });
 
     const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
     return mapBackendToFrontendTrip(res);

@@ -3263,6 +3263,10 @@ export interface components {
             monthly_salary?: number | string | null;
             /** Joining Date */
             joining_date?: string | null;
+            /** Is External */
+            is_external?: boolean | null;
+            /** Agency Name */
+            agency_name?: string | null;
         };
         /** DriverResponse */
         DriverResponse: {
@@ -3296,6 +3300,10 @@ export interface components {
             joining_date: string | null;
             /** Is Active */
             is_active: boolean;
+            /** Is External */
+            is_external: boolean;
+            /** Agency Name */
+            agency_name: string | null;
             /**
              * Created At
              * Format: date-time
@@ -3322,6 +3330,10 @@ export interface components {
             monthly_salary?: number | string | null;
             /** Joining Date */
             joining_date?: string | null;
+            /** Is External */
+            is_external?: boolean | null;
+            /** Agency Name */
+            agency_name?: string | null;
         };
         /** ExecutiveSummaryResponse */
         ExecutiveSummaryResponse: {

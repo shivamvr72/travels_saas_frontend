@@ -12,11 +12,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AppSectionCard } from '@/components/shared/app-section-card';
 import { AppLookup } from '@/components/shared/app-lookup';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useCreateDriver } from '@/features/drivers/api';
 import { toast } from 'sonner';
 
 export function TripCreateForm() {
   const router = useRouter();
   const createTrip = useCreateTrip();
+  const createDriverMutation = useCreateDriver();
 
   const form = useForm<TripFormValues>({
     mode: 'onChange',
@@ -39,12 +43,35 @@ export function TripCreateForm() {
       driver_id: '',
       co_driver_id: '',
       dispatcher_id: '',
+      isExternalDriver: false,
+      external_driver_name: '',
+      external_agency_name: '',
+      external_driver_phone: '',
     },
   });
 
+  const isExternal = form.watch('isExternalDriver');
+
   const onSubmit = async (data: TripFormValues) => {
     try {
-      const result = await createTrip.mutateAsync(data);
+      let finalDriverId = data.driver_id;
+      
+      // If external driver is selected, create the driver record first
+      if (data.isExternalDriver && data.external_driver_name) {
+        const extDriver = await createDriverMutation.mutateAsync({
+          name: data.external_driver_name,
+          agency_name: data.external_agency_name || null,
+          phone: data.external_driver_phone || '9999999999',
+          is_external: true,
+          license_no: `EXT-${Date.now()}` // Dummy license for external
+        });
+        finalDriverId = extDriver.id;
+      }
+
+      // We override the driver_id in data so the backend gets it
+      const payload = { ...data, driver_id: finalDriverId };
+
+      const result = await createTrip.mutateAsync(payload as any);
       toast.success(`Trip ${result.trip_number || 'created'} successfully`);
       router.push(`/trips/${result.id}`);
     } catch (error: any) {
@@ -294,16 +321,80 @@ export function TripCreateForm() {
               control={form.control}
               name="driver_id"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Primary Driver *</FormLabel>
-                  <FormControl>
-                    <AppLookup 
-                      lookupKey="drivers" 
-                      value={field.value || undefined} 
-                      onChange={field.onChange} 
-                      placeholder="Select driver..." 
-                    />
-                  </FormControl>
+                <FormItem className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Primary Driver {isExternal ? '' : '*'}</FormLabel>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is-external"
+                        checked={isExternal}
+                        onCheckedChange={(checked) => {
+                          form.setValue('isExternalDriver', checked);
+                          if (checked) {
+                            form.setValue('driver_id', '');
+                          } else {
+                            form.setValue('external_driver_name', '');
+                            form.setValue('external_agency_name', '');
+                            form.setValue('external_driver_phone', '');
+                          }
+                        }}
+                      />
+                      <Label htmlFor="is-external" className="text-xs">External Driver</Label>
+                    </div>
+                  </div>
+
+                  {!isExternal ? (
+                    <FormControl>
+                      <AppLookup 
+                        lookupKey="drivers" 
+                        value={field.value || undefined} 
+                        onChange={field.onChange} 
+                        placeholder="Select driver..." 
+                      />
+                    </FormControl>
+                  ) : (
+                    <div className="space-y-3 p-3 bg-secondary/20 rounded-md border">
+                      <FormField
+                        control={form.control}
+                        name="external_driver_name"
+                        render={({ field: nameField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Driver Name *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Enter driver name" {...nameField} value={nameField.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="external_agency_name"
+                        render={({ field: agencyField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Other Travels Company</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Agency name (optional)" {...agencyField} value={agencyField.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="external_driver_phone"
+                        render={({ field: phoneField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Phone Number</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Phone (optional)" {...phoneField} value={phoneField.value || ''} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}

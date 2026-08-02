@@ -30,10 +30,16 @@ export const tripSchema = z.object({
   customer_id: z.string().uuid('Invalid Customer selection').nullable().optional().or(z.literal('')),
 
   // Section 4 — Resources (Required by Backend)
-  vehicle_id: z.string().uuid('Please select a vehicle'),
-  driver_id: z.string().uuid('Please select a driver'),
+  vehicle_id: z.string().uuid('Please select a vehicle').optional().or(z.literal('')),
+  driver_id: z.string().uuid('Please select a driver').optional().or(z.literal('')),
   co_driver_id: z.string().uuid('Invalid Co-driver selection').nullable().optional().or(z.literal('')),
   dispatcher_id: z.string().uuid('Invalid Dispatcher selection').nullable().optional().or(z.literal('')),
+  
+  // External Driver Fields
+  isExternalDriver: z.boolean().default(false).optional(),
+  external_driver_name: z.string().optional(),
+  external_agency_name: z.string().optional(),
+  external_driver_phone: z.string().optional(),
 
 }).superRefine((data, ctx) => {
   // Cross-field: expected_end_date must be after start_date
@@ -48,11 +54,29 @@ export const tripSchema = z.object({
   }
 
   // Cross-field: co_driver requires driver
-  if (data.co_driver_id && !data.driver_id) {
+  if (data.co_driver_id && !data.driver_id && !data.isExternalDriver) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'A primary driver must be assigned before assigning a co-driver',
       path: ['co_driver_id'],
+    });
+  }
+
+  // Require standard driver if not external
+  if (!data.isExternalDriver && !data.driver_id) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please select a driver',
+      path: ['driver_id'],
+    });
+  }
+
+  // Require external fields if external
+  if (data.isExternalDriver && !data.external_driver_name) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Driver name is required',
+      path: ['external_driver_name'],
     });
   }
 });
