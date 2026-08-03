@@ -2558,6 +2558,10 @@ export interface components {
             vehicle_id?: string | null;
             /** Driver Id */
             driver_id?: string | null;
+            /** Co Driver Id */
+            co_driver_id?: string | null;
+            /** Dispatcher Id */
+            dispatcher_id?: string | null;
             /** Scheduled Start Time */
             scheduled_start_time?: string | null;
             /** Scheduled End Time */
@@ -2815,14 +2819,6 @@ export interface components {
             booking_number: string;
             /** Status */
             status: string;
-            /** Company */
-            company?: {
-                [key: string]: unknown;
-            } | null;
-            /** Customer */
-            customer?: {
-                [key: string]: unknown;
-            } | null;
         };
         /** BookingUpdate */
         BookingUpdate: {
@@ -2871,6 +2867,10 @@ export interface components {
             vehicle_id?: string | null;
             /** Driver Id */
             driver_id?: string | null;
+            /** Co Driver Id */
+            co_driver_id?: string | null;
+            /** Dispatcher Id */
+            dispatcher_id?: string | null;
             /** Scheduled Start Time */
             scheduled_start_time?: string | null;
             /** Scheduled End Time */
@@ -3263,8 +3263,11 @@ export interface components {
             monthly_salary?: number | string | null;
             /** Joining Date */
             joining_date?: string | null;
-            /** Is External */
-            is_external?: boolean | null;
+            /**
+             * Is External
+             * @default false
+             */
+            is_external: boolean;
             /** Agency Name */
             agency_name?: string | null;
         };
@@ -4903,6 +4906,10 @@ export interface components {
             vehicle_id?: string | null;
             /** Driver Id */
             driver_id?: string | null;
+            /** Co Driver Id */
+            co_driver_id?: string | null;
+            /** Dispatcher Id */
+            dispatcher_id?: string | null;
             /** External Hiring Id */
             external_hiring_id?: string | null;
         };
@@ -5279,6 +5286,10 @@ export interface components {
             vehicle_id: string | null;
             /** Driver Id */
             driver_id: string | null;
+            /** Co Driver Id */
+            co_driver_id: string | null;
+            /** Dispatcher Id */
+            dispatcher_id: string | null;
             /** External Hiring Id */
             external_hiring_id: string | null;
             /** Status */
@@ -7068,6 +7079,8 @@ export interface operations {
     list_drivers_api_v1_drivers__get: {
         parameters: {
             query?: {
+                /** @description Filter by external/internal driver status */
+                is_external?: boolean | null;
                 page?: number;
                 page_size?: number;
                 search?: string | null;

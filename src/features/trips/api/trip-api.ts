@@ -59,6 +59,7 @@ export async function refreshLookupsIfNeeded() {
 function resolveTripRelations(be: BETrip, customerId?: string | null) {
   const vehicle = cachedVehicles?.find(v => v.id === be.vehicle_id);
   const driver = cachedDrivers?.find(d => d.id === be.driver_id);
+  const coDriver = cachedDrivers?.find(d => d.id === be.co_driver_id);
   const company = cachedCompanies?.find(c => c.id === be.company_id);
   const customer = cachedCustomers?.find(c => c.id === (customerId || be.customer_booking_id));
 
@@ -75,6 +76,14 @@ function resolveTripRelations(be: BETrip, customerId?: string | null) {
       name: driver.name,
       phone: driver.phone,
       license_no: driver.license_no,
+      is_external: driver.is_external,
+    } : null,
+    co_driver: coDriver ? {
+      id: coDriver.id,
+      name: coDriver.name,
+      phone: coDriver.phone,
+      license_no: coDriver.license_no,
+      is_external: coDriver.is_external,
     } : null,
     company: company ? {
       id: company.id,
@@ -123,8 +132,8 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     vehicle_id: be.vehicle_id,
     driver_id: be.driver_id,
     route_id: firstLoc?.route_id || null,
-    dispatcher_id: be.created_by,
-    co_driver_id: null,
+    dispatcher_id: be.dispatcher_id || be.created_by,
+    co_driver_id: be.co_driver_id || null,
 
     ...relations,
 
@@ -133,7 +142,32 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   };
 }
 
-// ─── Local document and activity mocks removed ─────────────────────────────
+// Helper to resolve missing relations (like newly created external drivers)
+export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
+  if (trip.driver_id && !trip.driver) {
+    try {
+      const d = await apiClient.get(`/api/v1/drivers/${trip.driver_id}`).then(res => res.data);
+      trip.driver = { id: d.id, name: d.name, phone: d.phone, license_no: d.license_no, is_external: d.is_external };
+      if (cachedDrivers) cachedDrivers.push(d);
+    } catch (e) {
+      console.error('Failed to fetch missing driver', e);
+    }
+  }
+  if (trip.co_driver_id && !trip.co_driver) {
+    try {
+      const d = await apiClient.get(`/api/v1/drivers/${trip.co_driver_id}`).then(res => res.data);
+      trip.co_driver = { id: d.id, name: d.name, phone: d.phone, license_no: d.license_no, is_external: d.is_external };
+      if (cachedDrivers) cachedDrivers.push(d);
+    } catch (e) {
+      console.error('Failed to fetch missing co-driver', e);
+    }
+  }
+  if (trip.dispatcher_id && !trip.dispatcher) {
+    // Note: Dispatcher is typically a user, but we'll try to find it in users or just set the ID
+    trip.dispatcher = { id: trip.dispatcher_id, full_name: 'Dispatcher' };
+  }
+  return trip;
+}
 
 export const tripApi = {
   // ─── CRUD ─────────────────────────────────────────────────────────────
@@ -179,7 +213,9 @@ export const tripApi = {
   
   get: async (id: string): Promise<Trip> => {
     await refreshLookupsIfNeeded();
-    return apiClient.get(`/api/v1/trips/${id}`).then((r) => mapBackendToFrontendTrip(r.data));
+    const beTrip = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
+    const trip = mapBackendToFrontendTrip(beTrip);
+    return resolveMissingRelations(trip);
   },
   
   create: async (data: TripCreate): Promise<Trip> => {
@@ -193,6 +229,8 @@ export const tripApi = {
       trip_date: data.start_date,
       vehicle_id: data.vehicle_id,   // required - already validated by zod
       driver_id: data.driver_id,     // required - already validated by zod
+      co_driver_id: uuid(data.co_driver_id),
+      dispatcher_id: uuid(data.dispatcher_id),
       company_id: uuid(data.company_id),
       notes: data.remarks?.trim() || null,
       reporting_address: data.origin?.trim() || null,
@@ -221,7 +259,8 @@ export const tripApi = {
 
     // 5. Fetch and return full details
     const fullBeTrip = await apiClient.get(`/api/v1/trips/${beTrip.id}`).then((r) => r.data as BETrip);
-    return mapBackendToFrontendTrip(fullBeTrip);
+    const trip = mapBackendToFrontendTrip(fullBeTrip);
+    return resolveMissingRelations(trip);
   },
   
   update: async (id: string, data: TripUpdate): Promise<Trip> => {
@@ -232,6 +271,8 @@ export const tripApi = {
     const backendPayload: Record<string, any> = {};
     if (data.start_date) backendPayload.trip_date = data.start_date;
     if (data.company_id !== undefined) backendPayload.company_id = uuid(data.company_id);
+    if (data.co_driver_id !== undefined) backendPayload.co_driver_id = uuid(data.co_driver_id);
+    if (data.dispatcher_id !== undefined) backendPayload.dispatcher_id = uuid(data.dispatcher_id);
     if (data.remarks !== undefined) backendPayload.notes = data.remarks?.trim() || null;
     if (data.origin !== undefined) backendPayload.reporting_address = data.origin?.trim() || null;
     if (data.trip_type !== undefined) backendPayload.trip_type = data.trip_type;
@@ -270,7 +311,8 @@ export const tripApi = {
     }
 
     const updatedBeTrip = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
-    return mapBackendToFrontendTrip(updatedBeTrip);
+    const trip = mapBackendToFrontendTrip(updatedBeTrip);
+    return resolveMissingRelations(trip);
   },
   
   delete: (id: string): Promise<{ message: string }> =>
@@ -292,7 +334,8 @@ export const tripApi = {
       res = await apiClient.patch(`/api/v1/trips/${id}/status`, { status: action, reason: payload?.reason }).then((r) => r.data as BETrip);
     }
 
-    return mapBackendToFrontendTrip(res);
+    const trip = mapBackendToFrontendTrip(res);
+    return resolveMissingRelations(trip);
   },
 
   assign: async (id: string, assignment: TripAssignPayload): Promise<Trip> => {
@@ -301,15 +344,20 @@ export const tripApi = {
 
     const vehicleId = uuid(assignment.vehicle_id);
     const driverId = uuid(assignment.driver_id);
+    const coDriverId = uuid(assignment.co_driver_id);
+    const dispatcherId = uuid(assignment.dispatcher_id);
 
     // Call the correct dispatch assignment endpoint
     await apiClient.post(`/api/v1/dispatch/trips/${id}/assign`, {
       vehicle_id: vehicleId,
-      driver_id: driverId
+      driver_id: driverId,
+      co_driver_id: coDriverId,
+      dispatcher_id: dispatcherId,
     });
 
     const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
-    return mapBackendToFrontendTrip(res);
+    const trip = mapBackendToFrontendTrip(res);
+    return resolveMissingRelations(trip);
   },
 
   // ─── Activity Feed ───────────────────────────────────────────────────

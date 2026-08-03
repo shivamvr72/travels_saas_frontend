@@ -54,7 +54,7 @@ export const LookupRegistry: Record<string, LookupConfig> = {
     permissions: ['VEHICLES'],
   },
   drivers: {
-    endpoint: '/api/v1/drivers',
+    endpoint: '/api/v1/drivers?is_external=false',
     displayField: 'name',
     searchFields: ['name', 'license_no', 'phone'],
     defaultSortBy: 'name',

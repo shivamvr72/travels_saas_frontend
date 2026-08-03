@@ -22,13 +22,15 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
     isOpen: boolean;
     resourceType: ResourceType;
     currentId?: string | null;
+    isExternal?: boolean;
+    currentName?: string;
   }>({
     isOpen: false,
     resourceType: 'vehicle',
   });
 
-  const handleOpenDialog = (resourceType: ResourceType, currentId?: string | null) => {
-    setDialogState({ isOpen: true, resourceType, currentId });
+  const handleOpenDialog = (resourceType: ResourceType, currentId?: string | null, isExternal?: boolean, currentName?: string) => {
+    setDialogState({ isOpen: true, resourceType, currentId, isExternal, currentName });
   };
   
   const unassignMutation = useMutation({
@@ -43,19 +45,19 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
     }
   });
   
-  const renderAssignmentCard = (title: string, icon: React.ReactNode, value: string | undefined, type: ResourceType, currentId?: string | null) => (
+  const renderAssignmentCard = (title: string, icon: React.ReactNode, value: string | undefined, type: ResourceType, currentId?: string | null, isExternal?: boolean) => (
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
           {icon}
-          {title}
+          {title} {isExternal && <span className="text-xs font-normal bg-secondary/50 px-2 py-0.5 rounded-md ml-auto">External</span>}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center">
           <p className="font-semibold">{value || 'Unassigned'}</p>
           <Can permission={PERMISSION_KEYS.TRIPS_ASSIGN}>
-            <Button variant="outline" size="sm" onClick={() => handleOpenDialog(type, currentId)}>
+            <Button variant="outline" size="sm" onClick={() => handleOpenDialog(type, currentId, isExternal, value)}>
               {value ? 'Change' : 'Assign'}
             </Button>
           </Can>
@@ -84,8 +86,8 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {renderAssignmentCard('Vehicle', <Car className="h-4 w-4" />, trip.vehicle?.license_plate, 'vehicle', trip.vehicle_id)}
-      {renderAssignmentCard('Primary Driver', <User className="h-4 w-4" />, trip.driver?.name, 'driver', trip.driver_id)}
-      {renderAssignmentCard('Co-Driver', <Users className="h-4 w-4" />, trip.co_driver?.name, 'co_driver', trip.co_driver_id)}
+      {renderAssignmentCard('Primary Driver', <User className="h-4 w-4" />, trip.driver?.name, 'driver', trip.driver_id, trip.driver?.is_external)}
+      {renderAssignmentCard('Co-Driver', <Users className="h-4 w-4" />, trip.co_driver?.name, 'co_driver', trip.co_driver_id, trip.co_driver?.is_external)}
       {renderAssignmentCard('Dispatcher', <User className="h-4 w-4" />, trip.dispatcher?.full_name, 'dispatcher' as any, trip.dispatcher_id)}
 
       <TripAssignmentDialog
@@ -94,6 +96,8 @@ export function TripAssignmentTab({ trip }: TripAssignmentTabProps) {
         tripId={trip.id}
         resourceType={dialogState.resourceType}
         currentResourceId={dialogState.currentId}
+        currentIsExternal={dialogState.isExternal}
+        currentResourceName={dialogState.currentName}
         startDate={trip.start_date}
         endDate={trip.expected_end_date}
       />

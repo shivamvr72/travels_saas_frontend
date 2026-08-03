@@ -39,15 +39,18 @@ export const tripSchema = z.object({
   isExternalDriver: z.boolean().default(false).optional(),
   external_driver_name: z.string().optional(),
   external_agency_name: z.string().optional(),
-  external_driver_phone: z.string().optional(),
+  external_driver_phone: z.string()
+    .regex(/^\+?[\d\s-]{10,15}$/, 'Invalid phone number format')
+    .optional()
+    .or(z.literal('')),
 
 }).superRefine((data, ctx) => {
   // Cross-field: expected_end_date must be after start_date
   if (data.start_date && data.expected_end_date) {
-    if (new Date(data.expected_end_date) <= new Date(data.start_date)) {
+    if (new Date(data.expected_end_date) < new Date(data.start_date)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Expected end date must be after start date',
+        message: 'Expected end date must be after or on start date',
         path: ['expected_end_date'],
       });
     }

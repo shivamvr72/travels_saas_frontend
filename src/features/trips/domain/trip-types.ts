@@ -50,6 +50,7 @@ export interface TripDriverSummary {
   name: string;
   phone: string;
   license_no?: string;
+  is_external?: boolean;
 }
 
 export interface TripCompanySummary {

@@ -24,6 +24,8 @@ interface TripAssignmentDialogProps {
   tripId: string;
   resourceType: ResourceType;
   currentResourceId?: string | null;
+  currentIsExternal?: boolean;
+  currentResourceName?: string;
   startDate: string;
   endDate?: string | null;
   isOpen: boolean;
@@ -34,12 +36,14 @@ export function TripAssignmentDialog({
   tripId,
   resourceType,
   currentResourceId,
+  currentIsExternal,
+  currentResourceName,
   startDate,
   endDate,
   isOpen,
   onClose,
 }: TripAssignmentDialogProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(currentResourceId || null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   
   // External Driver state
   const [isExternal, setIsExternal] = useState(false);
@@ -49,13 +53,14 @@ export function TripAssignmentDialog({
 
   useEffect(() => {
     if (isOpen) {
-      setSelectedId(currentResourceId || null);
-      setIsExternal(false);
-      setExternalName('');
+      const isExt = currentIsExternal || false;
+      setIsExternal(isExt);
+      setSelectedId(isExt ? null : (currentResourceId || null));
+      setExternalName(isExt ? (currentResourceName || '') : '');
       setExternalAgency('');
       setExternalPhone('');
     }
-  }, [isOpen, currentResourceId]);
+  }, [isOpen, currentResourceId, currentIsExternal, currentResourceName]);
 
   const assignMutation = useTripAssign();
   const createDriverMutation = useCreateDriver();
@@ -88,6 +93,11 @@ export function TripAssignmentDialog({
     if (isExternal && isDriverType) {
       if (!externalName) {
         toast.error('Driver name is required for external drivers');
+        return;
+      }
+      if (currentIsExternal && externalName === currentResourceName && !externalAgency && !externalPhone) {
+        // They didn't change anything, just close the dialog to avoid creating a duplicate
+        onClose();
         return;
       }
       try {

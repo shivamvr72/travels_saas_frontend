@@ -89,6 +89,8 @@ apiClient.interceptors.response.use(
 
       if (!refreshToken) {
         useAuthStore.getState().logout();
+        isRefreshing = false;
+        processQueue(error, null);
         return Promise.reject(error);
       }
 
