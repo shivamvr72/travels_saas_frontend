@@ -57,6 +57,7 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
   return (
     <div className="flex items-center space-x-2">
       {availableActions
+        .filter((action) => action.targetStatus !== 'assigned' && action.targetStatus !== 'draft')
         .map((action) => {
         const Icon = action.icon;
         

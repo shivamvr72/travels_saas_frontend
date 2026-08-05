@@ -120,7 +120,8 @@ export function TripAssignmentDialog({
         onClose();
       } catch (error: any) {
         console.error("Failed to create or assign external driver", error);
-        toast.error(error.message || "Failed to assign driver");
+        const detail = error?.response?.data?.message || error.message || "Failed to assign driver";
+        toast.error(detail);
       }
     } else {
       if (!selectedId) return;
@@ -138,6 +139,9 @@ export function TripAssignmentDialog({
             queryClient.invalidateQueries({ queryKey: ['trips'] });
             onClose();
             setSelectedId(null);
+          },
+          onError: (error: any) => {
+            toast.error(error?.response?.data?.message || error.message || 'Failed to assign resource');
           },
         }
       );

@@ -135,7 +135,7 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
                 <div className="flex justify-end gap-4">
                   <Button variant="outline" onClick={handleSyncExpenses} disabled={isSyncing}>
                     <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} /> 
-                    {isSyncing ? 'Syncing...' : 'Auto-Fill Tolls & Parking'}
+                    {isSyncing ? 'Syncing...' : 'Auto-Fill Billable Expenses'}
                   </Button>
                   <Button variant="outline" onClick={() => setIsEditing(true)}>Edit Invoice Details</Button>
                   <Button onClick={() => setIsConfirmOpen(true)} disabled={isGenerating}>

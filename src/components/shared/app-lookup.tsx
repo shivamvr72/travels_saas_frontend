@@ -69,6 +69,10 @@ export function AppLookup({
       const separator = config.endpoint.includes('?') ? '&' : '?';
       const res = await apiClient.get(`${config.endpoint}${separator}${searchParams.toString()}`);
       // Backend PaginatedResponse uses { data: [...], total, page, page_size, total_pages }
+      // Some endpoints (like dispatch available endpoints) might return a direct array
+      if (Array.isArray(res.data)) {
+        return res.data;
+      }
       const payload = res.data as { data?: Record<string, unknown>[]; items?: Record<string, unknown>[] };
       return payload.data ?? payload.items ?? [];
     },
