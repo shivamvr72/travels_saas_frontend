@@ -96,7 +96,7 @@ apiClient.interceptors.response.use(
 
       try {
         // Attempt to refresh token using fetch to avoid circular dependency/interceptor loops
-        const response = await fetch(`${env.apiBaseUrl}/api/v1/auth/refresh`, {
+        const response = await fetch(`${env.apiBaseUrl}/auth/refresh`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ refresh_token: refreshToken }),
