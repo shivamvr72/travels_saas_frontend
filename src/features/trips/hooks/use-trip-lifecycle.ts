@@ -115,11 +115,22 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
         default:
           toast.error(`Action for status "${target}" is not supported.`);
       }
-    } catch (error: unknown) {
-      const detail = (error as { response?: { data?: { detail?: string } } })
-        ?.response?.data?.detail || 'An error occurred during transition.';
-      toast.error(`Action failed: ${detail}`);
-      throw error;
+    } catch (error: any) {
+      let errorMessage = 'An error occurred during transition.';
+      
+      const apiMessage = error?.response?.data?.message || error?.response?.data?.detail;
+      
+      if (typeof apiMessage === 'string') {
+        errorMessage = apiMessage;
+      } else if (Array.isArray(apiMessage)) {
+        errorMessage = apiMessage.map((d: any) => d.msg).join(', ');
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      toast.error(`Action failed: ${errorMessage}`);
     }
   };
 
