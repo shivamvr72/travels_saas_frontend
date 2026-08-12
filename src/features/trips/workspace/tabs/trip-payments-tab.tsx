@@ -9,7 +9,7 @@ import { PaymentFormValues } from '@/features/finance/schemas/finance-schemas';
 import { FinanceRules } from '@/features/finance/domain/finance-rules';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, IndianRupee, Plus } from 'lucide-react';
+import { AlertCircle, IndianRupee, Plus, CheckCircle2 } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
 import {
   AlertDialog,
@@ -79,10 +79,17 @@ export function TripPaymentsTab({ trip }: TripPaymentsTabProps) {
 
   return (
     <div className="max-w-4xl mx-auto mt-6 space-y-6">
-      {!canReceivePayment && (
+      {(!invoice || !['Generated', 'Sent', 'Partially Paid', 'Paid'].includes(invoice.status)) && (
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 flex gap-3 text-yellow-800 dark:text-yellow-400">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <p className="text-sm">Payments cannot be recorded until a final invoice has been generated for this trip.</p>
+        </div>
+      )}
+
+      {(paymentDetails && paymentDetails.total_payment > 0 && paymentDetails.balance_due <= 0) && (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex gap-3 text-green-800 dark:text-green-400">
+          <CheckCircle2 className="h-5 w-5 shrink-0" />
+          <p className="text-sm">This trip is fully paid. No further payments can be recorded.</p>
         </div>
       )}
 

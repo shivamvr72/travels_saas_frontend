@@ -16,6 +16,7 @@ export function PaymentHistory({ paymentDetails }: PaymentHistoryProps) {
   };
 
   const isSettled = paymentDetails.is_settled;
+  const isUnbilled = paymentDetails.total_payment === 0;
   
   return (
     <div className="bg-card text-card-foreground p-6 rounded-lg border shadow-sm space-y-6">
@@ -26,6 +27,10 @@ export function PaymentHistory({ paymentDetails }: PaymentHistoryProps) {
             {isSettled ? (
               <span className="flex items-center gap-1.5 text-sm font-medium text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2.5 py-1 rounded-full">
                 <CheckCircle2 className="h-4 w-4" /> Fully Paid
+              </span>
+            ) : isUnbilled ? (
+              <span className="flex items-center gap-1.5 text-sm font-medium text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 px-2.5 py-1 rounded-full">
+                <Clock className="h-4 w-4" /> Unbilled / Pending Invoice
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-sm font-medium text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 px-2.5 py-1 rounded-full">

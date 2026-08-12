@@ -3,8 +3,18 @@ import { Trip } from '../domain/trip-types';
 import { TripStatusBadge } from '../components/trip-status-badge';
 import { TripLifecycleActions } from '../components/trip-lifecycle-actions';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CalendarIcon, MapPinIcon, UserIcon } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, CalendarIcon, MapPinIcon, UserIcon, Edit2 } from 'lucide-react';
 import { tripNumberService } from '../services/trip-number.service';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { AppLookup } from '@/components/shared/app-lookup';
+import { useUpdateTrip } from '../api';
+import { useCreateCustomer } from '@/features/customers/api';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { tripQueryKeys } from '../api';
 
 interface WorkspaceHeaderProps {
   trip: Trip;
@@ -12,6 +22,39 @@ interface WorkspaceHeaderProps {
 
 export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const updateTrip = useUpdateTrip();
+  const createCustomerMutation = useCreateCustomer();
+  const [customerDialogOpen, setCustomerDialogOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(trip.customer_id || null);
+  const [newCustomerName, setNewCustomerName] = useState('');
+
+  const handleAssignCustomer = async () => {
+    if (!selectedCustomerId) return;
+    try {
+      await updateTrip.mutateAsync({ id: trip.id, data: { customer_id: selectedCustomerId } } as any);
+      await queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(trip.id) });
+      toast.success('Customer assigned successfully');
+      setCustomerDialogOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to assign customer');
+    }
+  };
+
+  const handleCreateCustomer = async () => {
+    if (!newCustomerName.trim()) return;
+    try {
+      const newCustomer = await createCustomerMutation.mutateAsync({ 
+        name: newCustomerName, 
+        phone: '9999999999' 
+      } as any);
+      setSelectedCustomerId(newCustomer.id);
+      setNewCustomerName('');
+      toast.success(`Customer "${newCustomerName}" created! You can now click Assign.`);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to create customer');
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 bg-card border rounded-lg p-4 shadow-sm">
@@ -30,7 +73,73 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground ml-11">
           <div className="flex items-center">
             <UserIcon className="mr-1.5 h-4 w-4 text-muted-foreground/70" />
-            <span className="font-medium text-foreground mr-1">{trip.customer?.name || 'No Customer'}</span>
+            <Dialog open={customerDialogOpen} onOpenChange={setCustomerDialogOpen}>
+              <DialogTrigger className="font-medium text-foreground mr-1 hover:underline hover:text-primary transition-colors flex items-center group">
+                {trip.customer?.name || 'No Customer'}
+                <Edit2 className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Assign Customer</DialogTitle>
+                </DialogHeader>
+                <div className="py-4 space-y-6">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Select Existing Customer</Label>
+                    <AppLookup 
+                      lookupKey="customers" 
+                      value={selectedCustomerId || undefined} 
+                      onChange={(val) => setSelectedCustomerId(val as string)} 
+                      placeholder="Search customers..." 
+                      allowCreate={true}
+                      onCreate={async (name) => {
+                        try {
+                          const newCustomer = await createCustomerMutation.mutateAsync({ 
+                            name, 
+                            phone: '9999999999' 
+                          } as any);
+                          setSelectedCustomerId(newCustomer.id);
+                          toast.success(`Customer "${name}" created successfully.`);
+                        } catch (err: any) {
+                          toast.error(err.message || 'Failed to create customer');
+                        }
+                      }}
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or Create New</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">New Customer Name</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        placeholder="Enter name..." 
+                        value={newCustomerName}
+                        onChange={(e) => setNewCustomerName(e.target.value)}
+                      />
+                      <Button 
+                        type="button" 
+                        variant="secondary" 
+                        onClick={handleCreateCustomer}
+                        disabled={createCustomerMutation.isPending || !newCustomerName.trim()}
+                      >
+                        {createCustomerMutation.isPending ? 'Creating...' : 'Create'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setCustomerDialogOpen(false)}>Cancel</Button>
+                  <Button onClick={handleAssignCustomer} disabled={updateTrip.isPending || !selectedCustomerId}>
+                    {updateTrip.isPending ? 'Assigning...' : 'Assign'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
           
           <div className="flex items-center">

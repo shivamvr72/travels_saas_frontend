@@ -38,10 +38,10 @@ export async function refreshLookupsIfNeeded() {
   if (now - lastCacheTime > 30000 || !cachedVehicles) {
     try {
       const [vehiclesRes, driversRes, customersRes, companiesRes] = await Promise.all([
-        apiClient.get('/api/v1/vehicles?page_size=100').catch(() => ({ data: { data: [] } })),
-        apiClient.get('/api/v1/drivers?page_size=100').catch(() => ({ data: { data: [] } })),
-        apiClient.get('/api/v1/customers?page_size=100').catch(() => ({ data: { data: [] } })),
-        apiClient.get('/api/v1/companies?page_size=100').catch(() => ({ data: { data: [] } })),
+        apiClient.get('/api/v1/vehicles/?page_size=100').catch(() => ({ data: { data: [] } })),
+        apiClient.get('/api/v1/drivers/?page_size=100').catch(() => ({ data: { data: [] } })),
+        apiClient.get('/api/v1/customers/?page_size=100').catch(() => ({ data: { data: [] } })),
+        apiClient.get('/api/v1/companies/?page_size=100').catch(() => ({ data: { data: [] } })),
       ]);
       cachedVehicles = vehiclesRes.data?.data || vehiclesRes.data?.items || [];
       cachedDrivers = driversRes.data?.data || driversRes.data?.items || [];
@@ -61,7 +61,7 @@ function resolveTripRelations(be: BETrip, customerId?: string | null) {
   const driver = cachedDrivers?.find(d => d.id === be.driver_id);
   const coDriver = cachedDrivers?.find(d => d.id === be.co_driver_id);
   const company = cachedCompanies?.find(c => c.id === be.company_id);
-  const customer = cachedCustomers?.find(c => c.id === (customerId || be.customer_booking_id));
+  const customer = cachedCustomers?.find(c => c.id === (customerId || be.customer_id || be.customer_booking_id));
 
   return {
     vehicle: vehicle ? {
@@ -128,7 +128,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     estimated_duration_mins: firstLoc?.total_hours ? Math.round(Number(firstLoc.total_hours) * 60) : null,
 
     company_id: be.company_id,
-    customer_id: be.customer_booking_id || null,
+    customer_id: (be as any).customer_id || be.customer_booking_id || null,
     vehicle_id: be.vehicle_id,
     driver_id: be.driver_id,
     route_id: firstLoc?.route_id || null,
@@ -271,6 +271,7 @@ export const tripApi = {
     const backendPayload: Record<string, any> = {};
     if (data.start_date) backendPayload.trip_date = data.start_date;
     if (data.company_id !== undefined) backendPayload.company_id = uuid(data.company_id);
+    if (data.customer_id !== undefined) backendPayload.customer_id = uuid(data.customer_id as string | undefined);
     if (data.co_driver_id !== undefined) backendPayload.co_driver_id = uuid(data.co_driver_id);
     if (data.dispatcher_id !== undefined) backendPayload.dispatcher_id = uuid(data.dispatcher_id);
     if (data.remarks !== undefined) backendPayload.notes = data.remarks?.trim() || null;

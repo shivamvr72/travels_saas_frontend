@@ -10,17 +10,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AppSectionCard } from '@/components/shared/app-section-card';
 import { AppLookup } from '@/components/shared/app-lookup';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useCreateDriver } from '@/features/drivers/api';
+import { useCreateCustomer } from '@/features/customers/api';
 import { toast } from 'sonner';
 
 export function TripCreateForm() {
   const router = useRouter();
   const createTrip = useCreateTrip();
   const createDriverMutation = useCreateDriver();
+  const createCustomerMutation = useCreateCustomer();
 
   const form = useForm<TripFormValues>({
     mode: 'onChange',
@@ -81,9 +82,13 @@ export function TripCreateForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <AppSectionCard title="1. Trip Identity">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10 max-w-5xl mx-auto pb-10 pt-4">
+        
+        <FormSection 
+          title="Trip Identity" 
+          description="Basic details and classifications for this trip."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
             <FormField
               control={form.control}
               name="trip_type"
@@ -144,7 +149,7 @@ export function TripCreateForm() {
               control={form.control}
               name="remarks"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
+                <FormItem className="sm:col-span-2">
                   <FormLabel>Remarks</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Any special instructions..." {...field} value={field.value || ''} />
@@ -154,10 +159,13 @@ export function TripCreateForm() {
               )}
             />
           </div>
-        </AppSectionCard>
+        </FormSection>
 
-        <AppSectionCard title="2. Schedule & Geography">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormSection 
+          title="Schedule & Geography" 
+          description="Specify when and where this trip will take place."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
             <FormField
               control={form.control}
               name="start_date"
@@ -196,7 +204,6 @@ export function TripCreateForm() {
                       {...field} 
                       onChange={(e) => {
                         field.onChange(e);
-                        // Manual edit of origin clears the selected route ID
                         form.setValue('route_id', '');
                       }}
                     />
@@ -217,7 +224,6 @@ export function TripCreateForm() {
                       {...field} 
                       onChange={(e) => {
                         field.onChange(e);
-                        // Manual edit of destination clears the selected route ID
                         form.setValue('route_id', '');
                       }}
                     />
@@ -227,10 +233,13 @@ export function TripCreateForm() {
               )}
             />
           </div>
-        </AppSectionCard>
+        </FormSection>
 
-        <AppSectionCard title="3. Route & Parties">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <FormSection 
+          title="Route & Parties" 
+          description="Select predefined routes, companies, and the customer associated with this trip."
+        >
+          <div className="grid grid-cols-1 gap-x-6 gap-y-5">
             <FormField
               control={form.control}
               name="route_id"
@@ -258,47 +267,65 @@ export function TripCreateForm() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="company_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company</FormLabel>
-                  <FormControl>
-                    <AppLookup 
-                      lookupKey="companies" 
-                      value={field.value || undefined} 
-                      onChange={field.onChange} 
-                      placeholder="Select company..." 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="customer_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Customer</FormLabel>
-                  <FormControl>
-                    <AppLookup 
-                      lookupKey="customers" 
-                      value={field.value || undefined} 
-                      onChange={field.onChange} 
-                      placeholder="Select customer..." 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+              <FormField
+                control={form.control}
+                name="company_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company</FormLabel>
+                    <FormControl>
+                      <AppLookup 
+                        lookupKey="companies" 
+                        value={field.value || undefined} 
+                        onChange={field.onChange} 
+                        placeholder="Select company..." 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customer_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Customer</FormLabel>
+                    <FormControl>
+                      <AppLookup 
+                        lookupKey="customers" 
+                        value={field.value || undefined} 
+                        onChange={field.onChange} 
+                        placeholder="Select customer..." 
+                        allowCreate={true}
+                        onCreate={async (name) => {
+                          try {
+                            const newCustomer = await createCustomerMutation.mutateAsync({ 
+                              name, 
+                              phone: '9999999999' 
+                            } as any);
+                            field.onChange(newCustomer.id);
+                            toast.success(`Customer "${name}" created successfully.`);
+                          } catch (err: any) {
+                            toast.error(err.message || 'Failed to create customer');
+                          }
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
-        </AppSectionCard>
+        </FormSection>
 
-        <AppSectionCard title="4. Resources">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FormSection 
+          title="Resources" 
+          description="Assign the vehicle, drivers, and dispatcher."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
             <FormField
               control={form.control}
               name="vehicle_id"
@@ -317,6 +344,7 @@ export function TripCreateForm() {
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="driver_id"
@@ -339,7 +367,7 @@ export function TripCreateForm() {
                           }
                         }}
                       />
-                      <Label htmlFor="is-external" className="text-xs">External Driver</Label>
+                      <Label htmlFor="is-external" className="text-xs font-normal text-muted-foreground">External Driver</Label>
                     </div>
                   </div>
 
@@ -353,7 +381,7 @@ export function TripCreateForm() {
                       />
                     </FormControl>
                   ) : (
-                    <div className="space-y-3 p-3 bg-secondary/20 rounded-md border">
+                    <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-border/50">
                       <FormField
                         control={form.control}
                         name="external_driver_name"
@@ -361,7 +389,7 @@ export function TripCreateForm() {
                           <FormItem>
                             <FormLabel className="text-xs">Driver Name *</FormLabel>
                             <FormControl>
-                              <Input placeholder="Enter driver name" {...nameField} value={nameField.value || ''} />
+                              <Input placeholder="Enter driver name" {...nameField} value={nameField.value || ''} className="bg-background" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -374,7 +402,7 @@ export function TripCreateForm() {
                           <FormItem>
                             <FormLabel className="text-xs">Other Travels Company</FormLabel>
                             <FormControl>
-                              <Input placeholder="Agency name (optional)" {...agencyField} value={agencyField.value || ''} />
+                              <Input placeholder="Agency name (optional)" {...agencyField} value={agencyField.value || ''} className="bg-background" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -387,7 +415,7 @@ export function TripCreateForm() {
                           <FormItem>
                             <FormLabel className="text-xs">Phone Number</FormLabel>
                             <FormControl>
-                              <Input placeholder="Phone (optional)" {...phoneField} value={phoneField.value || ''} />
+                              <Input placeholder="Phone (optional)" {...phoneField} value={phoneField.value || ''} className="bg-background" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -417,7 +445,6 @@ export function TripCreateForm() {
                 </FormItem>
               )}
             />
-            {/* Dispatchers uses users or staff lookup typically, we assume "dispatchers" is registered */}
             <FormField
               control={form.control}
               name="dispatcher_id"
@@ -437,15 +464,29 @@ export function TripCreateForm() {
               )}
             />
           </div>
-        </AppSectionCard>
+        </FormSection>
 
-        <div className="flex justify-end gap-3 pt-4">
-          <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
-          <Button type="submit" disabled={createTrip.isPending}>
+        <div className="flex justify-end gap-3 pt-6 border-t border-border mt-10">
+          <Button type="button" variant="outline" onClick={() => router.back()} className="w-24">Cancel</Button>
+          <Button type="submit" disabled={createTrip.isPending} className="w-32">
             {createTrip.isPending ? 'Creating...' : 'Create Trip'}
           </Button>
         </div>
       </form>
     </Form>
+  );
+}
+
+function FormSection({ title, description, children }: { title: string, description: string, children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+      <div className="md:col-span-1 space-y-2">
+        <h3 className="text-lg font-semibold leading-6 text-foreground tracking-tight">{title}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed pr-4">{description}</p>
+      </div>
+      <div className="md:col-span-2">
+        {children}
+      </div>
+    </div>
   );
 }

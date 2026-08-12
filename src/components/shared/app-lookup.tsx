@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { LookupRegistry } from '@/shared/config/lookup-registry';
 import { CacheProfiles } from '@/shared/lib/query-factory';
 import { useDebounce } from '@/shared/hooks';
-import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2, Plus } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +38,10 @@ interface AppLookupProps {
   placeholder?: string;
   /** Is the field disabled */
   disabled?: boolean;
+  /** Whether to allow creating new items */
+  allowCreate?: boolean;
+  /** Callback when create is triggered */
+  onCreate?: (search: string) => void;
 }
 
 export function AppLookup({
@@ -48,6 +52,8 @@ export function AppLookup({
   multiple = false,
   placeholder = 'Select option...',
   disabled = false,
+  allowCreate = false,
+  onCreate,
 }: AppLookupProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -180,6 +186,25 @@ export function AppLookup({
                     </CommandItem>
                   );
                 })}
+              </CommandGroup>
+            )}
+
+            {!isLoading && allowCreate && search.trim() !== '' && !items.some(item => (config.formatDisplay ? config.formatDisplay(item) : String(item[config.displayField])).toLowerCase() === search.toLowerCase()) && (
+              <CommandGroup>
+                <CommandItem
+                  value={search}
+                  onSelect={() => {
+                    if (onCreate) {
+                      onCreate(search);
+                      setOpen(false);
+                      setSearch('');
+                    }
+                  }}
+                  className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create "{search}"
+                </CommandItem>
               </CommandGroup>
             )}
           </CommandList>

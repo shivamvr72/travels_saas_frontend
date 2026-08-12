@@ -22,10 +22,8 @@ apiClient.interceptors.request.use(
     if (config.url?.startsWith('/api/v1')) {
       config.url = config.url.replace('/api/v1', '');
     }
-    // Also strip trailing slash on endpoints to prevent redirect loops (e.g. 307 Temporary Redirects)
-    if (config.url?.endsWith('/')) {
-      config.url = config.url.slice(0, -1);
-    }
+    // Allow URLs to maintain their trailing slashes to prevent 307 Temporary Redirects 
+    // from the FastAPI backend, which can cause browsers to drop the Authorization header.
     
     return config;
   },
