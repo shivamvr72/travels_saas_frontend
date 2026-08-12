@@ -61,7 +61,7 @@ function resolveTripRelations(be: BETrip, customerId?: string | null) {
   const driver = cachedDrivers?.find(d => d.id === be.driver_id);
   const coDriver = cachedDrivers?.find(d => d.id === be.co_driver_id);
   const company = cachedCompanies?.find(c => c.id === be.company_id);
-  const customer = cachedCustomers?.find(c => c.id === (customerId || be.customer_id || be.customer_booking_id));
+  const customer = cachedCustomers?.find(c => c.id === (customerId || (be as any).customer_id || be.customer_booking_id));
 
   return {
     vehicle: vehicle ? {
