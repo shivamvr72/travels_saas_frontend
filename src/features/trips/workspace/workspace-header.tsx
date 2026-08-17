@@ -45,9 +45,13 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
     if (!newCustomerName.trim()) return;
     try {
       const newCustomer = await createCustomerMutation.mutateAsync({ 
-        name: newCustomerName, 
+        name: newCustomerName.trim(), 
         phone: '9999999999' 
       } as any);
+      queryClient.setQueryData(['lookup', 'customers', ''], (oldData: any[]) => {
+        return oldData ? [newCustomer, ...oldData] : [newCustomer];
+      });
+      queryClient.invalidateQueries({ queryKey: ['lookup', 'customers'] });
       setSelectedCustomerId(newCustomer.id);
       setNewCustomerName('');
       toast.success(`Customer "${newCustomerName}" created! You can now click Assign.`);
@@ -97,6 +101,10 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
                             name, 
                             phone: '9999999999' 
                           } as any);
+                          queryClient.setQueryData(['lookup', 'customers', ''], (oldData: any[]) => {
+                            return oldData ? [newCustomer, ...oldData] : [newCustomer];
+                          });
+                          queryClient.invalidateQueries({ queryKey: ['lookup', 'customers'] });
                           setSelectedCustomerId(newCustomer.id);
                           toast.success(`Customer "${name}" created successfully.`);
                         } catch (err: any) {

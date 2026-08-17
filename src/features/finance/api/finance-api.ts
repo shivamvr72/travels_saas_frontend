@@ -3,30 +3,8 @@ import { Invoice, TripExpense, TripPaymentDetails, ProfitabilitySummary } from '
 import { ExpenseFormValues, PaymentFormValues, InvoiceGenerationValues } from '../schemas/finance-schemas';
 import { ExpenseCategory } from '../domain/finance-constants';
 
-// --- MOCK STORAGE with localStorage persistence ---
-const getStorage = <T>(key: string, defaultValue: T): T => {
-  if (typeof window === 'undefined') return defaultValue;
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : defaultValue;
-  } catch (e) {
-    return defaultValue;
-  }
-};
-
-const setStorage = (key: string, value: any) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-};
-
-const mockExpenses: Record<string, TripExpense[]> = getStorage('svr_mockExpenses', {});
-const mockInvoices: Record<string, Invoice> = getStorage('svr_mockInvoices', {});
-const mockPayments: Record<string, TripPaymentDetails> = getStorage('svr_mockPayments', {});
-
 /**
- * Temporary mock API client for Finance endpoints.
- * These methods will be replaced with actual `apiClient` calls once backend DB changes are applied.
+ * API client for Finance endpoints.
  */
 
 const mapBackendToFrontendCategory = (backendType: string): ExpenseCategory => {
