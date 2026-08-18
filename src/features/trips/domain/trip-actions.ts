@@ -15,6 +15,7 @@ export const TRIP_ACTIONS_MAP: Record<TripStatus, TripActionDef> = {
   dispatched: { targetStatus: 'dispatched', label: 'Dispatch Trip', icon: Send, variant: 'default', requiresConfirmation: true },
   started: { targetStatus: 'started', label: 'Start Trip', icon: PlayCircle, variant: 'default', requiresConfirmation: true },
   completed: { targetStatus: 'completed', label: 'Complete Trip', icon: CheckCircle2, variant: 'default', requiresConfirmation: true },
+  settled: { targetStatus: 'settled', label: 'Settle Trip', icon: Lock, variant: 'default', requiresConfirmation: true },
   cancelled: { targetStatus: 'cancelled', label: 'Cancel Trip', icon: Ban, variant: 'destructive', requiresConfirmation: true },
 };
 

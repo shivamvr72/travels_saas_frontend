@@ -46,6 +46,15 @@ export interface TripBillingResponse {
   total_amount: string;
 }
 
+export interface TripExpenseRequest {
+  expense_date: string;
+  expense_type: string;
+  amount: string;
+  payment_mode?: string | null;
+  notes?: string | null;
+  receipt_url?: string | null;
+}
+
 export interface TripExpenseResponse {
   id: string;
   trip_id: string;

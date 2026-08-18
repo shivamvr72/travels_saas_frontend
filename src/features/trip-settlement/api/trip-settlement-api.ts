@@ -7,7 +7,17 @@ import {
   TripBillingResponse,
   TripPaymentTransactionRequest,
   TripPaymentTransactionResponse,
+  TripExpenseRequest,
+  TripExpenseResponse,
 } from '../types';
+
+export interface SettlementDashboardMetrics {
+  pending_count: number;
+  settled_count: number;
+  total_outstanding: number;
+  total_settled_revenue: number;
+  avg_settlement_days: number;
+}
 
 export const settlementKeys = {
   all: ['trip-settlement'] as const,
@@ -93,5 +103,30 @@ export function useCompleteSettlement() {
   });
 }
 
-// Note: Expense recording mutation not strictly listed in API yet, but required conceptually.
-// If needed, we add useRecordExpense here.
+// Record Expense
+export function useRecordExpense() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ tripId, data }: { tripId: string; data: TripExpenseRequest }): Promise<TripExpenseResponse> => {
+      const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/expenses`, data);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: settlementKeys.summary(variables.tripId) });
+    },
+  });
+}
+
+// Fetch Dashboard Metrics
+export function useSettlementDashboardMetrics() {
+  return useQuery({
+    queryKey: settlementKeys.dashboard(),
+    queryFn: async (): Promise<SettlementDashboardMetrics> => {
+      const response = await apiClient.get('/api/v1/settlements/dashboard-metrics');
+      return response.data;
+    },
+    staleTime: CacheProfiles.Operational.staleTime,
+    gcTime: CacheProfiles.Operational.gcTime,
+  });
+}

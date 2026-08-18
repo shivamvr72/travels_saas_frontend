@@ -7,24 +7,50 @@ import { AppLoadingState } from '@/components/shared/app-loading-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Activity } from 'lucide-react';
 
-// Temporary mock data for Finance Dashboard
-const mockMetrics = {
-  todaysRevenue: 45000,
-  monthlyRevenue: 1250000,
-  outstandingAmount: 187000,
-  netProfit: 450000,
-  collectionRate: 85,
-};
+import { apiClient } from '@/shared/lib/axios';
+import { formatDistanceToNow } from 'date-fns';
 
 export function FinanceDashboard() {
   const [isLoading, setIsLoading] = useState(true);
+  const [metrics, setMetrics] = useState({
+    todaysRevenue: 0,
+    monthlyRevenue: 0,
+    outstandingAmount: 0,
+    netProfit: 0,
+    collectionRate: 0,
+  });
+  const [activities, setActivities] = useState<any[]>([]);
 
   useEffect(() => {
-    // Simulate API fetch
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
+    const fetchDashboardData = async () => {
+      try {
+        const [metricsRes, activityRes] = await Promise.all([
+          apiClient.get('/api/v1/analytics/executive-summary'),
+          apiClient.get('/api/v1/activity?entity_type=TRIP&limit=10') // Fetching general activity for now
+        ]);
+        
+        const m = metricsRes.data;
+        setMetrics({
+          todaysRevenue: m.today_revenue || 0,
+          monthlyRevenue: m.monthly_revenue || 0,
+          outstandingAmount: m.outstanding_receivables || 0,
+          netProfit: m.net_profit || 0,
+          collectionRate: m.collection_rate_pct || 0,
+        });
+
+        // Filter activity to just financial ones if possible, or just use recent
+        const financeEvents = activityRes.data.events.filter((e: any) => 
+          ['payment_received', 'invoice_generated', 'expense_added'].includes(e.event_type)
+        );
+        setActivities(financeEvents.slice(0, 5));
+      } catch (error) {
+        console.error('Failed to fetch finance dashboard data', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   if (isLoading) return <AppLoadingState />;
@@ -36,7 +62,7 @@ export function FinanceDashboard() {
         description="High-level financial performance, revenue, and profitability metrics."
       />
 
-      <FinanceMetricsCards metrics={mockMetrics} />
+      <FinanceMetricsCards metrics={metrics} />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card className="min-h-[300px]">
@@ -60,26 +86,23 @@ export function FinanceDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { id: 1, action: 'Payment Received', entity: 'TCS Operations', amount: 45000, time: '2 hours ago' },
-                { id: 2, action: 'Invoice Generated', entity: 'Trip #KT-2026-004', amount: 12500, time: '5 hours ago' },
-                { id: 3, action: 'Expense Recorded', entity: 'Fuel (Trip #KT-2026-005)', amount: 3500, time: 'Yesterday' },
-                { id: 4, action: 'Payment Received', entity: 'Mankind Pharma', amount: 120000, time: 'Yesterday' },
-              ].map((activity) => (
-                <div key={activity.id} className="flex items-center justify-between p-3 rounded-md bg-muted/40 border text-sm">
-                  <div>
-                    <p className="font-medium">{activity.action}</p>
-                    <p className="text-xs text-muted-foreground">{activity.entity}</p>
+              {activities.length === 0 ? (
+                <div className="text-sm text-muted-foreground p-4 text-center">No recent financial activity found.</div>
+              ) : (
+                activities.map((activity) => (
+                  <div key={activity.id} className="flex items-center justify-between p-3 rounded-md bg-muted/40 border text-sm">
+                    <div>
+                      <p className="font-medium">{activity.title}</p>
+                      <p className="text-xs text-muted-foreground">{activity.description}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">
+                        {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
-                      {activity.action === 'Expense Recorded' ? '-' : ''}
-                      ₹{activity.amount.toLocaleString('en-IN')}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

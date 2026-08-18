@@ -5,7 +5,8 @@ export const VALID_TRANSITIONS: Record<TripStatus, TripStatus[]> = {
   assigned:   ['dispatched', 'draft', 'cancelled'],
   dispatched: ['started', 'cancelled'],
   started:    ['completed', 'cancelled'],
-  completed:  [],
+  completed:  ['settled'],
+  settled:    [],
   cancelled:  [],
 };
 
@@ -25,6 +26,7 @@ export function getActionLabel(target: TripStatus): string {
     dispatched: 'Dispatch Trip',
     started:    'Start Trip',
     completed:  'Complete Trip',
+    settled:    'Settle Trip',
     cancelled:  'Cancel Trip',
   };
   return labels[target] || target;
@@ -32,10 +34,10 @@ export function getActionLabel(target: TripStatus): string {
 
 // Whether a transition requires a confirmation dialog
 export function requiresConfirmation(target: TripStatus): boolean {
-  return ['cancelled', 'completed', 'dispatched', 'started'].includes(target);
+  return ['cancelled', 'completed', 'dispatched', 'started', 'settled'].includes(target);
 }
 
 // Check if a state is a terminal state
 export function isTerminalState(status: TripStatus): boolean {
-  return ['completed', 'cancelled'].includes(status);
+  return ['completed', 'cancelled', 'settled'].includes(status);
 }

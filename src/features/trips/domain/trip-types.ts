@@ -14,6 +14,7 @@ export type TripStatus =
   | 'dispatched'
   | 'started'
   | 'completed'
+  | 'settled'
   | 'cancelled';
 
 export type TripType =
