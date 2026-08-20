@@ -13,3 +13,4 @@ import '@/features/customers/config';
 import '@/features/drivers/config';
 import '@/features/vehicles/config';
 import '@/features/routes/config';
+import '@/features/external-hiring/config';

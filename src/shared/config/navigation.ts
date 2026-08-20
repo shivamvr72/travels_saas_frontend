@@ -50,6 +50,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
       { title: 'Companies', href: '/companies', icon: Building2, module: 'COMPANIES' },
       { title: 'Customers', href: '/customers', icon: Users, module: 'CUSTOMERS' },
       { title: 'Routes', href: '/routes', icon: MapPin, module: 'ROUTES' },
+      { title: 'External Hiring', href: '/external-hiring', icon: Bus, module: 'FINANCE' },
     ],
   },
   {

@@ -18,6 +18,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useCreateDriver } from '@/features/drivers/api';
+import { useCreateVehicle } from '@/features/vehicles/api';
+import { useCreateExternalHiring } from '@/features/external-hiring/api';
 import { toast } from 'sonner';
 
 interface TripAssignmentDialogProps {
@@ -51,6 +53,10 @@ export function TripAssignmentDialog({
   const [externalAgency, setExternalAgency] = useState('');
   const [externalPhone, setExternalPhone] = useState('');
 
+  // External Vehicle state
+  const [externalVehicleReg, setExternalVehicleReg] = useState('');
+  const [externalAgreedRate, setExternalAgreedRate] = useState('');
+
   useEffect(() => {
     if (isOpen) {
       const isExt = currentIsExternal || false;
@@ -59,11 +65,15 @@ export function TripAssignmentDialog({
       setExternalName(isExt ? (currentResourceName || '') : '');
       setExternalAgency('');
       setExternalPhone('');
+      setExternalVehicleReg(isExt ? (currentResourceName || '') : '');
+      setExternalAgreedRate('');
     }
   }, [isOpen, currentResourceId, currentIsExternal, currentResourceName]);
 
   const assignMutation = useTripAssign();
   const createDriverMutation = useCreateDriver();
+  const createVehicleMutation = useCreateVehicle();
+  const createHiringMutation = useCreateExternalHiring();
   const queryClient = useQueryClient();
 
   const { data: availability, isLoading: isChecking } = useResourceAvailability(
@@ -123,6 +133,49 @@ export function TripAssignmentDialog({
         const detail = error?.response?.data?.message || error.message || "Failed to assign driver";
         toast.error(detail);
       }
+    } else if (isExternal && resourceType === 'vehicle') {
+      if (!externalVehicleReg || !externalName || !externalAgreedRate) {
+        toast.error('Vehicle Reg, Provider Name, and Agreed Rate are required');
+        return;
+      }
+      try {
+        const newVehicle = await createVehicleMutation.mutateAsync({
+          reg_number: externalVehicleReg,
+          ownership_type: 'rented',
+          status: 'available',
+          brand_name: 'External',
+          model_type: 'External',
+          vehicle_type: 'Other',
+          fuel_type: 'diesel'
+        } as any);
+
+        const newHiring = await createHiringMutation.mutateAsync({
+          provider_name: externalName,
+          provider_phone: externalPhone || undefined,
+          provider_type: 'vendor',
+          start_date: startDate,
+          agreed_rate: parseFloat(externalAgreedRate),
+          total_amount_payable: parseFloat(externalAgreedRate),
+          vehicle_id: newVehicle.id,
+          external_vehicle_reg: externalVehicleReg,
+        } as any);
+
+        await assignMutation.mutateAsync({
+          id: tripId,
+          assignment: {
+            vehicle_id: newVehicle.id,
+            external_hiring_id: newHiring.id,
+          }
+        });
+        
+        queryClient.invalidateQueries({ queryKey: ['trips', tripId] });
+        queryClient.invalidateQueries({ queryKey: ['trips'] });
+        onClose();
+      } catch (error: any) {
+        console.error("Failed to create or assign external vehicle", error);
+        const detail = error?.response?.data?.message || error.message || "Failed to assign vehicle";
+        toast.error(detail);
+      }
     } else {
       if (!selectedId) return;
 
@@ -148,8 +201,10 @@ export function TripAssignmentDialog({
     }
   };
 
-  const isAssigning = assignMutation.isPending || createDriverMutation.isPending;
-  const isAssignDisabled = isExternal ? (!externalName || isAssigning) : (!selectedId || isChecking || isAssigning);
+  const isAssigning = assignMutation.isPending || createDriverMutation.isPending || createVehicleMutation.isPending || createHiringMutation.isPending;
+  const isAssignDisabled = isExternal 
+    ? (resourceType === 'vehicle' ? (!externalVehicleReg || !externalName || !externalAgreedRate || isAssigning) : (!externalName || isAssigning)) 
+    : (!selectedId || isChecking || isAssigning);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -159,15 +214,15 @@ export function TripAssignmentDialog({
         </DialogHeader>
         
         <div className="py-4 space-y-4">
-          {isDriverType && (
+          {(isDriverType || resourceType === 'vehicle') && (
             <div className="flex items-center space-x-2 mb-4 bg-muted/50 p-3 rounded-lg border">
               <Switch
-                id="external-driver"
+                id="external-resource"
                 checked={isExternal}
                 onCheckedChange={setIsExternal}
               />
-              <Label htmlFor="external-driver" className="cursor-pointer">
-                External Driver (Other Travels)
+              <Label htmlFor="external-resource" className="cursor-pointer">
+                {isDriverType ? 'External Driver (Other Travels)' : 'External Vehicle (Hired from Vendor)'}
               </Label>
             </div>
           )}
@@ -184,30 +239,55 @@ export function TripAssignmentDialog({
             </div>
           ) : (
             <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+              {resourceType === 'vehicle' && (
+                <div className="space-y-2">
+                  <Label>Vehicle Registration <span className="text-destructive">*</span></Label>
+                  <Input 
+                    value={externalVehicleReg}
+                    onChange={(e) => setExternalVehicleReg(e.target.value)}
+                    placeholder="e.g. MH 12 AB 1234" 
+                  />
+                </div>
+              )}
               <div className="space-y-2">
-                <Label>Driver Name <span className="text-destructive">*</span></Label>
+                <Label>{resourceType === 'vehicle' ? 'Vendor Name' : 'Driver Name'} <span className="text-destructive">*</span></Label>
                 <Input 
                   value={externalName}
                   onChange={(e) => setExternalName(e.target.value)}
-                  placeholder="e.g. Ramesh Kumar" 
+                  placeholder={resourceType === 'vehicle' ? "e.g. Patel Travels" : "e.g. Ramesh Kumar"} 
                 />
               </div>
+              {isDriverType && (
+                <div className="space-y-2">
+                  <Label>Other Travels Company</Label>
+                  <Input 
+                    value={externalAgency}
+                    onChange={(e) => setExternalAgency(e.target.value)}
+                    placeholder="e.g. Patel Travels" 
+                  />
+                </div>
+              )}
               <div className="space-y-2">
-                <Label>Other Travels Company</Label>
-                <Input 
-                  value={externalAgency}
-                  onChange={(e) => setExternalAgency(e.target.value)}
-                  placeholder="e.g. Patel Travels" 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Phone Number</Label>
+                <Label>{resourceType === 'vehicle' ? 'Vendor Phone' : 'Phone Number'}</Label>
                 <Input 
                   value={externalPhone}
                   onChange={(e) => setExternalPhone(e.target.value)}
                   placeholder="e.g. 9876543210" 
                 />
               </div>
+              {resourceType === 'vehicle' && (
+                <div className="space-y-2">
+                  <Label>Agreed Trip Rate <span className="text-destructive">*</span></Label>
+                  <Input 
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={externalAgreedRate}
+                    onChange={(e) => setExternalAgreedRate(e.target.value)}
+                    placeholder="e.g. 5000" 
+                  />
+                </div>
+              )}
             </div>
           )}
 
