@@ -60,6 +60,7 @@ export const BillingService = {
     });
 
     const updates = {
+      ...currentInvoice,
       ...values,
       ...newTotals,
     };

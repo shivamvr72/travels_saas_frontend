@@ -361,6 +361,22 @@ export const tripApi = {
     return resolveMissingRelations(trip);
   },
 
+  assignExternalVehicle: async (id: string, payload: any): Promise<Trip> => {
+    await refreshLookupsIfNeeded();
+    await apiClient.post(`/api/v1/dispatch/trips/${id}/assign-external`, payload);
+    const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
+    const trip = mapBackendToFrontendTrip(res);
+    return resolveMissingRelations(trip);
+  },
+
+  assignExternalDriver: async (id: string, payload: any): Promise<Trip> => {
+    await refreshLookupsIfNeeded();
+    await apiClient.post(`/api/v1/dispatch/trips/${id}/assign-external-driver`, payload);
+    const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
+    const trip = mapBackendToFrontendTrip(res);
+    return resolveMissingRelations(trip);
+  },
+
   // ─── Activity Feed ───────────────────────────────────────────────────
   // (Activity Feed is now directly queried from backend in hooks)
 

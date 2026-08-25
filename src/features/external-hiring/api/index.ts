@@ -6,7 +6,7 @@ export type ExternalHiring = components['schemas']['ExternalVehicleHiringRespons
 export type ExternalHiringCreate = components['schemas']['ExternalVehicleHiringCreate'];
 export type ExternalHiringUpdate = components['schemas']['ExternalVehicleHiringUpdate'];
 
-export const externalHiringApi = createCrudApi<ExternalHiring, ExternalHiringCreate, ExternalHiringUpdate>('/api/v1/external-hiring');
+export const externalHiringApi = createCrudApi<ExternalHiring, ExternalHiringCreate, ExternalHiringUpdate>('/api/v1/external-hirings');
 export const externalHiringHooks = createCrudHooks('external-hiring', externalHiringApi);
 
 export const {

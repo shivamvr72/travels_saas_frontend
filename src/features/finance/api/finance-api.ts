@@ -110,7 +110,7 @@ export const FinanceApi = {
   },
 
   generateDraftInvoice: async (tripId: string, invoiceBase: Partial<Invoice>): Promise<Invoice> => {
-    const response = await apiClient.put(`/api/v1/trips/${tripId}/billing`, invoiceBase);
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/billing`, invoiceBase);
     const billing = response.data;
     return {
       ...billing,
@@ -120,7 +120,7 @@ export const FinanceApi = {
   },
 
   updateDraftInvoice: async (tripId: string, invoiceId: string, updates: Partial<Invoice>): Promise<Invoice> => {
-    const response = await apiClient.put(`/api/v1/trips/${tripId}/billing`, updates);
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/billing`, updates);
     const billing = response.data;
     return {
       ...billing,
@@ -130,7 +130,7 @@ export const FinanceApi = {
   },
 
   syncExpenses: async (tripId: string): Promise<Invoice> => {
-    const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/sync-expenses`);
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/billing`, { sync_expenses: true });
     const billing = response.data;
     return {
       ...billing,
@@ -173,7 +173,7 @@ export const FinanceApi = {
   },
 
   recordPayment: async (tripId: string, data: PaymentFormValues): Promise<TripPaymentDetails> => {
-    const response = await apiClient.post(`/api/v1/trips/${tripId}/payment/record`, data);
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/payments`, data);
     return response.data;
   },
 

@@ -70,14 +70,26 @@ export const externalHiringConfig: FeatureConfig<ExternalHiring, ExternalHiring,
         fields: [
           { name: 'provider_name', label: 'Provider Name', type: 'text', required: true },
           { name: 'provider_phone', label: 'Provider Phone', type: 'text' },
+          { name: 'provider_type', label: 'Provider Type', type: 'select', options: [
+            { value: 'rental_agency', label: 'Rental Agency' },
+            { value: 'registered_travel', label: 'Registered Travel Agency' },
+            { value: 'individual_owner', label: 'Individual Owner' },
+          ]},
           { name: 'external_vehicle_reg', label: 'Vehicle Registration', type: 'text' },
           { name: 'start_date', label: 'Start Date', type: 'date', required: true },
+          { name: 'end_date', label: 'End Date', type: 'date' },
         ],
       },
       {
         title: 'Financials',
         fields: [
           { name: 'agreed_rate', label: 'Agreed Rate', type: 'number', required: true },
+          { name: 'rate_type', label: 'Rate Type', type: 'select', options: [
+            { value: 'fixed', label: 'Fixed / Flat' },
+            { value: 'per_day', label: 'Per Day' },
+            { value: 'per_km', label: 'Per KM' },
+            { value: 'per_trip', label: 'Per Trip' },
+          ]},
           { name: 'total_amount_payable', label: 'Total Payable', type: 'number' },
           { name: 'amount_paid', label: 'Amount Paid', type: 'number' },
         ],
@@ -96,16 +108,16 @@ export const externalHiringConfig: FeatureConfig<ExternalHiring, ExternalHiring,
     ],
   },
   detail: {
-    documents: {
-      enabled: true,
-      entityType: 'EXTERNAL_HIRING',
-      categories: [
-        { value: 'VENDOR_INVOICE', label: 'Vendor Invoice' },
-        { value: 'CONTRACT', label: 'Contract' },
-        { value: 'OTHER', label: 'Other' },
-      ],
-      defaultCategory: 'VENDOR_INVOICE'
-    },
+    // documents: {
+    //   enabled: true,
+    //   entityType: 'EXTERNAL_HIRING',
+    //   categories: [
+    //     { value: 'VENDOR_INVOICE', label: 'Vendor Invoice' },
+    //     { value: 'CONTRACT', label: 'Contract' },
+    //     { value: 'OTHER', label: 'Other' },
+    //   ],
+    //   defaultCategory: 'VENDOR_INVOICE'
+    // },
     metadata: {
       cards: [
         {

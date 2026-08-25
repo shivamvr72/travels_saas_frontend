@@ -10,16 +10,13 @@ import {
 } from '@/components/ui/dialog';
 import { AppLookup } from '@/components/shared/app-lookup';
 import { useResourceAvailability } from '../hooks/use-resource-availability';
-import { useTripAssign } from '../api';
+import { useTripAssign, useTripAssignExternalVehicle, useTripAssignExternalDriver } from '../api';
 import { ResourceType } from '../services/resource-availability.service';
 import { AlertCircle, CheckCircle2, Clock, Info } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useCreateDriver } from '@/features/drivers/api';
-import { useCreateVehicle } from '@/features/vehicles/api';
-import { useCreateExternalHiring } from '@/features/external-hiring/api';
 import { toast } from 'sonner';
 
 interface TripAssignmentDialogProps {
@@ -71,9 +68,8 @@ export function TripAssignmentDialog({
   }, [isOpen, currentResourceId, currentIsExternal, currentResourceName]);
 
   const assignMutation = useTripAssign();
-  const createDriverMutation = useCreateDriver();
-  const createVehicleMutation = useCreateVehicle();
-  const createHiringMutation = useCreateExternalHiring();
+  const assignExternalVehicleMutation = useTripAssignExternalVehicle();
+  const assignExternalDriverMutation = useTripAssignExternalDriver();
   const queryClient = useQueryClient();
 
   const { data: availability, isLoading: isChecking } = useResourceAvailability(
@@ -111,26 +107,20 @@ export function TripAssignmentDialog({
         return;
       }
       try {
-        const newDriver = await createDriverMutation.mutateAsync({
-          name: externalName,
-          agency_name: externalAgency || undefined,
-          phone: externalPhone || undefined,
-          is_external: true,
-        } as any);
-
-        await assignMutation.mutateAsync({
+        await assignExternalDriverMutation.mutateAsync({
           id: tripId,
-          assignment: {
-            [resourceType === 'driver' ? 'driver_id' : 'co_driver_id']: newDriver.id,
+          payload: {
+            name: externalName,
+            phone: externalPhone || undefined,
+            agency_name: externalAgency || undefined,
+            is_co_driver: resourceType === 'co_driver',
           }
         });
         
-        queryClient.invalidateQueries({ queryKey: ['trips', tripId] });
-        queryClient.invalidateQueries({ queryKey: ['trips'] });
         onClose();
       } catch (error: any) {
-        console.error("Failed to create or assign external driver", error);
-        const detail = error?.response?.data?.message || error.message || "Failed to assign driver";
+        console.error("Failed to assign external driver", error);
+        const detail = error?.response?.data?.detail || error?.response?.data?.message || error.message || "Failed to assign driver";
         toast.error(detail);
       }
     } else if (isExternal && resourceType === 'vehicle') {
@@ -139,41 +129,21 @@ export function TripAssignmentDialog({
         return;
       }
       try {
-        const newVehicle = await createVehicleMutation.mutateAsync({
-          reg_number: externalVehicleReg,
-          ownership_type: 'rented',
-          status: 'available',
-          brand_name: 'External',
-          model_type: 'External',
-          vehicle_type: 'Other',
-          fuel_type: 'diesel'
-        } as any);
-
-        const newHiring = await createHiringMutation.mutateAsync({
-          provider_name: externalName,
-          provider_phone: externalPhone || undefined,
-          provider_type: 'vendor',
-          start_date: startDate,
-          agreed_rate: parseFloat(externalAgreedRate),
-          total_amount_payable: parseFloat(externalAgreedRate),
-          vehicle_id: newVehicle.id,
-          external_vehicle_reg: externalVehicleReg,
-        } as any);
-
-        await assignMutation.mutateAsync({
+        await assignExternalVehicleMutation.mutateAsync({
           id: tripId,
-          assignment: {
-            vehicle_id: newVehicle.id,
-            external_hiring_id: newHiring.id,
+          payload: {
+            reg_number: externalVehicleReg,
+            provider_name: externalName,
+            provider_phone: externalPhone || undefined,
+            agreed_rate: parseFloat(externalAgreedRate),
+            start_date: startDate,
           }
         });
         
-        queryClient.invalidateQueries({ queryKey: ['trips', tripId] });
-        queryClient.invalidateQueries({ queryKey: ['trips'] });
         onClose();
       } catch (error: any) {
-        console.error("Failed to create or assign external vehicle", error);
-        const detail = error?.response?.data?.message || error.message || "Failed to assign vehicle";
+        console.error("Failed to assign external vehicle", error);
+        const detail = error?.response?.data?.detail || error?.response?.data?.message || error.message || "Failed to assign vehicle";
         toast.error(detail);
       }
     } else {
@@ -201,7 +171,7 @@ export function TripAssignmentDialog({
     }
   };
 
-  const isAssigning = assignMutation.isPending || createDriverMutation.isPending || createVehicleMutation.isPending || createHiringMutation.isPending;
+  const isAssigning = assignMutation.isPending || assignExternalVehicleMutation.isPending || assignExternalDriverMutation.isPending;
   const isAssignDisabled = isExternal 
     ? (resourceType === 'vehicle' ? (!externalVehicleReg || !externalName || !externalAgreedRate || isAssigning) : (!externalName || isAssigning)) 
     : (!selectedId || isChecking || isAssigning);

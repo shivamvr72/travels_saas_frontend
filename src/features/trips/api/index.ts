@@ -201,6 +201,32 @@ export const useTripAssign = () => {
   });
 };
 
+export const useTripAssignExternalVehicle = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) =>
+      tripApi.assignExternalVehicle(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+    },
+  });
+};
+
+export const useTripAssignExternalDriver = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) =>
+      tripApi.assignExternalDriver(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(variables.id) });
+    },
+  });
+};
+
 export const useUploadTripDocument = () => {
   const queryClient = useQueryClient();
   return useMutation({
