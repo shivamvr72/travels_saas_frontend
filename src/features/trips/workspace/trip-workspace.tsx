@@ -49,11 +49,7 @@ export function TripWorkspace({ tripId }: TripWorkspaceProps) {
   const defaultTab = searchParams.get('tab') || 'overview';
   const isSettlementPhase = trip?.status === 'completed' || trip?.status === 'settled';
   
-  // If in settlement phase and trying to access old individual tabs, redirect to unified settlement tab
   let activeTab = defaultTab;
-  if (isSettlementPhase && ['invoice', 'payments', 'profitability'].includes(activeTab)) {
-    activeTab = 'settlement';
-  }
 
   const handleTabChange = (value: string) => {
     router.replace(`/trips/${tripId}?tab=${value}`, { scroll: false });
@@ -87,34 +83,31 @@ export function TripWorkspace({ tripId }: TripWorkspaceProps) {
             >
               Expenses
             </TabsTrigger>
-            {isSettlementPhase ? (
+            <TabsTrigger 
+              value="invoice" 
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
+            >
+              Invoice
+            </TabsTrigger>
+            <TabsTrigger 
+              value="payments" 
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
+            >
+              Payments
+            </TabsTrigger>
+            <TabsTrigger 
+              value="profitability" 
+              className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
+            >
+              Profitability
+            </TabsTrigger>
+            {isSettlementPhase && (
               <TabsTrigger 
                 value="settlement" 
                 className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
               >
                 Settlement
               </TabsTrigger>
-            ) : (
-              <>
-                <TabsTrigger 
-                  value="invoice" 
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
-                >
-                  Invoice
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="payments" 
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
-                >
-                  Payments
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="profitability" 
-                  className="rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary px-4 py-2"
-                >
-                  Profitability
-                </TabsTrigger>
-              </>
             )}
             <TabsTrigger 
               value="documents" 
@@ -141,23 +134,20 @@ export function TripWorkspace({ tripId }: TripWorkspaceProps) {
           <TabsContent value="expenses" className="m-0 border-0 p-0">
             <TripExpensesTab trip={trip} />
           </TabsContent>
-          {isSettlementPhase ? (
+          {isSettlementPhase && (
             <TabsContent value="settlement" className="m-0 border-0 p-0">
               <TripSettlementTab trip={trip} />
             </TabsContent>
-          ) : (
-            <>
-              <TabsContent value="invoice" className="m-0 border-0 p-0">
-                <TripInvoiceTab trip={trip} />
-              </TabsContent>
-              <TabsContent value="payments" className="m-0 border-0 p-0">
-                <TripPaymentsTab trip={trip} />
-              </TabsContent>
-              <TabsContent value="profitability" className="m-0 border-0 p-0">
-                <TripProfitabilityTab trip={trip} />
-              </TabsContent>
-            </>
           )}
+          <TabsContent value="invoice" className="m-0 border-0 p-0">
+            <TripInvoiceTab trip={trip} />
+          </TabsContent>
+          <TabsContent value="payments" className="m-0 border-0 p-0">
+            <TripPaymentsTab trip={trip} />
+          </TabsContent>
+          <TabsContent value="profitability" className="m-0 border-0 p-0">
+            <TripProfitabilityTab trip={trip} />
+          </TabsContent>
           <TabsContent value="documents" className="m-0 border-0 p-0">
             <TripDocumentsTab trip={trip} />
           </TabsContent>

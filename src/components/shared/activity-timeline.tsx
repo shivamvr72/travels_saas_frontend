@@ -1,3 +1,5 @@
+"use client";
+
 import { useActivity } from '@/shared/hooks/use-generic-engines';
 import { Timeline, TimelineItem, TimelineIcon, TimelineContent, TimelineTitle, TimelineDescription, TimelineTime } from '@/components/ui/timeline';
 import { Activity, Clock } from 'lucide-react';

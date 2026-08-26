@@ -48,8 +48,8 @@ export function useNotifications() {
   const query = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const { data } = await api.get<NotificationResponse[]>('/api/v1/notifications/');
-      return data;
+      const { data } = await api.get<any>('/api/v1/notifications/');
+      return data.data || [];
     },
   });
 
@@ -80,10 +80,10 @@ export function useAvailability(entityType: string, entityId: string) {
   const query = useQuery({
     queryKey: ['availability', entityType, entityId],
     queryFn: async () => {
-      const { data } = await api.get<AvailabilityResponse[]>('/api/v1/availability/', {
-        params: { entity_type: entityType, entity_id: entityId }
+      const { data } = await api.get<any>('/api/v1/availability/', {
+        params: { resource_type: entityType, resource_id: entityId }
       });
-      return data;
+      return data.data || [];
     },
     enabled: !!entityId,
   });

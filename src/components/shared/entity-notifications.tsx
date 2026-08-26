@@ -1,3 +1,5 @@
+"use client";
+
 import { useNotifications } from '@/shared/hooks/use-generic-engines';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

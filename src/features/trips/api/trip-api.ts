@@ -61,7 +61,8 @@ function resolveTripRelations(be: BETrip, customerId?: string | null) {
   const driver = cachedDrivers?.find(d => d.id === be.driver_id);
   const coDriver = cachedDrivers?.find(d => d.id === be.co_driver_id);
   const company = cachedCompanies?.find(c => c.id === be.company_id);
-  const customer = cachedCustomers?.find(c => c.id === (customerId || (be as any).customer_id || be.customer_booking_id));
+  const targetCustId = customerId || (be as any).customer_id || be.customer_booking_id;
+  const customer = cachedCustomers?.find(c => c.id === targetCustId);
 
   return {
     vehicle: vehicle ? {
@@ -105,7 +106,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   // Backend status maps 1:1 to frontend status — use directly
   const mappedStatus = be.status as TripStatus;
 
-  const relations = resolveTripRelations(be, be.customer_booking_id);
+  const relations = resolveTripRelations(be, (be as any).customer_id || be.customer_booking_id);
 
   return {
     id: be.id,
@@ -142,13 +143,13 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   };
 }
 
-// Helper to resolve missing relations (like newly created external drivers)
+// Helper to resolve missing relations (like newly created external drivers or customers)
 export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
   if (trip.driver_id && !trip.driver) {
     try {
       const d = await apiClient.get(`/api/v1/drivers/${trip.driver_id}`).then(res => res.data);
       trip.driver = { id: d.id, name: d.name, phone: d.phone, license_no: d.license_no, is_external: d.is_external };
-      if (cachedDrivers) cachedDrivers.push(d);
+      if (cachedDrivers && !cachedDrivers.some(item => item.id === d.id)) cachedDrivers.push(d);
     } catch (e) {
       console.error('Failed to fetch missing driver', e);
     }
@@ -157,13 +158,21 @@ export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
     try {
       const d = await apiClient.get(`/api/v1/drivers/${trip.co_driver_id}`).then(res => res.data);
       trip.co_driver = { id: d.id, name: d.name, phone: d.phone, license_no: d.license_no, is_external: d.is_external };
-      if (cachedDrivers) cachedDrivers.push(d);
+      if (cachedDrivers && !cachedDrivers.some(item => item.id === d.id)) cachedDrivers.push(d);
     } catch (e) {
       console.error('Failed to fetch missing co-driver', e);
     }
   }
+  if (trip.customer_id && !trip.customer) {
+    try {
+      const c = await apiClient.get(`/api/v1/customers/${trip.customer_id}`).then(res => res.data);
+      trip.customer = { id: c.id, name: c.name, phone: c.phone };
+      if (cachedCustomers && !cachedCustomers.some(item => item.id === c.id)) cachedCustomers.push(c);
+    } catch (e) {
+      console.error('Failed to fetch missing customer', e);
+    }
+  }
   if (trip.dispatcher_id && !trip.dispatcher) {
-    // Note: Dispatcher is typically a user, but we'll try to find it in users or just set the ID
     trip.dispatcher = { id: trip.dispatcher_id, full_name: 'Dispatcher' };
   }
   return trip;
@@ -232,6 +241,7 @@ export const tripApi = {
       co_driver_id: uuid(data.co_driver_id),
       dispatcher_id: uuid(data.dispatcher_id),
       company_id: uuid(data.company_id),
+      customer_id: uuid(data.customer_id),
       notes: data.remarks?.trim() || null,
       reporting_address: data.origin?.trim() || null,
       trip_type: data.trip_type || 'One Way',

@@ -130,7 +130,7 @@ export const FinanceApi = {
   },
 
   syncExpenses: async (tripId: string): Promise<Invoice> => {
-    const response = await apiClient.post(`/api/v1/trips/${tripId}/settlement/billing`, { sync_expenses: true });
+    const response = await apiClient.post(`/api/v1/trips/${tripId}/billing/sync-expenses`);
     const billing = response.data;
     return {
       ...billing,

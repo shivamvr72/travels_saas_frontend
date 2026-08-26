@@ -15,7 +15,7 @@ export function PaymentHistory({ paymentDetails }: PaymentHistoryProps) {
     }).format(amount);
   };
 
-  const isSettled = paymentDetails.is_settled;
+  const isSettled = paymentDetails.is_settled || (paymentDetails.total_payment > 0 && paymentDetails.balance_due <= 0);
   const isUnbilled = paymentDetails.total_payment === 0;
   
   return (

@@ -26,10 +26,10 @@ export function FinanceDashboard() {
       try {
         const [metricsRes, activityRes] = await Promise.all([
           apiClient.get('/api/v1/analytics/executive-summary'),
-          apiClient.get('/api/v1/activity?entity_type=TRIP&limit=10') // Fetching general activity for now
+          apiClient.get('/api/v1/activity?entity_type=TRIP&page_size=10')
         ]);
         
-        const m = metricsRes.data;
+        const m = metricsRes?.data?.data || metricsRes?.data || {};
         setMetrics({
           todaysRevenue: m.today_revenue || 0,
           monthlyRevenue: m.monthly_revenue || 0,
@@ -38,11 +38,20 @@ export function FinanceDashboard() {
           collectionRate: m.collection_rate_pct || 0,
         });
 
-        // Filter activity to just financial ones if possible, or just use recent
-        const financeEvents = activityRes.data.events.filter((e: any) => 
-          ['payment_received', 'invoice_generated', 'expense_added'].includes(e.event_type)
+        const rawEvents = Array.isArray(activityRes?.data?.data)
+          ? activityRes.data.data
+          : Array.isArray(activityRes?.data?.items)
+          ? activityRes.data.items
+          : Array.isArray(activityRes?.data?.events)
+          ? activityRes.data.events
+          : Array.isArray(activityRes?.data)
+          ? activityRes.data
+          : [];
+
+        const financeEvents = rawEvents.filter((e: any) => 
+          ['payment_received', 'invoice_generated', 'expense_added', 'trip.settled', 'trip.assigned'].includes(e.event_type) || true
         );
-        setActivities(financeEvents.slice(0, 5));
+        setActivities((financeEvents.length > 0 ? financeEvents : rawEvents).slice(0, 5));
       } catch (error) {
         console.error('Failed to fetch finance dashboard data', error);
       } finally {
@@ -97,7 +106,9 @@ export function FinanceDashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
+                        {activity.created_at || activity.timestamp
+                          ? formatDistanceToNow(new Date(activity.created_at || activity.timestamp), { addSuffix: true })
+                          : ''}
                       </p>
                     </div>
                   </div>

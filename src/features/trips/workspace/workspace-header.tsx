@@ -12,7 +12,7 @@ import { AppLookup } from '@/components/shared/app-lookup';
 import { useUpdateTrip } from '../api';
 import { useCreateCustomer } from '@/features/customers/api';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { tripQueryKeys } from '../api';
 
@@ -29,11 +29,18 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(trip.customer_id || null);
   const [newCustomerName, setNewCustomerName] = useState('');
 
-  const handleAssignCustomer = async () => {
-    if (!selectedCustomerId) return;
+  // Sync selectedCustomerId whenever trip changes
+  useEffect(() => {
+    setSelectedCustomerId(trip.customer_id || null);
+  }, [trip.customer_id]);
+
+  const handleAssignCustomer = async (customerIdToAssign?: string) => {
+    const targetId = customerIdToAssign || selectedCustomerId;
+    if (!targetId) return;
     try {
-      await updateTrip.mutateAsync({ id: trip.id, data: { customer_id: selectedCustomerId } } as any);
+      await updateTrip.mutateAsync({ id: trip.id, data: { customer_id: targetId } } as any);
       await queryClient.invalidateQueries({ queryKey: tripQueryKeys.detail(trip.id) });
+      await queryClient.invalidateQueries({ queryKey: tripQueryKeys.all });
       toast.success('Customer assigned successfully');
       setCustomerDialogOpen(false);
     } catch (error: any) {
@@ -51,10 +58,11 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
       queryClient.setQueryData(['lookup', 'customers', ''], (oldData: any[]) => {
         return oldData ? [newCustomer, ...oldData] : [newCustomer];
       });
-      queryClient.invalidateQueries({ queryKey: ['lookup', 'customers'] });
+      await queryClient.invalidateQueries({ queryKey: ['lookup', 'customers'] });
       setSelectedCustomerId(newCustomer.id);
       setNewCustomerName('');
-      toast.success(`Customer "${newCustomerName}" created! You can now click Assign.`);
+      // Auto assign the newly created customer immediately
+      await handleAssignCustomer(newCustomer.id);
     } catch (error: any) {
       toast.error(error.message || 'Failed to create customer');
     }
@@ -142,7 +150,7 @@ export function WorkspaceHeader({ trip }: WorkspaceHeaderProps) {
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setCustomerDialogOpen(false)}>Cancel</Button>
-                  <Button onClick={handleAssignCustomer} disabled={updateTrip.isPending || !selectedCustomerId}>
+                  <Button onClick={() => handleAssignCustomer()} disabled={updateTrip.isPending || !selectedCustomerId}>
                     {updateTrip.isPending ? 'Assigning...' : 'Assign'}
                   </Button>
                 </DialogFooter>
