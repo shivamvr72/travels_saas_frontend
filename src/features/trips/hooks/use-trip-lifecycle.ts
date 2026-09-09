@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { tripLifecycleService } from '../services/trip-lifecycle.service';
-import { useDispatchTrip, useStartTrip, useCompleteTrip, useCancelTrip, tripQueryKeys } from '../api';
+import { useDispatchTrip, useStartTrip, useCompleteTrip, useCancelTrip, useSettleTrip, tripQueryKeys } from '../api';
 import { getActionDef } from '../domain/trip-actions';
 import { toast } from 'sonner';
 import { isTerminalState } from '../domain/trip-status';
@@ -13,6 +13,7 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
   const startMutation = useStartTrip();
   const completeMutation = useCompleteTrip();
   const cancelMutation = useCancelTrip();
+  const settleMutation = useSettleTrip();
   const queryClient = useQueryClient();
 
   // ─── Computations ────────────────────────────────────────────────────────
@@ -42,7 +43,8 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
     dispatchMutation.isPending ||
     startMutation.isPending ||
     completeMutation.isPending ||
-    cancelMutation.isPending;
+    cancelMutation.isPending ||
+    settleMutation.isPending;
 
   const execute = async (
     target: TripStatus,
@@ -111,6 +113,10 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
             payload: { cancellation_reason: payload?.reason ?? '' },
           });
           toast.success('Trip cancelled.');
+          break;
+        case 'settled':
+          await settleMutation.mutateAsync(currentTrip.id);
+          toast.success('Trip settled successfully.');
           break;
         default:
           toast.error(`Action for status "${target}" is not supported.`);

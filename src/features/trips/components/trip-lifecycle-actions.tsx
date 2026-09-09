@@ -66,6 +66,7 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
           started:    PERMISSION_KEYS.TRIP_EVENT_CREATE,
           completed:  PERMISSION_KEYS.TRIP_EVENT_CREATE,
           cancelled:  PERMISSION_KEYS.TRIP_CANCEL,
+          settled:    PERMISSION_KEYS.TRIP_SETTLEMENT_CREATE,
         };
         const requiredPermission = permissionMap[action.targetStatus] ?? PERMISSION_KEYS.TRIPS_EDIT;
 

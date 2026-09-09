@@ -35,4 +35,7 @@ export const tripLifecycleApi = {
 
   cancel: (id: string, payload: CancelTripPayload): Promise<Trip> =>
     apiClient.post(`/api/v1/trips/${id}/cancel`, payload).then(r => mapBackendToFrontendTrip(r.data as BETrip)),
+
+  settle: (id: string): Promise<Trip> =>
+    apiClient.post(`/api/v1/trips/${id}/settlement/settle`).then(r => mapBackendToFrontendTrip(r.data as BETrip)),
 };

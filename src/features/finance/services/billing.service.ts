@@ -22,6 +22,7 @@ export const BillingService = {
 
     // Default parameters for a draft invoice (this would usually come from the backend's route_rates)
     const baseInvoice: Partial<Invoice> = {
+      rate_type: 'custom',
       base_rate: 0,
       included_km: 80,
       included_hrs: 8,
@@ -59,13 +60,13 @@ export const BillingService = {
       ...values,
     });
 
-    const updates = {
+    const fullPayload = {
       ...currentInvoice,
       ...values,
       ...newTotals,
     };
 
-    return await FinanceApi.updateDraftInvoice(tripId, invoiceId, updates);
+    return await FinanceApi.updateDraftInvoice(tripId, invoiceId, fullPayload);
   },
 
   /**

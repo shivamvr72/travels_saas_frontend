@@ -22,6 +22,7 @@ export interface Invoice {
   invoice_number: string;
   trip_id: string;
   status: InvoiceStatus;
+  rate_type?: string;
   
   // Amounts
   base_rate: number;

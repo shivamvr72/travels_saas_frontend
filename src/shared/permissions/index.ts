@@ -30,6 +30,7 @@ export const PERMISSION_KEYS = {
   // Trip Events
   TRIP_EVENT_CREATE: 'trip:event:create',
   TRIP_CANCEL: 'trip:cancel',
+  TRIP_SETTLEMENT_CREATE: 'trip:settlement:create',
   
   // Trips
   TRIPS_VIEW: 'trips:view',
@@ -68,7 +69,8 @@ export const ROLE_PERMISSION_MATRIX: Record<Role, string[]> = {
   admin: ['*'], // admin has all
   manager: [
     'dispatch:*',
-    'trips:*', 
+    'trips:*',
+    'trip:*',
     'customers:*', 
     'companies:*',
     'routes:*',
@@ -79,7 +81,8 @@ export const ROLE_PERMISSION_MATRIX: Record<Role, string[]> = {
   ],
   viewer: [
     'dispatch:view',
-    'trips:view', 
+    'trips:view',
+    'trip:view',
     'customers:view',
     'companies:view',
     'routes:view',

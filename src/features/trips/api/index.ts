@@ -188,6 +188,20 @@ export const useCancelTrip = () => {
   });
 };
 
+export const useSettleTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => tripLifecycleApi.settle(id),
+    onSuccess: (data, id) => {
+      queryClient.setQueryData(tripQueryKeys.detail(id), data);
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.activity(id) });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+      queryClient.invalidateQueries({ queryKey: ['settlement-summary', id] });
+    },
+  });
+};
+
 export const useTripAssign = () => {
   const queryClient = useQueryClient();
   return useMutation({
