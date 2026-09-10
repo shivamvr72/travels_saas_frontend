@@ -25,6 +25,14 @@ interface TripAssignmentDialogProps {
   currentResourceId?: string | null;
   currentIsExternal?: boolean;
   currentResourceName?: string;
+  /** Pre-fill data from an existing external hiring record */
+  externalDetails?: {
+    reg_number?: string;
+    vehicle_description?: string;
+    provider_name?: string;
+    provider_phone?: string;
+    agreed_rate?: number;
+  };
   startDate: string;
   endDate?: string | null;
   isOpen: boolean;
@@ -37,6 +45,7 @@ export function TripAssignmentDialog({
   currentResourceId,
   currentIsExternal,
   currentResourceName,
+  externalDetails,
   startDate,
   endDate,
   isOpen,
@@ -52,6 +61,7 @@ export function TripAssignmentDialog({
 
   // External Vehicle state
   const [externalVehicleReg, setExternalVehicleReg] = useState('');
+  const [externalVehicleName, setExternalVehicleName] = useState('');
   const [externalAgreedRate, setExternalAgreedRate] = useState('');
 
   useEffect(() => {
@@ -59,13 +69,43 @@ export function TripAssignmentDialog({
       const isExt = currentIsExternal || false;
       setIsExternal(isExt);
       setSelectedId(isExt ? null : (currentResourceId || null));
-      setExternalName(isExt ? (currentResourceName || '') : '');
+
+      // Use primitive values from externalDetails to avoid object reference issues
+      const extReg = externalDetails?.reg_number;
+      const extDesc = externalDetails?.vehicle_description;
+      const extName = externalDetails?.provider_name;
+      const extPhone = externalDetails?.provider_phone;
+      const extRate = externalDetails?.agreed_rate;
+      const hasExtDetails = isExt && (extReg != null || extName != null || extDesc != null);
+
+      if (hasExtDetails) {
+        // Pre-populate fields from existing external hiring
+        setExternalVehicleReg(extReg || '');
+        setExternalVehicleName(extDesc || '');
+        setExternalName(extName || '');
+        setExternalPhone(extPhone || '');
+        setExternalAgreedRate(extRate != null ? String(extRate) : '');
+      } else {
+        setExternalName(isExt ? (currentResourceName || '') : '');
+        setExternalPhone('');
+        setExternalVehicleReg('');
+        setExternalVehicleName('');
+        setExternalAgreedRate('');
+      }
       setExternalAgency('');
-      setExternalPhone('');
-      setExternalVehicleReg(isExt ? (currentResourceName || '') : '');
-      setExternalAgreedRate('');
     }
-  }, [isOpen, currentResourceId, currentIsExternal, currentResourceName]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isOpen,
+    currentResourceId,
+    currentIsExternal,
+    currentResourceName,
+    externalDetails?.reg_number,
+    externalDetails?.vehicle_description,
+    externalDetails?.provider_name,
+    externalDetails?.provider_phone,
+    externalDetails?.agreed_rate,
+  ]);
 
   const assignMutation = useTripAssign();
   const assignExternalVehicleMutation = useTripAssignExternalVehicle();
@@ -106,6 +146,10 @@ export function TripAssignmentDialog({
         onClose();
         return;
       }
+      if (externalPhone && !/^\+?[0-9\s\-()]{7,15}$/.test(externalPhone)) {
+        toast.error('Please enter a valid phone number');
+        return;
+      }
       try {
         await assignExternalDriverMutation.mutateAsync({
           id: tripId,
@@ -128,11 +172,16 @@ export function TripAssignmentDialog({
         toast.error('Vehicle Reg, Provider Name, and Agreed Rate are required');
         return;
       }
+      if (externalPhone && !/^\+?[0-9\s\-()]{7,15}$/.test(externalPhone)) {
+        toast.error('Please enter a valid phone number');
+        return;
+      }
       try {
         await assignExternalVehicleMutation.mutateAsync({
           id: tripId,
           payload: {
             reg_number: externalVehicleReg,
+            vehicle_description: externalVehicleName || undefined,
             provider_name: externalName,
             provider_phone: externalPhone || undefined,
             agreed_rate: parseFloat(externalAgreedRate),
@@ -210,14 +259,24 @@ export function TripAssignmentDialog({
           ) : (
             <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
               {resourceType === 'vehicle' && (
-                <div className="space-y-2">
-                  <Label>Vehicle Registration <span className="text-destructive">*</span></Label>
-                  <Input 
-                    value={externalVehicleReg}
-                    onChange={(e) => setExternalVehicleReg(e.target.value)}
-                    placeholder="e.g. MH 12 AB 1234" 
-                  />
-                </div>
+                <>
+                  <div className="space-y-2">
+                    <Label>Vehicle Registration <span className="text-destructive">*</span></Label>
+                    <Input 
+                      value={externalVehicleReg}
+                      onChange={(e) => setExternalVehicleReg(e.target.value)}
+                      placeholder="e.g. MH 12 AB 1234" 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Vehicle Name / Model</Label>
+                    <Input 
+                      value={externalVehicleName}
+                      onChange={(e) => setExternalVehicleName(e.target.value)}
+                      placeholder="e.g. Innova Crysta, Bus 40 Seater" 
+                    />
+                  </div>
+                </>
               )}
               <div className="space-y-2">
                 <Label>{resourceType === 'vehicle' ? 'Vendor Name' : 'Driver Name'} <span className="text-destructive">*</span></Label>

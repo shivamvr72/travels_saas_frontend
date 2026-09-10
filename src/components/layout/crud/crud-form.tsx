@@ -52,7 +52,7 @@ export function CrudForm({
       config.form.sections.forEach(sec => {
         sec.fields.forEach(f => {
           if (f.type === 'switch' && defaults[f.name] === undefined) {
-            defaults[f.name] = true;
+            defaults[f.name] = false; // default switches to OFF, not ON
           }
         });
       });

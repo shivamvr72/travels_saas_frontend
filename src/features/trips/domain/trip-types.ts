@@ -114,6 +114,19 @@ export interface Trip {
   vehicle_id?: string | null;
   vehicle?: TripVehicleSummary | null;
 
+  // External Hiring (when a 3rd-party vehicle/driver is hired instead of own fleet)
+  external_hiring_id?: string | null;
+  external_hiring?: {
+    id: string;
+    provider_name: string | null;
+    provider_phone?: string | null;
+    external_vehicle_reg: string | null;
+    vehicle_description?: string | null;
+    external_driver_name: string | null;
+    agreed_rate?: number | null;
+    status: string;
+  } | null;
+
   driver_id?: string | null;
   driver?: TripDriverSummary | null;
 
@@ -159,6 +172,7 @@ export interface TripAssignPayload {
   driver_id?: string | null;
   co_driver_id?: string | null;
   dispatcher_id?: string | null;
+  external_hiring_id?: string | null;
 }
 
 export interface TripTransitionPayload {

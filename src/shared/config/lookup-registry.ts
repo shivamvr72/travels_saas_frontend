@@ -94,5 +94,19 @@ export const LookupRegistry: Record<string, LookupConfig> = {
     defaultSortBy: 'name',
     staleTime: 5 * 60 * 1000,
     permissions: ['TRIPS'],
+  },
+  'dispatch-external-hirings': {
+    endpoint: '/api/v1/external-hirings?status=active',
+    displayField: 'provider_name',
+    formatDisplay: (item: any) => {
+      const provider = item.provider_name || 'Internal Agency';
+      const vehicle = item.external_vehicle_reg || 'Internal Vehicle';
+      return `${provider} - ${vehicle}`;
+    },
+    searchFields: ['provider_name', 'external_vehicle_reg'],
+    defaultSortBy: 'created_at',
+    defaultSortDir: 'desc',
+    staleTime: 5 * 60 * 1000,
+    permissions: ['FINANCE'],
   }
 };

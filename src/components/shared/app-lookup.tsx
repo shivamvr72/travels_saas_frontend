@@ -114,8 +114,14 @@ export function AppLookup({
   };
 
   const getDisplayLabel = (val: string) => {
+    // While items are still loading and the item isn't found yet, show a loading indicator
+    if (isLoading) return '...';
     const item = items.find(i => i[config.valueField || 'id'] === val);
-    if (!item) return val;
+    // If item not found in current page, try fetching a specific label
+    if (!item) {
+      // Return a truncated UUID as a fallback (not the full UUID)
+      return `Loading... (${val.substring(0, 8)})`;
+    }
     if (config.formatDisplay) return config.formatDisplay(item);
     return String(item[config.displayField]);
   };

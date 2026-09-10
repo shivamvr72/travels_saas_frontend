@@ -34,6 +34,7 @@ export const TripDispatchSummarySchema = z.object({
   vehicle_reg_number: z.string().nullable().optional(),
   driver_id: z.string().uuid().nullable().optional(),
   driver_name: z.string().nullable().optional(),
+  external_hiring_id: z.string().uuid().nullable().optional(),
   customer_name: z.string().nullable().optional(),
   trip_type: z.string().nullable().optional(),
   priority: z.string().nullable().optional(),
@@ -56,11 +57,12 @@ export type DispatchBoardData = z.infer<typeof DispatchBoardReadSchema>;
 export const AssignTripRequestSchema = z.object({
   vehicle_id: z.string().uuid().nullable().optional(),
   driver_id: z.string().uuid().nullable().optional(),
+  external_hiring_id: z.string().uuid().nullable().optional(),
   scheduled_start_time: z.string().nullable().optional(), // ISO datetime string
   scheduled_end_time: z.string().nullable().optional(),
   estimated_duration_hrs: z.number().nullable().optional(),
-}).refine(data => data.vehicle_id != null || data.driver_id != null, {
-  message: 'At least one resource (vehicle or driver) must be selected',
+}).refine(data => data.vehicle_id != null || data.driver_id != null || data.external_hiring_id != null, {
+  message: 'At least one resource (vehicle, driver, or external hiring) must be selected',
   path: ['vehicle_id'], // attach the error to the vehicle_id field
 });
 export type AssignTripRequest = z.infer<typeof AssignTripRequestSchema>;
@@ -70,6 +72,7 @@ export const BulkAssignItemSchema = z.object({
   trip_id: z.string().uuid(),
   vehicle_id: z.string().uuid().nullable().optional(),
   driver_id: z.string().uuid().nullable().optional(),
+  external_hiring_id: z.string().uuid().nullable().optional(),
   scheduled_start_time: z.string().nullable().optional(),
   scheduled_end_time: z.string().nullable().optional(),
   estimated_duration_hrs: z.number().nullable().optional(),

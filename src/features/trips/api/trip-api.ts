@@ -135,6 +135,7 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
     route_id: firstLoc?.route_id || null,
     dispatcher_id: be.dispatcher_id || be.created_by,
     co_driver_id: be.co_driver_id || null,
+    external_hiring_id: (be as any).external_hiring_id || null,
 
     ...relations,
 
@@ -143,8 +144,47 @@ export function mapBackendToFrontendTrip(be: BETrip): Trip {
   };
 }
 
-// Helper to resolve missing relations (like newly created external drivers or customers)
+// Helper to resolve missing relations (like newly created external vehicles/hirings/drivers/customers)
 export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
+  // 1. Resolve vehicle
+  if (trip.vehicle_id && !trip.vehicle) {
+    try {
+      const v = await apiClient.get(`/api/v1/vehicles/${trip.vehicle_id}`).then(res => res.data);
+      trip.vehicle = {
+        id: v.id,
+        license_plate: v.reg_number,
+        make: v.brand_name,
+        model: v.model_type,
+        type: v.vehicle_type,
+      };
+      if (cachedVehicles && !cachedVehicles.some(item => item.id === v.id)) {
+        cachedVehicles.push(v);
+      }
+    } catch (e) {
+      console.error('Failed to fetch missing vehicle', e);
+    }
+  }
+
+  // 2. Resolve external hiring
+  if (trip.external_hiring_id && !trip.external_hiring) {
+    try {
+      const h = await apiClient.get(`/api/v1/external-hirings/${trip.external_hiring_id}`).then(res => res.data);
+      trip.external_hiring = {
+        id: h.id,
+        provider_name: h.provider_name,
+        provider_phone: h.provider_phone,
+        external_vehicle_reg: h.external_vehicle_reg || trip.vehicle?.license_plate || null,
+        vehicle_description: h.vehicle_description || null,
+        external_driver_name: h.external_driver_name,
+        agreed_rate: h.agreed_rate,
+        status: h.status,
+      };
+    } catch (e) {
+      console.error('Failed to fetch missing external hiring', e);
+    }
+  }
+
+  // 3. Resolve driver
   if (trip.driver_id && !trip.driver) {
     try {
       const d = await apiClient.get(`/api/v1/drivers/${trip.driver_id}`).then(res => res.data);
@@ -154,6 +194,8 @@ export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
       console.error('Failed to fetch missing driver', e);
     }
   }
+
+  // 4. Resolve co-driver
   if (trip.co_driver_id && !trip.co_driver) {
     try {
       const d = await apiClient.get(`/api/v1/drivers/${trip.co_driver_id}`).then(res => res.data);
@@ -163,6 +205,8 @@ export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
       console.error('Failed to fetch missing co-driver', e);
     }
   }
+
+  // 5. Resolve customer
   if (trip.customer_id && !trip.customer) {
     try {
       const c = await apiClient.get(`/api/v1/customers/${trip.customer_id}`).then(res => res.data);
@@ -172,9 +216,12 @@ export async function resolveMissingRelations(trip: Trip): Promise<Trip> {
       console.error('Failed to fetch missing customer', e);
     }
   }
+
+  // 6. Resolve dispatcher
   if (trip.dispatcher_id && !trip.dispatcher) {
     trip.dispatcher = { id: trip.dispatcher_id, full_name: 'Dispatcher' };
   }
+
   return trip;
 }
 
@@ -372,6 +419,7 @@ export const tripApi = {
   },
 
   assignExternalVehicle: async (id: string, payload: any): Promise<Trip> => {
+    lastCacheTime = 0;
     await refreshLookupsIfNeeded();
     await apiClient.post(`/api/v1/dispatch/trips/${id}/assign-external`, payload);
     const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);
@@ -380,6 +428,7 @@ export const tripApi = {
   },
 
   assignExternalDriver: async (id: string, payload: any): Promise<Trip> => {
+    lastCacheTime = 0;
     await refreshLookupsIfNeeded();
     await apiClient.post(`/api/v1/dispatch/trips/${id}/assign-external-driver`, payload);
     const res = await apiClient.get(`/api/v1/trips/${id}`).then((r) => r.data as BETrip);

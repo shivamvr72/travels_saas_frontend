@@ -89,6 +89,37 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
+              name="external_hiring_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>External Hiring (Optional)</FormLabel>
+                  <FormControl>
+                    <AppLookup
+                      lookupKey="dispatch-external-hirings"
+                      placeholder="Select an active external hiring..."
+                      value={field.value ?? undefined}
+                      onChange={(val) => {
+                        field.onChange(val || null);
+                        if (val) {
+                          form.setValue('vehicle_id', null);
+                          form.setValue('driver_id', null);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="relative flex items-center py-2">
+              <div className="flex-grow border-t border-muted"></div>
+              <span className="flex-shrink-0 mx-4 text-muted-foreground text-xs uppercase">Or</span>
+              <div className="flex-grow border-t border-muted"></div>
+            </div>
+
+            <FormField
+              control={form.control}
               name="vehicle_id"
               render={({ field }) => (
                 <FormItem>
@@ -98,7 +129,10 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
                       lookupKey="dispatch-available-vehicles"
                       placeholder="Select a vehicle..."
                       value={field.value ?? undefined}
-                      onChange={(val) => field.onChange(val || null)}
+                      onChange={(val) => {
+                        field.onChange(val || null);
+                        if (val) form.setValue('external_hiring_id', null);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -117,7 +151,10 @@ export function AssignTripDialog({ open, onOpenChange, tripId }: AssignTripDialo
                       lookupKey="dispatch-available-drivers"
                       placeholder="Select a driver..."
                       value={field.value ?? undefined}
-                      onChange={(val) => field.onChange(val || null)}
+                      onChange={(val) => {
+                        field.onChange(val || null);
+                        if (val) form.setValue('external_hiring_id', null);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
