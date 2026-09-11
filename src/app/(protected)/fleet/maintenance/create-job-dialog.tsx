@@ -54,7 +54,7 @@ export function CreateJobDialog({ open, onOpenChange, onSuccess }: CreateJobDial
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CreateJobFormValues>({
-    resolver: zodResolver(createJobSchema),
+    resolver: zodResolver(createJobSchema) as any,
     defaultValues: {
       vehicle_id: '',
       job_source: 'scheduled',
