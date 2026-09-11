@@ -99,9 +99,9 @@ export function DashboardKpiCards() {
 
 export function DashboardMainContent() {
   return (
-    <div className="mt-8 grid gap-6 lg:grid-cols-5">
-      {/* Active Trips (60% width on Desktop) */}
-      <Card className="lg:col-span-3 shadow-none border-border/50 bg-card">
+    <div className="mt-8 grid gap-6 lg:grid-cols-5 2xl:grid-cols-6">
+      {/* Active Trips (60% width on Desktop, more on ultrawide) */}
+      <Card className="lg:col-span-3 2xl:col-span-4 shadow-none border-border/50 bg-card">
         <CardHeader className="border-b border-border/40 pb-4 pt-5">
           <CardTitle className="text-base font-semibold text-foreground">Active Trips</CardTitle>
         </CardHeader>
@@ -135,8 +135,8 @@ export function DashboardMainContent() {
         </CardContent>
       </Card>
       
-      {/* Recent Payments (40% width on Desktop) */}
-      <Card className="lg:col-span-2 shadow-none border-border/50 bg-card">
+      {/* Recent Payments (40% width on Desktop, less on ultrawide) */}
+      <Card className="lg:col-span-2 2xl:col-span-2 shadow-none border-border/50 bg-card">
         <CardHeader className="border-b border-border/40 pb-4 pt-5">
           <CardTitle className="text-base font-semibold text-foreground">Recent Payments</CardTitle>
         </CardHeader>
