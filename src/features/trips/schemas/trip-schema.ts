@@ -44,6 +44,12 @@ export const tripSchema = z.object({
     .optional()
     .or(z.literal('')),
 
+  // External Vehicle Fields
+  isExternalVehicle: z.boolean().default(false).optional(),
+  external_vehicle_reg: z.string().optional(),
+  external_vehicle_make: z.string().optional(),
+  external_provider_name: z.string().optional(),
+
 }).superRefine((data, ctx) => {
   // Cross-field: expected_end_date must be after start_date
   if (data.start_date && data.expected_end_date) {
@@ -74,12 +80,30 @@ export const tripSchema = z.object({
     });
   }
 
-  // Require external fields if external
+  // Require standard vehicle if not external
+  if (!data.isExternalVehicle && !data.vehicle_id) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Please select a vehicle',
+      path: ['vehicle_id'],
+    });
+  }
+
+  // Require external fields if external driver
   if (data.isExternalDriver && !data.external_driver_name) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'Driver name is required',
       path: ['external_driver_name'],
+    });
+  }
+
+  // Require external fields if external vehicle
+  if (data.isExternalVehicle && !data.external_vehicle_reg) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Vehicle Registration is required',
+      path: ['external_vehicle_reg'],
     });
   }
 });

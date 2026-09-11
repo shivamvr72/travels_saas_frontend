@@ -1,6 +1,7 @@
 import { Trip, TripDocumentCategory, TripDocument } from '../../domain/trip-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/shared/lib/utils';
 import { FileText, Upload, File, Trash2, Download } from 'lucide-react';
 import { useTripDocuments } from '../../hooks/use-trip-documents';
 import { formatBytes } from '@/shared/lib/utils';
@@ -44,11 +45,19 @@ export function TripDocumentsTab({ trip }: TripDocumentsTabProps) {
     );
   }
 
-  const renderDocumentList = (docs: TripDocument[]) => {
+  const renderDocumentList = (docs: TripDocument[], categoryId: string) => {
     if (docs.length === 0) {
       return (
-        <div className="text-center py-6 text-sm text-muted-foreground border border-dashed rounded-md bg-muted/20">
-          No documents uploaded in this category.
+        <div className="text-center py-8 text-sm text-muted-foreground border border-dashed rounded-md bg-muted/20 flex flex-col items-center justify-center gap-3">
+          <p>No documents uploaded in this category.</p>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => { setUploadCategory(categoryId); setUploadOpen(true); }}
+          >
+            <Upload className="mr-2 h-4 w-4" />
+            Upload Document
+          </Button>
         </div>
       );
     }
@@ -67,10 +76,16 @@ export function TripDocumentsTab({ trip }: TripDocumentsTabProps) {
                 <span>{format(new Date(doc.uploaded_at), 'MMM d, yyyy')}</span>
               </p>
             </div>
-            <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => window.open(doc.file_url, '_blank')}>
+            <div className="flex items-center gap-1">
+              <a 
+                href={doc.file_url} 
+                download={doc.file_name} 
+                target="_blank" 
+                rel="noreferrer"
+                className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8 text-muted-foreground hover:text-foreground")}
+              >
                 <Download className="h-4 w-4" />
-              </Button>
+              </a>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10">
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -106,7 +121,7 @@ export function TripDocumentsTab({ trip }: TripDocumentsTabProps) {
               </Button>
             </CardHeader>
             <CardContent className="p-4">
-              {renderDocumentList(categoryDocs)}
+              {renderDocumentList(categoryDocs, category.id)}
             </CardContent>
           </Card>
         );

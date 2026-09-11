@@ -15,6 +15,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useCreateDriver } from '@/features/drivers/api';
 import { useCreateCustomer } from '@/features/customers/api';
+import { useCreateExternalHiring } from '@/features/external-hiring/api';
 import { toast } from 'sonner';
 
 export function TripCreateForm() {
@@ -22,6 +23,7 @@ export function TripCreateForm() {
   const createTrip = useCreateTrip();
   const createDriverMutation = useCreateDriver();
   const createCustomerMutation = useCreateCustomer();
+  const createExternalHiringMutation = useCreateExternalHiring();
 
   const form = useForm<TripFormValues>({
     mode: 'onChange',
@@ -48,14 +50,21 @@ export function TripCreateForm() {
       external_driver_name: '',
       external_agency_name: '',
       external_driver_phone: '',
+      isExternalVehicle: false,
+      external_vehicle_reg: '',
+      external_vehicle_make: '',
+      external_provider_name: '',
     },
   });
 
-  const isExternal = form.watch('isExternalDriver');
+  const isExternalDriver = form.watch('isExternalDriver');
+  const isExternalVehicle = form.watch('isExternalVehicle');
 
   const onSubmit = async (data: TripFormValues) => {
     try {
       let finalDriverId = data.driver_id;
+      let finalVehicleId = data.vehicle_id;
+      let finalExternalHiringId = null;
       
       // If external driver is selected, create the driver record first
       if (data.isExternalDriver && data.external_driver_name) {
@@ -69,8 +78,27 @@ export function TripCreateForm() {
         finalDriverId = extDriver.id;
       }
 
-      // We override the driver_id in data so the backend gets it
-      const payload = { ...data, driver_id: finalDriverId };
+      // If external vehicle is selected, create external hiring record
+      if (data.isExternalVehicle && data.external_vehicle_reg) {
+        const extHiring = await createExternalHiringMutation.mutateAsync({
+          provider_name: data.external_provider_name || 'External Agency',
+          provider_phone: null,
+          external_vehicle_reg: data.external_vehicle_reg,
+          vehicle_description: data.external_vehicle_make || null,
+          external_driver_name: data.isExternalDriver ? data.external_driver_name : 'Pending',
+          agreed_rate: 0,
+        } as any);
+        finalExternalHiringId = extHiring.id;
+        finalVehicleId = undefined; // Backend doesn't expect vehicle_id if external
+      }
+
+      // We override the IDs in data so the backend gets it
+      const payload = { 
+        ...data, 
+        driver_id: finalDriverId, 
+        vehicle_id: finalVehicleId,
+        external_hiring_id: finalExternalHiringId
+      };
 
       const result = await createTrip.mutateAsync(payload as any);
       toast.success(`Trip ${result.trip_number || 'created'} successfully`);
@@ -330,16 +358,80 @@ export function TripCreateForm() {
               control={form.control}
               name="vehicle_id"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vehicle *</FormLabel>
-                  <FormControl>
-                    <AppLookup 
-                      lookupKey="vehicles" 
-                      value={field.value || undefined} 
-                      onChange={field.onChange} 
-                      placeholder="Select vehicle..." 
-                    />
-                  </FormControl>
+                <FormItem className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Vehicle {isExternalVehicle ? '' : '*'}</FormLabel>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is-external-vehicle"
+                        checked={isExternalVehicle}
+                        onCheckedChange={(checked) => {
+                          form.setValue('isExternalVehicle', checked);
+                          if (checked) {
+                            form.setValue('vehicle_id', '');
+                          } else {
+                            form.setValue('external_vehicle_reg', '');
+                            form.setValue('external_vehicle_make', '');
+                            form.setValue('external_provider_name', '');
+                          }
+                        }}
+                      />
+                      <Label htmlFor="is-external-vehicle" className="text-xs font-normal text-muted-foreground">External Vehicle</Label>
+                    </div>
+                  </div>
+
+                  {!isExternalVehicle ? (
+                    <FormControl>
+                      <AppLookup 
+                        lookupKey="vehicles" 
+                        value={field.value || undefined} 
+                        onChange={field.onChange} 
+                        placeholder="Select vehicle..." 
+                      />
+                    </FormControl>
+                  ) : (
+                    <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-border/50">
+                      <FormField
+                        control={form.control}
+                        name="external_vehicle_reg"
+                        render={({ field: regField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Vehicle Reg Number *</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. MH 12 AB 1234" {...regField} value={regField.value || ''} className="bg-background" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="external_vehicle_make"
+                        render={({ field: makeField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Vehicle Model / Make</FormLabel>
+                            <FormControl>
+                              <Input placeholder="e.g. Tata Ace, Innova..." {...makeField} value={makeField.value || ''} className="bg-background" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="external_provider_name"
+                        render={({ field: provField }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs">Vendor / Provider Name</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Vendor name (optional)" {...provField} value={provField.value || ''} className="bg-background" />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -351,11 +443,11 @@ export function TripCreateForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <FormLabel>Primary Driver {isExternal ? '' : '*'}</FormLabel>
+                    <FormLabel>Primary Driver {isExternalDriver ? '' : '*'}</FormLabel>
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="is-external"
-                        checked={isExternal}
+                        checked={isExternalDriver}
                         onCheckedChange={(checked) => {
                           form.setValue('isExternalDriver', checked);
                           if (checked) {
@@ -371,7 +463,7 @@ export function TripCreateForm() {
                     </div>
                   </div>
 
-                  {!isExternal ? (
+                  {!isExternalDriver ? (
                     <FormControl>
                       <AppLookup 
                         lookupKey="drivers" 

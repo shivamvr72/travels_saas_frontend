@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { MaintenanceJob, maintenanceApi } from '@/lib/api/maintenance';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { CreateJobDialog } from './create-job-dialog';
 import {
   Table,
   TableBody,
@@ -16,6 +17,7 @@ import {
 export default function MaintenancePage() {
   const [jobs, setJobs] = useState<MaintenanceJob[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   useEffect(() => {
     fetchJobs();
@@ -41,11 +43,17 @@ export default function MaintenancePage() {
             Manage your fleet's maintenance jobs and records.
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setIsCreateOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Job
         </Button>
       </div>
+
+      <CreateJobDialog 
+        open={isCreateOpen} 
+        onOpenChange={setIsCreateOpen} 
+        onSuccess={fetchJobs} 
+      />
 
       <div className="border rounded-md">
         <Table>
