@@ -99,7 +99,12 @@ export default function MaintenancePage() {
                     </span>
                   </TableCell>
                   <TableCell>{new Date(job.scheduled_date).toLocaleDateString()}</TableCell>
-                  <TableCell>₹{job.actual_cost}</TableCell>
+                  <TableCell>
+                    ₹{Number(job.actual_cost) > 0 
+                      ? Number(job.actual_cost).toFixed(2) 
+                      : (job.override_cost ? Number(job.override_cost).toFixed(2) : '0.00')}
+                    {Number(job.actual_cost) === 0 && job.override_cost && <span className="text-xs text-muted-foreground ml-1">(Est.)</span>}
+                  </TableCell>
                 </TableRow>
               ))
             )}

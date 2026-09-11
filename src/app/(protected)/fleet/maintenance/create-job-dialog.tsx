@@ -36,6 +36,7 @@ const createJobSchema = z.object({
   workshop_name: z.string()
     .max(100, 'Workshop name cannot exceed 100 characters')
     .optional(),
+  override_cost: z.coerce.number().min(0, 'Cost must be positive').optional(),
   notes: z.string()
     .max(500, 'Notes cannot exceed 500 characters')
     .optional(),
@@ -185,6 +186,20 @@ export function CreateJobDialog({ open, onOpenChange, onSuccess }: CreateJobDial
                     <FormLabel>Scheduled Date *</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="override_cost"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Estimated Cost (Optional)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0.00" {...field} value={field.value || ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
