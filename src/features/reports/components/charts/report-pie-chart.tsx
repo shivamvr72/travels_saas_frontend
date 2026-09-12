@@ -27,6 +27,10 @@ export function ReportPieChart({
   formatValue = (v) => v.toString(),
   colors = CHART_COLORS,
 }: ReportPieChartProps) {
+  const totalValue = React.useMemo(() => {
+    return data.reduce((acc, item) => acc + (Number(item[valueKey]) || 0), 0);
+  }, [data, valueKey]);
+
   return (
     <Card>
       {(title || description) && (
@@ -41,33 +45,38 @@ export function ReportPieChart({
             No data available for this period.
           </div>
         ) : (
-          <div style={{ height }}>
+          <div className="relative" style={{ height }}>
+            {variant === 'donut' && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-9 z-10">
+                <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total</span>
+                <span className="text-sm sm:text-base font-bold text-foreground drop-shadow-xs">{formatValue(totalValue)}</span>
+              </div>
+            )}
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={variant === 'donut' ? 60 : 0}
-                outerRadius={80}
-                paddingAngle={variant === 'donut' ? 2 : 0}
-                dataKey={valueKey}
-                nameKey={nameKey}
-              >
-                {data.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip
-                 
-                // @ts-expect-error Recharts ValueType is broader than number|string at runtime
-                formatter={(value: number | string) => formatValue(Number(value))}
-                contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
-              />
-              <Legend verticalAlign="bottom" height={36} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={variant === 'donut' ? 60 : 0}
+                  outerRadius={80}
+                  paddingAngle={variant === 'donut' ? 2 : 0}
+                  dataKey={valueKey}
+                  nameKey={nameKey}
+                >
+                  {data.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  // @ts-expect-error Recharts ValueType is broader than number|string at runtime
+                  formatter={(value: number | string) => formatValue(Number(value))}
+                  contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
+                />
+                <Legend verticalAlign="bottom" height={36} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         )}
       </CardContent>
     </Card>

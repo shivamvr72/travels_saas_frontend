@@ -82,3 +82,25 @@ export interface ProfitabilitySummary {
   net_profit: number;
   profit_margin_percent: number;
 }
+
+export interface CustomerInvoiceItem {
+  id: string;
+  invoice_number: string;
+  trip_number?: string;
+  issue_date: string;
+  due_date: string;
+  amount: number;
+  balance_due: number;
+  status: 'overdue' | 'pending' | 'paid';
+}
+
+export interface CustomerOutstandingItem {
+  id: string;
+  name: string;
+  total_invoices: number;
+  overdue_invoices: number;
+  total_outstanding: number;
+  phone?: string;
+  email?: string;
+  invoices?: CustomerInvoiceItem[];
+}

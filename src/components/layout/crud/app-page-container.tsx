@@ -14,7 +14,8 @@ export function AppPageContainer({
 }: AppPageContainerProps) {
   return (
     <div className={cn(
-      "w-full mx-auto space-y-6 animate-in fade-in duration-300",
+      "w-full mx-auto animate-in fade-in duration-300",
+      !className?.includes("flex") && "space-y-4",
       {
         "max-w-3xl": maxWidth === "sm",
         "max-w-4xl": maxWidth === "md",

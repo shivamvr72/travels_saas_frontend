@@ -271,7 +271,7 @@ export function AppDataTable<T>({
                 )}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="py-3 px-4 text-sm">
+                  <TableCell key={cell.id} className="py-2.5 px-4 text-sm">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

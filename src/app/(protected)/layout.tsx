@@ -45,7 +45,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
 
           {/* Main content area — fills remaining space and contains its own scrollable sections */}
           <main className="flex-1 flex flex-col min-h-0 min-w-0 w-full overflow-y-auto overflow-x-hidden">
-            <div className="w-full max-w-full 2xl:max-w-[2400px] mx-auto p-4 pb-12 sm:p-6 sm:pb-16 lg:p-8 lg:pb-20 flex-1 flex flex-col min-h-0 min-w-0">
+            <div className="w-full max-w-full 2xl:max-w-[2400px] mx-auto p-4 sm:p-6 lg:p-6 flex-1 flex flex-col min-h-0 min-w-0">
               {children}
             </div>
           </main>
