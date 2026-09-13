@@ -47,3 +47,16 @@ export const PROFIT_CHART_COLORS = {
   expenses: 'hsl(var(--chart-5))', // red-ish
   profit: 'hsl(var(--chart-1))', // blue-ish
 };
+
+export const FLEET_CHART_COLORS = {
+  running: 'hsl(var(--chart-2))',
+  idle: 'hsl(var(--chart-5))',
+  utilization: 'hsl(var(--chart-1))',
+};
+
+export const VEHICLE_STATUS_COLORS: Record<string, string> = {
+  active: 'hsl(var(--chart-2))',
+  idle: 'hsl(var(--chart-5))',
+  maintenance: 'hsl(var(--chart-4))',
+  inactive: 'hsl(var(--muted-foreground))',
+};

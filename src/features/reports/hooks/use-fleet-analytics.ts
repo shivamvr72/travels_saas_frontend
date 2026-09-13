@@ -10,3 +10,22 @@ export function useFleetSummary(filter: ReportDateFilter) {
     staleTime: 5 * 60 * 1000,
   });
 }
+
+export function useFleetSummaryKpis(filter: ReportDateFilter) {
+  return useQuery({
+    queryKey: reportKeys.fleetKpis(filter),
+    queryFn: () => ReportsApi.getFleetSummaryKpis(filter),
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useFleetUtilizationTrend(
+  granularity: 'daily' | 'weekly' | 'monthly',
+  filter: ReportDateFilter
+) {
+  return useQuery({
+    queryKey: reportKeys.fleetUtilizationTrend(granularity, filter),
+    queryFn: () => ReportsApi.getFleetUtilizationTrend(granularity, filter),
+    staleTime: 5 * 60 * 1000,
+  });
+}

@@ -19,6 +19,8 @@ import {
   DriverProfitRow,
   CustomerProfitRow,
   RouteProfitRow,
+  FleetSummaryKpis,
+  FleetUtilizationTrend,
 } from '../domain/reports-types';
 
 const getData = <T>(r: AxiosResponse<T>) => r.data;
@@ -95,6 +97,15 @@ export const ReportsApi = {
 
   getFleetSummary: (params: ReportDateFilter): Promise<FleetSummary[]> =>
     apiClient.get<FleetSummary[]>('/api/v1/analytics/fleet/summary', { params: parseReportDateFilter(params) }).then(getData),
+
+  getFleetSummaryKpis: (params: ReportDateFilter): Promise<FleetSummaryKpis> =>
+    apiClient.get<FleetSummaryKpis>('/api/v1/analytics/fleet/summary-kpis', { params: parseReportDateFilter(params) }).then(getData),
+
+  getFleetUtilizationTrend: (
+    granularity: 'daily' | 'weekly' | 'monthly',
+    params: ReportDateFilter
+  ): Promise<FleetUtilizationTrend[]> =>
+    apiClient.get<FleetUtilizationTrend[]>(`/api/v1/analytics/fleet/utilization-trend/${granularity}`, { params: parseReportDateFilter(params) }).then(getData),
 
   getDriverAnalytics: (params: ReportDateFilter): Promise<DriverAnalytics[]> =>
     apiClient.get<DriverAnalytics[]>('/api/v1/analytics/drivers/summary', { params: parseReportDateFilter(params) }).then(getData),

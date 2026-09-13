@@ -180,3 +180,22 @@ export interface RouteProfitRow {
   margin_pct: number;
   trips: number;
 }
+
+export interface FleetSummaryKpis {
+  total_vehicles: number;
+  active_vehicles: number;
+  idle_vehicles: number;
+  fleet_utilization_pct: number;
+  avg_trips_per_vehicle: number;
+  avg_revenue_per_vehicle: number;
+  top_performing_vehicle?: string;
+  most_idle_vehicle?: string;
+}
+
+export interface FleetUtilizationTrend {
+  period_label: string;
+  utilization_pct: number;
+  vehicles_running: number;
+  vehicles_idle: number;
+  trips: number;
+}
