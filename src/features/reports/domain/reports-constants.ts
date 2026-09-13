@@ -41,3 +41,9 @@ export const EXPENSE_PERIOD_PRESETS: { label: string; value: PeriodPreset }[] = 
   { label: 'Last Quarter', value: 'last_quarter' },
   { label: 'YTD', value: 'ytd' },
 ];
+
+export const PROFIT_CHART_COLORS = {
+  revenue: 'hsl(var(--chart-2))', // green-ish
+  expenses: 'hsl(var(--chart-5))', // red-ish
+  profit: 'hsl(var(--chart-1))', // blue-ish
+};

@@ -120,3 +120,63 @@ export interface ExpenseSummaryKpis {
   expense_to_revenue_ratio: number;
   mom_change_pct: number | null;
 }
+
+export interface ProfitabilitySummaryKpis {
+  gross_revenue: number;
+  total_expenses: number;
+  net_profit: number;
+  profit_margin_pct: number;
+  avg_profit_per_trip: number;
+  mom_change_pct: number | null;
+}
+
+export interface ProfitTrend {
+  period_label: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  trip_count: number;
+  margin_pct: number;
+}
+
+export interface VehicleProfitRow {
+  vehicle_id: string;
+  reg_number: string;
+  vehicle_name?: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  margin_pct: number;
+  trips: number;
+  profit_per_trip: number;
+}
+
+export interface DriverProfitRow {
+  driver_id: string;
+  driver_name: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  margin_pct: number;
+  trips: number;
+}
+
+export interface CustomerProfitRow {
+  customer_id: string;
+  customer_name: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  margin_pct: number;
+  trips: number;
+}
+
+export interface RouteProfitRow {
+  route_id: string;
+  route_name: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+  margin_pct: number;
+  trips: number;
+}

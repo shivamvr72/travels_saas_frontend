@@ -13,6 +13,12 @@ import {
   VehicleExpenseRow,
   DriverExpenseRow,
   ExpenseSummaryKpis,
+  ProfitabilitySummaryKpis,
+  ProfitTrend,
+  VehicleProfitRow,
+  DriverProfitRow,
+  CustomerProfitRow,
+  RouteProfitRow,
 } from '../domain/reports-types';
 
 const getData = <T>(r: AxiosResponse<T>) => r.data;
@@ -118,4 +124,25 @@ export const ReportsApi = {
 
   getExpenseSummaryKpis: (params: ReportDateFilter): Promise<ExpenseSummaryKpis> =>
     apiClient.get<ExpenseSummaryKpis>('/api/v1/analytics/expenses/summary-kpis', { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitabilitySummaryKpis: (params: ReportDateFilter): Promise<ProfitabilitySummaryKpis> =>
+    apiClient.get<ProfitabilitySummaryKpis>('/api/v1/analytics/profitability/summary-kpis', { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitTrend: (
+    granularity: 'daily' | 'weekly' | 'monthly',
+    params: ReportDateFilter
+  ): Promise<ProfitTrend[]> =>
+    apiClient.get<ProfitTrend[]>(`/api/v1/analytics/profitability/trend/${granularity}`, { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitByVehicle: (params: ReportDateFilter): Promise<VehicleProfitRow[]> =>
+    apiClient.get<VehicleProfitRow[]>('/api/v1/analytics/profitability/by-vehicle', { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitByDriver: (params: ReportDateFilter): Promise<DriverProfitRow[]> =>
+    apiClient.get<DriverProfitRow[]>('/api/v1/analytics/profitability/by-driver', { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitByCustomer: (params: ReportDateFilter): Promise<CustomerProfitRow[]> =>
+    apiClient.get<CustomerProfitRow[]>('/api/v1/analytics/profitability/by-customer', { params: parseReportDateFilter(params) }).then(getData),
+
+  getProfitByRoute: (params: ReportDateFilter): Promise<RouteProfitRow[]> =>
+    apiClient.get<RouteProfitRow[]>('/api/v1/analytics/profitability/by-route', { params: parseReportDateFilter(params) }).then(getData),
 };
