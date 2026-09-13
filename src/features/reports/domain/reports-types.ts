@@ -57,6 +57,25 @@ export interface DriverAnalytics {
   ranking: number;
 }
 
+export interface DriverSummaryKpis {
+  total_drivers: number;
+  active_drivers: number;
+  total_trips: number;
+  total_revenue: number;
+  avg_trips_per_driver: number;
+  avg_revenue_per_driver: number;
+  top_driver_name?: string;
+  top_driver_revenue?: number;
+}
+
+export interface DriverPerformanceTrend {
+  period_label: string;
+  trips: number;
+  revenue: number;
+  avg_duration_hours: number;
+  active_drivers: number;
+}
+
 export interface FleetSummary {
   vehicle_id: string;
   reg_number: string;

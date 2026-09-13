@@ -21,6 +21,8 @@ import {
   RouteProfitRow,
   FleetSummaryKpis,
   FleetUtilizationTrend,
+  DriverSummaryKpis,
+  DriverPerformanceTrend,
 } from '../domain/reports-types';
 
 const getData = <T>(r: AxiosResponse<T>) => r.data;
@@ -109,6 +111,15 @@ export const ReportsApi = {
 
   getDriverAnalytics: (params: ReportDateFilter): Promise<DriverAnalytics[]> =>
     apiClient.get<DriverAnalytics[]>('/api/v1/analytics/drivers/summary', { params: parseReportDateFilter(params) }).then(getData),
+
+  getDriverSummaryKpis: (params: ReportDateFilter): Promise<DriverSummaryKpis> =>
+    apiClient.get<DriverSummaryKpis>('/api/v1/analytics/drivers/summary-kpis', { params: parseReportDateFilter(params) }).then(getData),
+
+  getDriverPerformanceTrend: (
+    granularity: 'daily' | 'weekly' | 'monthly',
+    params: ReportDateFilter
+  ): Promise<DriverPerformanceTrend[]> =>
+    apiClient.get<DriverPerformanceTrend[]>(`/api/v1/analytics/drivers/performance-trend/${granularity}`, { params: parseReportDateFilter(params) }).then(getData),
 
   getCustomerAnalytics: (
     params: ReportDateFilter & { limit?: number }

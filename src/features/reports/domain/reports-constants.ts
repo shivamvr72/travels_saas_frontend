@@ -60,3 +60,9 @@ export const VEHICLE_STATUS_COLORS: Record<string, string> = {
   maintenance: 'hsl(var(--chart-4))',
   inactive: 'hsl(var(--muted-foreground))',
 };
+
+export const DRIVER_CHART_COLORS = {
+  trips: 'hsl(var(--chart-1))',
+  revenue: 'hsl(var(--chart-2))',
+  duration: 'hsl(var(--chart-4))',
+};
