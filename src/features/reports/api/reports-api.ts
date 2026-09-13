@@ -9,6 +9,10 @@ import {
   ReportDateFilter,
   RevenueByPeriod,
   TopEntity,
+  ExpenseTrend,
+  VehicleExpenseRow,
+  DriverExpenseRow,
+  ExpenseSummaryKpis,
 } from '../domain/reports-types';
 
 const getData = <T>(r: AxiosResponse<T>) => r.data;
@@ -48,6 +52,16 @@ const parseReportDateFilter = (filter: ReportDateFilter): { start_date?: string,
       const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
       const end = new Date(today.getFullYear(), today.getMonth(), 0);
       return { start_date: formatDate(start), end_date: formatDate(end) };
+    }
+    case 'last_quarter': {
+      const currentQuarter = Math.floor(today.getMonth() / 3);
+      const start = new Date(today.getFullYear(), (currentQuarter - 1) * 3, 1);
+      const end = new Date(today.getFullYear(), currentQuarter * 3, 0);
+      return { start_date: formatDate(start), end_date: formatDate(end) };
+    }
+    case 'ytd': {
+      const start = new Date(today.getFullYear(), 0, 1);
+      return { start_date: formatDate(start), end_date: formatDate(today) };
     }
     default:
       return {};
@@ -89,4 +103,19 @@ export const ReportsApi = {
 
   getAlerts: (): Promise<AlertItem[]> =>
     apiClient.get<AlertItem[]>('/api/v1/analytics/alerts').then(getData),
+
+  getExpenseTrend: (
+    granularity: 'daily' | 'weekly' | 'monthly',
+    params: ReportDateFilter
+  ): Promise<ExpenseTrend[]> =>
+    apiClient.get<ExpenseTrend[]>(`/api/v1/analytics/expenses/trend/${granularity}`, { params: parseReportDateFilter(params) }).then(getData),
+
+  getExpenseByVehicle: (params: ReportDateFilter): Promise<VehicleExpenseRow[]> =>
+    apiClient.get<VehicleExpenseRow[]>('/api/v1/analytics/expenses/by-vehicle', { params: parseReportDateFilter(params) }).then(getData),
+
+  getExpenseByDriver: (params: ReportDateFilter): Promise<DriverExpenseRow[]> =>
+    apiClient.get<DriverExpenseRow[]>('/api/v1/analytics/expenses/by-driver', { params: parseReportDateFilter(params) }).then(getData),
+
+  getExpenseSummaryKpis: (params: ReportDateFilter): Promise<ExpenseSummaryKpis> =>
+    apiClient.get<ExpenseSummaryKpis>('/api/v1/analytics/expenses/summary-kpis', { params: parseReportDateFilter(params) }).then(getData),
 };

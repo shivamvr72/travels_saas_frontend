@@ -1,4 +1,4 @@
-export type PeriodPreset = 'today' | 'yesterday' | 'this_week' | 'last_week' | 'this_month' | 'last_month' | 'custom';
+export type PeriodPreset = 'today' | 'yesterday' | 'this_week' | 'last_week' | 'this_month' | 'last_month' | 'last_quarter' | 'ytd' | 'custom';
 
 export interface ReportDateFilter {
   start_date?: string;
@@ -75,4 +75,48 @@ export interface AlertItem {
   message: string;
   entity_id?: string;
   entity_name?: string;
+}
+
+export interface ExpenseTrend {
+  period_label: string;
+  total_expenses: number;
+  fuel: number;
+  maintenance: number;
+  toll: number;
+  driver_allowance: number;
+  other: number;
+  trip_count: number;
+}
+
+export interface VehicleExpenseRow {
+  vehicle_id: string;
+  reg_number: string;
+  vehicle_name?: string;
+  total_expenses: number;
+  fuel: number;
+  maintenance: number;
+  toll: number;
+  driver_allowance: number;
+  other: number;
+  trips: number;
+  cost_per_trip: number;
+  pct_of_total: number;
+}
+
+export interface DriverExpenseRow {
+  driver_id: string;
+  driver_name: string;
+  total_expenses: number;
+  allowances: number;
+  trips: number;
+  cost_per_trip: number;
+}
+
+export interface ExpenseSummaryKpis {
+  total_expenses_period: number;
+  avg_expense_per_trip: number;
+  highest_category: string;
+  highest_category_amount: number;
+  expense_to_revenue_ratio: number;
+  mom_change_pct: number | null;
 }

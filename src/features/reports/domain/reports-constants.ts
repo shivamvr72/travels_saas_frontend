@@ -35,3 +35,9 @@ export const EXPENSE_COLOR_MAP: Record<string, string> = {
   driver_allowance: 'hsl(var(--chart-5))',
   other: 'hsl(var(--muted-foreground))',
 };
+
+export const EXPENSE_PERIOD_PRESETS: { label: string; value: PeriodPreset }[] = [
+  ...PERIOD_PRESETS,
+  { label: 'Last Quarter', value: 'last_quarter' },
+  { label: 'YTD', value: 'ytd' },
+];
