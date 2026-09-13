@@ -49,7 +49,7 @@ export function TripWorkspace({ tripId }: TripWorkspaceProps) {
   const defaultTab = searchParams.get('tab') || 'overview';
   const isSettlementPhase = trip?.status === 'completed' || trip?.status === 'settled';
   
-  let activeTab = defaultTab;
+  const activeTab = defaultTab;
 
   const handleTabChange = (value: string) => {
     router.replace(`/trips/${tripId}?tab=${value}`, { scroll: false });

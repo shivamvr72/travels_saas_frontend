@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,22 +8,54 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Building2, CreditCard, ExternalLink, FileText, AlertCircle, CheckCircle2, Clock, ArrowLeft } from 'lucide-react';
 import { CURRENCY_CONFIG } from '@/features/finance/domain/finance-constants';
+import { FinanceApi } from '@/features/finance/api/finance-api';
+import { CustomerInvoiceItem, CustomerOutstandingItem } from '@/features/finance/domain/finance-types';
 import { PaymentForm } from '@/features/finance/components/payment-form';
-import { mockCustomerOutstanding } from '@/features/finance/pages/receivables-page';
-import { CustomerInvoiceItem } from '@/features/finance/domain/finance-types';
+import { PaymentFormValues } from '@/features/finance/schemas/finance-schemas';
+import { toast } from 'sonner';
 
 export default function CustomerReceivablesPage({ params }: { params: Promise<{ customerId: string }> }) {
   const { customerId } = React.use(params);
   const [activeInvoiceForPayment, setActiveInvoiceForPayment] = useState<CustomerInvoiceItem | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<CustomerOutstandingItem | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // In a real app, you would fetch this data from an API
-  // Currently falling back to mock data
-  const customer = mockCustomerOutstanding.find(c => c.id === customerId);
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      // Fetch both the company summary and the invoices concurrently
+      const [balances, invoices] = await Promise.all([
+        FinanceApi.getOutstandingBalances(customerId),
+        FinanceApi.getCustomerInvoices(customerId)
+      ]);
 
-  if (!customer) {
-    notFound();
-  }
+      const balanceInfo = balances.find((b: { company_id: string; company_name: string; outstanding_balance: number }) => b.company_id === customerId);
+      
+      if (balanceInfo) {
+        setCustomer({
+          id: balanceInfo.company_id,
+          name: balanceInfo.company_name,
+          total_invoices: invoices.length,
+          overdue_invoices: invoices.filter((i: { status: string }) => i.status === 'overdue').length,
+          total_outstanding: balanceInfo.outstanding_balance,
+          invoices: invoices
+        });
+      } else {
+        // If not found in balances, try to get name from another endpoint or 404
+        setCustomer(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch customer receivables:', error);
+      toast.error('Failed to load receivables details');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [customerId]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat(CURRENCY_CONFIG.locale, {
@@ -32,11 +64,39 @@ export default function CustomerReceivablesPage({ params }: { params: Promise<{ 
     }).format(amount);
   };
 
-  const handleRecordPayment = (data: any) => {
-    setSuccessMessage(`Payment of ${formatCurrency(data.amount)} recorded successfully for ${customer.name}!`);
-    setActiveInvoiceForPayment(null);
-    setTimeout(() => setSuccessMessage(null), 5000);
+  const handleRecordPayment = async (data: PaymentFormValues) => {
+    if (!activeInvoiceForPayment || !customer) return;
+    
+    try {
+      await FinanceApi.payCustomerInvoice(customer.id, activeInvoiceForPayment.id, {
+        amount: data.amount,
+        payment_mode: data.payment_mode,
+        payment_date: data.payment_date || new Date().toISOString().split('T')[0],
+        reference_no: data.reference_no,
+        remarks: data.remarks
+      });
+      
+      setSuccessMessage(`Payment of ${formatCurrency(data.amount)} recorded successfully for ${customer.name}!`);
+      setActiveInvoiceForPayment(null);
+      
+      // Refresh data to show updated balances
+      await fetchData();
+      
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch (error) {
+      console.error('Failed to record payment:', error);
+      toast.error('Failed to record payment. Please try again.');
+    }
   };
+
+  if (isLoading) {
+    return <div className="p-8 text-center text-muted-foreground">Loading receivables data...</div>;
+  }
+
+  if (!customer) {
+    notFound();
+    return null; // Fallback for TS inference
+  }
 
   return (
     <div className="space-y-6">
@@ -140,15 +200,18 @@ export default function CustomerReceivablesPage({ params }: { params: Promise<{ 
           <Button 
             variant="default" 
             className="gap-2"
-            onClick={() => setActiveInvoiceForPayment(customer.invoices?.[0] || {
-              id: 'new',
-              invoice_number: `INV-GEN-${customer.id}`,
-              issue_date: new Date().toISOString().split('T')[0],
-              due_date: new Date().toISOString().split('T')[0],
-              amount: customer.total_outstanding,
-              balance_due: customer.total_outstanding,
-              status: 'pending'
-            })}
+            onClick={() => {
+              if (!customer) return;
+              setActiveInvoiceForPayment(customer.invoices?.[0] || {
+                id: 'new',
+                invoice_number: `INV-GEN-${customer.id}`,
+                issue_date: new Date().toISOString().split('T')[0],
+                due_date: new Date().toISOString().split('T')[0],
+                amount: customer.total_outstanding,
+                balance_due: customer.total_outstanding,
+                status: 'pending'
+              });
+            }}
           >
             <CreditCard className="h-4 w-4" />
             Record Payment

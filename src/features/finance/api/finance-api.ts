@@ -179,5 +179,25 @@ export const FinanceApi = {
 
   resetPayments: async (tripId: string): Promise<void> => {
     await apiClient.delete(`/api/v1/trips/${tripId}/payment/clear`);
+  },
+
+  // ─── CUSTOMER RECEIVABLES ────────────────────────────────────────────────
+  
+  getOutstandingBalances: async (companyId?: string) => {
+    const url = companyId 
+      ? `/api/v1/outstanding-balances?company_id=${companyId}`
+      : `/api/v1/outstanding-balances`;
+    const response = await apiClient.get(url);
+    return response.data;
+  },
+
+  getCustomerInvoices: async (companyId: string) => {
+    const response = await apiClient.get(`/api/v1/outstanding-balances/${companyId}/invoices`);
+    return response.data;
+  },
+
+  payCustomerInvoice: async (companyId: string, tripPaymentId: string, data: PaymentFormValues) => {
+    const response = await apiClient.post(`/api/v1/outstanding-balances/${companyId}/pay-invoice/${tripPaymentId}`, data);
+    return response.data;
   }
 };

@@ -23,7 +23,7 @@ export default function MaintenancePage() {
     fetchJobs();
   }, []);
 
-  const fetchJobs = async () => {
+  async function fetchJobs() {
     try {
       const { data } = await maintenanceApi.listJobs();
       setJobs(data);
@@ -32,7 +32,7 @@ export default function MaintenancePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="p-6">

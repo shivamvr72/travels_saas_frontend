@@ -94,7 +94,6 @@ export function TripAssignmentDialog({
       }
       setExternalAgency('');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isOpen,
     currentResourceId,
