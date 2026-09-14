@@ -83,11 +83,11 @@ export function ExpenseTrendChart({
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
                 
-                <Bar dataKey="fuel" name="Fuel" stackId="a" fill={EXPENSE_COLOR_MAP.fuel} radius={[0, 0, 0, 0]} />
-                <Bar dataKey="maintenance" name="Maintenance" stackId="a" fill={EXPENSE_COLOR_MAP.maintenance} radius={[0, 0, 0, 0]} />
-                <Bar dataKey="toll" name="Toll" stackId="a" fill={EXPENSE_COLOR_MAP.toll} radius={[0, 0, 0, 0]} />
-                <Bar dataKey="driver_allowance" name="Driver Allowance" stackId="a" fill={EXPENSE_COLOR_MAP.driver_allowance} radius={[0, 0, 0, 0]} />
-                <Bar dataKey="other" name="Other" stackId="a" fill={EXPENSE_COLOR_MAP.other} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="fuel" name="Fuel" stackId="a" fill={EXPENSE_COLOR_MAP.fuel} radius={[0, 0, 0, 0]} maxBarSize={60} />
+                <Bar dataKey="maintenance" name="Maintenance" stackId="a" fill={EXPENSE_COLOR_MAP.maintenance} radius={[0, 0, 0, 0]} maxBarSize={60} />
+                <Bar dataKey="toll" name="Toll" stackId="a" fill={EXPENSE_COLOR_MAP.toll} radius={[0, 0, 0, 0]} maxBarSize={60} />
+                <Bar dataKey="driver_allowance" name="Driver Allowance" stackId="a" fill={EXPENSE_COLOR_MAP.driver_allowance} radius={[0, 0, 0, 0]} maxBarSize={60} />
+                <Bar dataKey="other" name="Other" stackId="a" fill={EXPENSE_COLOR_MAP.other} radius={[4, 4, 0, 0]} maxBarSize={60} />
               </BarChart>
             </ResponsiveContainer>
           </div>

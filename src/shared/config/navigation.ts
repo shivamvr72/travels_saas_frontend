@@ -27,6 +27,7 @@ export interface NavItem {
   icon: React.ElementType;
   module?: AppModule;
   badge?: number;
+  exact?: boolean;
 }
 
 export interface NavGroup {
@@ -39,7 +40,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Dashboard',
     items: [
-      { title: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+      { title: 'Overview', href: '/dashboard', icon: LayoutDashboard, exact: true },
     ],
   },
   {
@@ -72,7 +73,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
   {
     group: 'Reports & Analytics',
     items: [
-      { title: 'Executive Dashboard', href: '/reports', icon: BarChart2, module: 'REPORTS' },
+      { title: 'Executive Dashboard', href: '/reports', icon: BarChart2, module: 'REPORTS', exact: true },
       { title: 'Revenue Analytics', href: '/reports/revenue', icon: TrendingUp, module: 'REPORTS' },
       { title: 'Expense Analytics', href: '/reports/expenses', icon: Receipt, module: 'REPORTS' },
       { title: 'Profitability', href: '/reports/profitability', icon: PieChart, module: 'REPORTS' },

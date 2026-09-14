@@ -42,17 +42,17 @@ export function TopCustomersTable({ data, isLoading }: TopCustomersTableProps) {
   }
 
   return (
-    <Card className="col-span-1 md:col-span-2 border-muted/40 shadow-sm hover:shadow-md transition-shadow duration-300 bg-gradient-to-br from-card to-card/50 font-sans group">
+    <Card className="col-span-1 md:col-span-2 border shadow-sm hover:shadow-md transition-shadow duration-300 bg-card font-sans group">
       <CardHeader>
         <CardTitle className="text-xl font-bold tracking-tight">Top Customers</CardTitle>
         <CardDescription>Highest revenue generating clients</CardDescription>
       </CardHeader>
       <CardContent>
         {data && data.length > 0 ? (
-          <div className="overflow-x-auto rounded-xl border border-border/40">
+          <div className="overflow-x-auto rounded-xl border">
             <Table>
-              <TableHeader className="bg-muted/30">
-                <TableRow className="hover:bg-transparent border-border/40">
+              <TableHeader className="bg-muted/50">
+                <TableRow className="hover:bg-transparent">
                   <TableHead className="font-semibold text-muted-foreground">Customer</TableHead>
                   <TableHead className="text-right font-semibold text-muted-foreground">Trips</TableHead>
                   <TableHead className="text-right font-semibold text-muted-foreground">Total Revenue</TableHead>
@@ -62,7 +62,7 @@ export function TopCustomersTable({ data, isLoading }: TopCustomersTableProps) {
               </TableHeader>
               <TableBody>
                 {data.map((customer) => (
-                  <TableRow key={customer.entity_id} className="hover:bg-muted/20 border-border/40 transition-colors">
+                  <TableRow key={customer.entity_id} className="hover:bg-muted/50 transition-colors">
                     <TableCell className="font-bold">
                       <Link href={`/customers/${customer.entity_id}`} className="hover:text-primary transition-colors">
                         {customer.entity_name}
@@ -95,8 +95,9 @@ export function TopCustomersTable({ data, isLoading }: TopCustomersTableProps) {
             </Table>
           </div>
         ) : (
-          <div className="text-center py-12 text-muted-foreground border border-dashed border-muted-foreground/20 rounded-xl bg-muted/5">
-            <span className="font-medium">No customer data available for this period.</span>
+          <div className="flex flex-col items-center justify-center text-center py-16 text-muted-foreground border-2 border-dashed border-border rounded-xl bg-muted/10">
+            <span className="font-medium text-lg">No customer data available</span>
+            <span className="text-sm mt-1 opacity-70">There is no revenue data for this period.</span>
           </div>
         )}
       </CardContent>

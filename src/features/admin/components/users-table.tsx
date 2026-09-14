@@ -70,20 +70,20 @@ export function UsersTable() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700 uppercase">
+              <thead className="bg-muted/50 text-muted-foreground uppercase">
                 <tr>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Role</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3 text-right">Actions</th>
+                  <th className="px-6 py-3 font-medium">Name</th>
+                  <th className="px-6 py-3 font-medium">Email</th>
+                  <th className="px-6 py-3 font-medium">Role</th>
+                  <th className="px-6 py-3 font-medium">Status</th>
+                  <th className="px-6 py-3 font-medium text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users?.map((user) => (
-                  <tr key={user.id} className="border-b bg-white">
+                  <tr key={user.id} className="border-b transition-colors hover:bg-muted/50">
                     <td className="px-6 py-4 font-medium">{user.name}</td>
-                    <td className="px-6 py-4 text-gray-500">{user.email}</td>
+                    <td className="px-6 py-4 text-muted-foreground">{user.email}</td>
                     <td className="px-6 py-4">
                       <Badge variant="outline" className="capitalize">
                         {user.role}
@@ -97,7 +97,7 @@ export function UsersTable() {
                       ) : user.status === 'inactive' ? (
                         <Badge variant="secondary">Inactive</Badge>
                       ) : (
-                        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100 flex items-center gap-1 w-fit">
+                        <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-500/20 dark:text-green-400 dark:hover:bg-green-500/20 flex items-center gap-1 w-fit">
                           <CheckCircle className="h-3 w-3" /> Active
                         </Badge>
                       )}

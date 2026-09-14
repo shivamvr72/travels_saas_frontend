@@ -71,23 +71,29 @@ function SidebarContent() {
 
               <div className="space-y-1">
                 {visibleItems.map((item) => {
-                  const isActive = pathname.startsWith(item.href);
+                  const isActive = item.exact 
+                    ? pathname === item.href 
+                    : pathname === item.href || pathname.startsWith(item.href + '/');
                   
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setSidebarOpen(false)}
+                      onClick={() => {
+                        if (window.innerWidth < 768) {
+                          setSidebarOpen(false);
+                        }
+                      }}
                       className={cn(
                         "group flex items-center rounded-md text-sm font-medium transition-colors hover:bg-muted hover:text-foreground relative",
-                        isActive ? "bg-primary/5 text-primary" : "text-muted-foreground",
+                        isActive ? "bg-primary/15 text-primary font-semibold dark:bg-primary/20 dark:text-primary" : "text-muted-foreground",
                       )}
                       title={!isSidebarOpen ? item.title : undefined}
                     >
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center">
                         <item.icon className={cn(
                           "h-5 w-5", 
-                          isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                          isActive ? "text-primary dark:text-primary" : "text-muted-foreground group-hover:text-foreground"
                         )} />
                       </div>
                       
