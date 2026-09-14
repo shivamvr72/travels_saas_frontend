@@ -7,6 +7,7 @@ import { AppUserMenu } from './app-user-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTenantStore } from '@/store/tenant-store';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export function AppTopNav() {
   const { toggleSidebar, setCommandPaletteOpen } = useUiStore();
@@ -72,6 +73,8 @@ export function AppTopNav() {
             <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive border-2 border-background" />
             <span className="sr-only">Notifications</span>
           </Button>
+
+          <ThemeToggle />
           
           <AppUserMenu />
         </div>
