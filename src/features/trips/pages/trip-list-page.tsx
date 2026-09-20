@@ -20,6 +20,8 @@ import { Can } from '@/shared/permissions/can';
 import { tripNumberService } from '../services/trip-number.service';
 import { Trip } from '../domain/trip-types';
 import { TripCard } from '../components/trip-card';
+import { TripBoardView } from '../components/trip-board-view';
+import { TripCalendarView } from '../components/trip-calendar-view';
 
 export function TripListPage() {
   const router = useRouter();
@@ -51,7 +53,12 @@ export function TripListPage() {
     localStorage.setItem('tripList_viewMode', val);
   };
 
-  const { data, isLoading, refetch } = useTripList({ ...params, ...queryParams });
+  const isAllItemsView = viewMode === 'calendar' || viewMode === 'board';
+  const { data, isLoading, refetch } = useTripList({
+    ...params,
+    ...(isAllItemsView ? { page_size: 100, page: 1 } : {}),
+    ...queryParams,
+  });
 
   // In FE-4.2 this will be extracted to a separate file or hook
   const columns = [
@@ -182,8 +189,8 @@ export function TripListPage() {
           <TabsList>
             <TabsTrigger value="table"><List className="h-4 w-4 mr-2" /> Table</TabsTrigger>
             <TabsTrigger value="card"><LayoutGrid className="h-4 w-4 mr-2" /> Grid</TabsTrigger>
-            <TabsTrigger value="calendar" disabled><Calendar className="h-4 w-4 mr-2" /> Calendar</TabsTrigger>
-            <TabsTrigger value="board" disabled><LayoutPanelLeft className="h-4 w-4 mr-2" /> Board</TabsTrigger>
+            <TabsTrigger value="calendar"><Calendar className="h-4 w-4 mr-2" /> Calendar</TabsTrigger>
+            <TabsTrigger value="board"><LayoutPanelLeft className="h-4 w-4 mr-2" /> Board</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -264,6 +271,14 @@ export function TripListPage() {
             />
           </div>
         </div>
+      )}
+
+      {viewMode === 'calendar' && (
+        <TripCalendarView trips={data?.items || []} isLoading={isLoading} />
+      )}
+
+      {viewMode === 'board' && (
+        <TripBoardView trips={data?.items || []} isLoading={isLoading} />
       )}
     </div>
   );
