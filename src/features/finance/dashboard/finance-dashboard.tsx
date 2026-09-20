@@ -3,12 +3,26 @@
 import { useState, useEffect } from 'react';
 import { AppPageHeader } from '@/components/shared/app-page-header';
 import { FinanceMetricsCards } from './finance-metrics-cards';
+import { RevenueExpenseChart, MonthlyFinancialPoint } from './revenue-expense-chart';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Activity } from 'lucide-react';
 
 import { apiClient } from '@/shared/lib/axios';
 import { formatDistanceToNow } from 'date-fns';
+
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatMonthLabel(periodLabel: string): string {
+  if (!periodLabel) return '';
+  const parts = periodLabel.split('-');
+  if (parts.length >= 2) {
+    const monthIdx = parseInt(parts[1], 10) - 1;
+    const yearShort = parts[0].slice(2);
+    return `${MONTH_NAMES[monthIdx] || parts[1]} '${yearShort}`;
+  }
+  return periodLabel;
+}
 
 export function FinanceDashboard() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,14 +33,23 @@ export function FinanceDashboard() {
     netProfit: 0,
     collectionRate: 0,
   });
+  const [trendData, setTrendData] = useState<MonthlyFinancialPoint[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [metricsRes, activityRes] = await Promise.all([
+        const today = new Date();
+        const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+        const startDate = `${sixMonthsAgo.getFullYear()}-${String(sixMonthsAgo.getMonth() + 1).padStart(2, '0')}-01`;
+        const endDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        const [metricsRes, activityRes, trendRes] = await Promise.all([
           apiClient.get('/api/v1/analytics/executive-summary'),
-          apiClient.get('/api/v1/activity?entity_type=TRIP&page_size=10')
+          apiClient.get('/api/v1/activity?entity_type=TRIP&page_size=10'),
+          apiClient.get('/api/v1/analytics/revenue/monthly', {
+            params: { start_date: startDate, end_date: endDate },
+          }),
         ]);
         
         const m = metricsRes?.data?.data || metricsRes?.data || {};
@@ -37,6 +60,23 @@ export function FinanceDashboard() {
           netProfit: m.net_profit || 0,
           collectionRate: m.collection_rate_pct || 0,
         });
+
+        // Parse monthly trend data
+        const rawTrend = Array.isArray(trendRes?.data?.data)
+          ? trendRes.data.data
+          : Array.isArray(trendRes?.data)
+          ? trendRes.data
+          : [];
+
+        const formattedTrend: MonthlyFinancialPoint[] = rawTrend.map((item: any) => ({
+          period_label: item.period_label || '',
+          display_label: formatMonthLabel(item.period_label || ''),
+          revenue: Number(item.revenue) || 0,
+          expenses: Number(item.expenses) || 0,
+          profit: Number(item.profit) || (Number(item.revenue) || 0) - (Number(item.expenses) || 0),
+          trip_count: item.trip_count || 0,
+        }));
+        setTrendData(formattedTrend);
 
         const rawEvents = Array.isArray(activityRes?.data?.data)
           ? activityRes.data.data
@@ -74,15 +114,15 @@ export function FinanceDashboard() {
       <FinanceMetricsCards metrics={metrics} />
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="min-h-[300px]">
-          <CardHeader>
+        <Card className="min-h-[340px]">
+          <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-2">
               <BarChart className="h-4 w-4 text-primary" />
               Revenue vs Expenses (Last 6 Months)
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex items-center justify-center h-[250px] text-muted-foreground border-t border-dashed m-6 mt-0 bg-muted/10 rounded-lg">
-            Chart visualization will be implemented here
+          <CardContent className="pt-0">
+            <RevenueExpenseChart data={trendData} isLoading={isLoading} height={260} />
           </CardContent>
         </Card>
 
