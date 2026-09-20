@@ -305,13 +305,13 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                 <div
                   key={day.toISOString()}
                   className={cn(
-                    'relative p-1.5 flex flex-col justify-between overflow-hidden border-b border-r border-border/40 transition-colors select-none group',
+                    'relative p-1.5 flex items-start gap-1.5 overflow-hidden border-b border-r border-border/40 transition-colors select-none group',
                     !inCurrentMonth && 'bg-muted/10 text-muted-foreground/30',
                     inCurrentMonth && 'bg-card'
                   )}
                 >
-                  {/* Top Bar: Date Number (Left) & Day Action/Count (Right) */}
-                  <div className="flex items-center justify-between shrink-0 mb-1">
+                  {/* Left Column: Date Indicator */}
+                  <div className="shrink-0 pt-0.5">
                     <span
                       className={cn(
                         'text-xs font-semibold flex items-center justify-center w-5 h-5 rounded-full transition-colors',
@@ -322,39 +322,41 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                     >
                       {format(day, 'd')}
                     </span>
-
-                    {/* If day has trips: clickable trips count badge */}
-                    {dayTrips.length > 0 ? (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedDay(day);
-                          setDayDialogOpen(true);
-                        }}
-                        className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
-                        title={`View all ${dayTrips.length} trips on ${format(day, 'MMM d')}`}
-                      >
-                        {dayTrips.length}
-                      </button>
-                    ) : inCurrentMonth ? (
-                      /* If day is empty: subtle '+' on hover to schedule a trip */
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/trips/new?start_date=${format(day, 'yyyy-MM-dd')}`);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer"
-                        title={`Schedule a new trip on ${format(day, 'MMM d')}`}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
-                    ) : null}
                   </div>
 
-                  {/* Trip Pills Content: Exactly 1 trip chip + 1 badge if overflow */}
-                  <div className="flex-1 flex flex-col gap-1 overflow-hidden min-h-0 justify-end">
+                  {/* Right Area (Green Box): Top Header with Action/Badge + Trips Content */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1 overflow-hidden justify-start">
+                    {/* Header Row: Trips Count Badge or '+' Add Action */}
+                    <div className="flex items-center justify-end min-h-[18px] shrink-0">
+                      {dayTrips.length > 0 ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedDay(day);
+                            setDayDialogOpen(true);
+                          }}
+                          className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
+                          title={`View all ${dayTrips.length} trips on ${format(day, 'MMM d')}`}
+                        >
+                          {dayTrips.length}
+                        </button>
+                      ) : inCurrentMonth ? (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/trips/new?start_date=${format(day, 'yyyy-MM-dd')}`);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground cursor-pointer"
+                          title={`Schedule a new trip on ${format(day, 'MMM d')}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                      ) : null}
+                    </div>
+
+                    {/* Trip Pills Content */}
                     {dayTrips.length === 1 && (
                       <div
                         onClick={(e) => {
@@ -362,7 +364,7 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                           router.push(`/trips/${dayTrips[0].id}`);
                         }}
                         className={cn(
-                          'px-1.5 py-1 rounded text-[10.5px] font-medium border truncate flex items-center gap-1 transition-all cursor-pointer shadow-2xs hover:brightness-125 hover:ring-1 hover:ring-primary/40',
+                          'px-1.5 py-0.5 rounded text-[10px] font-medium border truncate flex items-center gap-1 transition-all cursor-pointer shadow-2xs hover:brightness-125 hover:ring-1 hover:ring-primary/40',
                           STATUS_COLOR_MAP[dayTrips[0].status]?.bg || STATUS_COLOR_MAP.draft.bg,
                           STATUS_COLOR_MAP[dayTrips[0].status]?.text || STATUS_COLOR_MAP.draft.text,
                           STATUS_COLOR_MAP[dayTrips[0].status]?.border || STATUS_COLOR_MAP.draft.border
@@ -370,7 +372,7 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                         title={`Click to open Trip ${tripNumberService.format(dayTrips[0].trip_number)} (${dayTrips[0].route?.from_location || dayTrips[0].origin} → ${dayTrips[0].route?.to_location || dayTrips[0].destination})`}
                       >
                         <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', STATUS_COLOR_MAP[dayTrips[0].status]?.dot || STATUS_COLOR_MAP.draft.dot)} />
-                        <span className="font-mono text-[10px] font-bold shrink-0">
+                        <span className="font-mono text-[9.5px] font-bold shrink-0">
                           {tripNumberService.format(dayTrips[0].trip_number).replace('TRP-', '')}
                         </span>
                         <span className="truncate">
