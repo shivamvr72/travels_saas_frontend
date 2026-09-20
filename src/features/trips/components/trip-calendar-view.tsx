@@ -310,8 +310,8 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                     inCurrentMonth && 'bg-card'
                   )}
                 >
-                  {/* Left Column: Date Indicator */}
-                  <div className="shrink-0 pt-0.5">
+                  {/* Left Column: Date Indicator & Counter Badge Below It */}
+                  <div className="shrink-0 flex flex-col items-center gap-1 pt-0.5">
                     <span
                       className={cn(
                         'text-xs font-semibold flex items-center justify-center w-5 h-5 rounded-full transition-colors',
@@ -322,26 +322,29 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                     >
                       {format(day, 'd')}
                     </span>
+
+                    {/* Counter Badge moved directly below Date */}
+                    {dayTrips.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDay(day);
+                          setDayDialogOpen(true);
+                        }}
+                        className="text-[9.5px] font-mono font-bold px-1.5 py-0 rounded-full bg-primary/15 text-primary border border-primary/25 hover:bg-primary/25 transition-colors cursor-pointer"
+                        title={`View all ${dayTrips.length} trips on ${format(day, 'MMM d')}`}
+                      >
+                        {dayTrips.length}
+                      </button>
+                    )}
                   </div>
 
-                  {/* Right Area (Green Box): Top Header with Action/Badge + Trips Content */}
-                  <div className="flex-1 min-w-0 flex flex-col gap-1 overflow-hidden justify-start">
-                    {/* Header Row: Trips Count Badge or '+' Add Action */}
-                    <div className="flex items-center justify-end min-h-[18px] shrink-0">
-                      {dayTrips.length > 0 ? (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedDay(day);
-                            setDayDialogOpen(true);
-                          }}
-                          className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
-                          title={`View all ${dayTrips.length} trips on ${format(day, 'MMM d')}`}
-                        >
-                          {dayTrips.length}
-                        </button>
-                      ) : inCurrentMonth ? (
+                  {/* Right Area: Trips Content directly aligned to top */}
+                  <div className="flex-1 min-w-0 flex flex-col gap-1 overflow-hidden justify-start pt-0.5">
+                    {/* If day is empty: subtle '+' on hover to schedule a trip */}
+                    {dayTrips.length === 0 && inCurrentMonth && (
+                      <div className="flex items-center justify-end">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -353,8 +356,8 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                         >
                           <Plus className="h-3 w-3" />
                         </button>
-                      ) : null}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Trip Pills Content */}
                     {dayTrips.length === 1 && (
