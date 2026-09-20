@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Trip, TripStatus } from '../domain/trip-types';
@@ -8,7 +8,7 @@ import { TripStatusBadge } from './trip-status-badge';
 import { tripNumberService } from '../services/trip-number.service';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -25,18 +25,21 @@ import {
   MapPin,
   ArrowRight,
   ExternalLink,
+  CalendarDays,
+  Columns,
 } from 'lucide-react';
 import {
   format,
   addMonths,
   subMonths,
+  addWeeks,
+  subWeeks,
   startOfMonth,
   endOfMonth,
   startOfWeek,
   endOfWeek,
   eachDayOfInterval,
   isSameMonth,
-  isSameDay,
   isToday,
 } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -46,61 +49,150 @@ interface TripCalendarViewProps {
   isLoading?: boolean;
 }
 
-const STATUS_COLOR_MAP: Record<TripStatus | string, { bg: string; text: string; dot: string }> = {
-  draft: { bg: 'bg-slate-500/15 hover:bg-slate-500/25', text: 'text-slate-300', dot: 'bg-slate-400' },
-  assigned: { bg: 'bg-blue-500/15 hover:bg-blue-500/25', text: 'text-blue-300', dot: 'bg-blue-400' },
-  dispatched: { bg: 'bg-amber-500/15 hover:bg-amber-500/25', text: 'text-amber-300', dot: 'bg-amber-400' },
-  started: { bg: 'bg-emerald-500/15 hover:bg-emerald-500/25', text: 'text-emerald-300', dot: 'bg-emerald-400' },
-  completed: { bg: 'bg-indigo-500/15 hover:bg-indigo-500/25', text: 'text-indigo-300', dot: 'bg-indigo-400' },
-  settled: { bg: 'bg-zinc-500/15 hover:bg-zinc-500/25', text: 'text-zinc-300', dot: 'bg-zinc-400' },
-  cancelled: { bg: 'bg-rose-500/15 hover:bg-rose-500/25', text: 'text-rose-300', dot: 'bg-rose-400' },
+const STATUS_COLOR_MAP: Record<TripStatus | string, { bg: string; text: string; dot: string; border: string }> = {
+  draft: {
+    bg: 'bg-slate-500/15 hover:bg-slate-500/25',
+    text: 'text-slate-300',
+    dot: 'bg-slate-400',
+    border: 'border-slate-500/30',
+  },
+  assigned: {
+    bg: 'bg-blue-500/15 hover:bg-blue-500/25',
+    text: 'text-blue-300',
+    dot: 'bg-blue-400',
+    border: 'border-blue-500/30',
+  },
+  dispatched: {
+    bg: 'bg-amber-500/15 hover:bg-amber-500/25',
+    text: 'text-amber-300',
+    dot: 'bg-amber-400',
+    border: 'border-amber-500/30',
+  },
+  started: {
+    bg: 'bg-emerald-500/15 hover:bg-emerald-500/25',
+    text: 'text-emerald-300',
+    dot: 'bg-emerald-400',
+    border: 'border-emerald-500/30',
+  },
+  completed: {
+    bg: 'bg-indigo-500/15 hover:bg-indigo-500/25',
+    text: 'text-indigo-300',
+    dot: 'bg-indigo-400',
+    border: 'border-indigo-500/30',
+  },
+  settled: {
+    bg: 'bg-zinc-500/15 hover:bg-zinc-500/25',
+    text: 'text-zinc-300',
+    dot: 'bg-zinc-400',
+    border: 'border-zinc-500/30',
+  },
+  cancelled: {
+    bg: 'bg-rose-500/15 hover:bg-rose-500/25',
+    text: 'text-rose-300',
+    dot: 'bg-rose-400',
+    border: 'border-rose-500/30',
+  },
 };
+
+/**
+ * Robust date parser: handles YYYY-MM-DD strings without UTC timezone drift.
+ */
+function parseTripDate(dateStr?: string | null): Date | null {
+  if (!dateStr) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+  try {
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+  } catch {
+    return null;
+  }
+}
+
+function isSameDaySafe(d1: Date, d2: Date): boolean {
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
+}
 
 export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
   const router = useRouter();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [calendarMode, setCalendarMode] = useState<'month' | 'week'>('month');
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [dayDialogOpen, setDayDialogOpen] = useState(false);
 
   // Month intervals
-  const monthStart = startOfMonth(currentMonth);
+  const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
-  const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
+  const monthDays = useMemo(() => {
+    const startDate = startOfWeek(monthStart);
+    const endDate = endOfWeek(monthEnd);
+    return eachDayOfInterval({ start: startDate, end: endDate });
+  }, [monthStart, monthEnd]);
 
-  const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
-  const goToToday = () => setCurrentMonth(new Date());
+  // Week intervals
+  const weekDays = useMemo(() => {
+    const startDate = startOfWeek(currentDate);
+    const endDate = endOfWeek(currentDate);
+    return eachDayOfInterval({ start: startDate, end: endDate });
+  }, [currentDate]);
+
+  const handlePrev = () => {
+    if (calendarMode === 'month') {
+      setCurrentDate((prev) => subMonths(prev, 1));
+    } else {
+      setCurrentDate((prev) => subWeeks(prev, 1));
+    }
+  };
+
+  const handleNext = () => {
+    if (calendarMode === 'month') {
+      setCurrentDate((prev) => addMonths(prev, 1));
+    } else {
+      setCurrentDate((prev) => addWeeks(prev, 1));
+    }
+  };
+
+  const handleToday = () => {
+    setCurrentDate(new Date());
+  };
 
   const getTripsForDay = (day: Date): Trip[] => {
     return trips.filter((t) => {
-      if (!t.start_date) return false;
-      try {
-        return isSameDay(new Date(t.start_date), day);
-      } catch {
-        return false;
-      }
+      const tripDate = parseTripDate(t.start_date);
+      if (!tripDate) return false;
+      return isSameDaySafe(tripDate, day);
     });
   };
 
   const selectedDayTrips = selectedDay ? getTripsForDay(selectedDay) : [];
 
   const handleDayClick = (day: Date, dayTrips: Trip[]) => {
+    setSelectedDay(day);
     if (dayTrips.length > 0) {
-      setSelectedDay(day);
       setDayDialogOpen(true);
     }
   };
 
-  const monthTripsCount = trips.filter((t) => {
-    if (!t.start_date) return false;
-    try {
-      return isSameMonth(new Date(t.start_date), currentMonth);
-    } catch {
-      return false;
+  const activePeriodTripsCount = useMemo(() => {
+    if (calendarMode === 'month') {
+      return trips.filter((t) => {
+        const tripDate = parseTripDate(t.start_date);
+        return tripDate && isSameMonth(tripDate, currentDate);
+      }).length;
     }
-  }).length;
+    const startW = startOfWeek(currentDate);
+    const endW = endOfWeek(currentDate);
+    return trips.filter((t) => {
+      const tripDate = parseTripDate(t.start_date);
+      return tripDate && tripDate >= startW && tripDate <= endW;
+    }).length;
+  }, [trips, currentDate, calendarMode]);
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-3">
@@ -110,8 +202,9 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
           <Button
             variant="outline"
             size="icon"
-            onClick={prevMonth}
+            onClick={handlePrev}
             className="h-8 w-8"
+            aria-label="Previous Period"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -119,8 +212,9 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
           <Button
             variant="outline"
             size="icon"
-            onClick={nextMonth}
+            onClick={handleNext}
             className="h-8 w-8"
+            aria-label="Next Period"
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
@@ -128,127 +222,254 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={goToToday}
-            className="h-8 text-xs font-medium"
+            onClick={handleToday}
+            className="h-8 text-xs font-medium px-3"
           >
             Today
           </Button>
 
           <h2 className="text-base font-semibold tracking-tight ml-2">
-            {format(currentMonth, 'MMMM yyyy')}
+            {calendarMode === 'month'
+              ? format(currentDate, 'MMMM yyyy')
+              : `Week of ${format(startOfWeek(currentDate), 'MMM d')} – ${format(endOfWeek(currentDate), 'MMM d, yyyy')}`}
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Badge variant="secondary" className="text-xs px-2.5 py-1 font-medium">
-            {monthTripsCount} {monthTripsCount === 1 ? 'Trip' : 'Trips'} in {format(currentMonth, 'MMM')}
+            {activePeriodTripsCount} {activePeriodTripsCount === 1 ? 'Trip' : 'Trips'} in{' '}
+            {calendarMode === 'month' ? format(currentDate, 'MMM') : 'this week'}
           </Badge>
-        </div>
-      </div>
 
-      {/* Calendar Grid Container */}
-      <div className="flex-1 min-h-0 bg-card border rounded-xl shadow-xs overflow-hidden flex flex-col">
-        {/* Day of Week Headers */}
-        <div className="grid grid-cols-7 border-b bg-muted/40 text-center text-xs font-semibold py-2">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, idx) => (
-            <div
-              key={dayName}
+          {/* Mode Switcher: Month / Week */}
+          <div className="inline-flex rounded-lg border bg-muted/30 p-0.5">
+            <button
+              type="button"
+              onClick={() => setCalendarMode('month')}
               className={cn(
-                'py-1',
-                idx === 0 || idx === 6 ? 'text-muted-foreground' : 'text-foreground'
+                'flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all',
+                calendarMode === 'month'
+                  ? 'bg-background text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              {dayName}
-            </div>
-          ))}
-        </div>
-
-        {/* Days Matrix */}
-        <div className="grid grid-cols-7 flex-1 auto-rows-fr divide-x divide-y border-b overflow-y-auto">
-          {calendarDays.map((day) => {
-            const dayTrips = getTripsForDay(day);
-            const inCurrentMonth = isSameMonth(day, currentMonth);
-            const isTodayDate = isToday(day);
-
-            return (
-              <div
-                key={day.toISOString()}
-                onClick={() => handleDayClick(day, dayTrips)}
-                className={cn(
-                  'min-h-[110px] p-2 flex flex-col gap-1 transition-colors select-none',
-                  !inCurrentMonth && 'bg-muted/15 text-muted-foreground/40',
-                  inCurrentMonth && 'hover:bg-accent/40',
-                  dayTrips.length > 0 && 'cursor-pointer'
-                )}
-              >
-                {/* Date Number Indicator */}
-                <div className="flex items-center justify-between">
-                  <span
-                    className={cn(
-                      'text-xs font-semibold flex items-center justify-center w-6 h-6 rounded-full',
-                      isTodayDate && 'bg-primary text-primary-foreground',
-                      !isTodayDate && inCurrentMonth && 'text-foreground',
-                      !inCurrentMonth && 'text-muted-foreground/40'
-                    )}
-                  >
-                    {format(day, 'd')}
-                  </span>
-
-                  {dayTrips.length > 0 && (
-                    <span className="text-[10px] text-muted-foreground font-mono">
-                      {dayTrips.length}
-                    </span>
-                  )}
-                </div>
-
-                {/* Trip Pills */}
-                <div className="flex-1 flex flex-col gap-1 overflow-hidden mt-1">
-                  {dayTrips.slice(0, 3).map((trip) => {
-                    const colorConf = STATUS_COLOR_MAP[trip.status] || STATUS_COLOR_MAP.draft;
-
-                    return (
-                      <div
-                        key={trip.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/trips/${trip.id}`);
-                        }}
-                        className={cn(
-                          'px-2 py-1 rounded text-[11px] font-medium border border-transparent truncate flex items-center gap-1.5 transition-all cursor-pointer',
-                          colorConf.bg,
-                          colorConf.text
-                        )}
-                        title={`${tripNumberService.format(trip.trip_number)}: ${trip.route?.from_location || trip.origin} → ${trip.route?.to_location || trip.destination}`}
-                      >
-                        <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', colorConf.dot)} />
-                        <span className="font-mono text-[10px] font-semibold shrink-0">
-                          {tripNumberService.format(trip.trip_number).slice(-6)}
-                        </span>
-                        <span className="truncate">
-                          {trip.route?.from_location || trip.origin}
-                        </span>
-                      </div>
-                    );
-                  })}
-
-                  {dayTrips.length > 3 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDayClick(day, dayTrips);
-                      }}
-                      className="text-[10px] font-medium text-primary hover:underline text-left pl-1"
-                    >
-                      +{dayTrips.length - 3} more
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+              <CalendarDays className="h-3.5 w-3.5" />
+              Month
+            </button>
+            <button
+              type="button"
+              onClick={() => setCalendarMode('week')}
+              className={cn(
+                'flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all',
+                calendarMode === 'week'
+                  ? 'bg-background text-foreground shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Columns className="h-3.5 w-3.5" />
+              Week
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* MONTH VIEW */}
+      {calendarMode === 'month' && (
+        <div className="flex-1 min-h-0 bg-card border rounded-xl shadow-xs overflow-hidden flex flex-col">
+          {/* Day of Week Headers */}
+          <div className="grid grid-cols-7 border-b bg-muted/40 text-center text-xs font-semibold py-2 shrink-0">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((dayName, idx) => (
+              <div
+                key={dayName}
+                className={cn(
+                  'py-0.5',
+                  idx === 0 || idx === 6 ? 'text-muted-foreground' : 'text-foreground'
+                )}
+              >
+                {dayName}
+              </div>
+            ))}
+          </div>
+
+          {/* Days Matrix */}
+          <div className="grid grid-cols-7 flex-1 auto-rows-fr divide-x divide-y overflow-y-auto">
+            {monthDays.map((day) => {
+              const dayTrips = getTripsForDay(day);
+              const inCurrentMonth = isSameMonth(day, currentDate);
+              const isTodayDate = isToday(day);
+
+              return (
+                <div
+                  key={day.toISOString()}
+                  onClick={() => handleDayClick(day, dayTrips)}
+                  className={cn(
+                    'relative p-2 min-h-[95px] flex flex-col overflow-hidden transition-colors select-none group',
+                    !inCurrentMonth && 'bg-muted/10 text-muted-foreground/40',
+                    inCurrentMonth && 'hover:bg-accent/30',
+                    dayTrips.length > 0 && 'cursor-pointer'
+                  )}
+                >
+                  {/* Top Bar: Date Number & Trip Count */}
+                  <div className="flex items-center justify-between shrink-0 mb-1.5">
+                    <span
+                      className={cn(
+                        'text-xs font-semibold flex items-center justify-center w-6 h-6 rounded-full transition-colors',
+                        isTodayDate && 'bg-primary text-primary-foreground font-bold shadow-xs',
+                        !isTodayDate && inCurrentMonth && 'text-foreground',
+                        !inCurrentMonth && 'text-muted-foreground/30'
+                      )}
+                    >
+                      {format(day, 'd')}
+                    </span>
+
+                    {dayTrips.length > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className="h-4 px-1.5 text-[10px] font-mono font-medium rounded-full bg-muted/60"
+                      >
+                        {dayTrips.length}
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Trip Pills (Capped at 2 to strictly prevent any row bleeding) */}
+                  <div className="flex-1 flex flex-col gap-1 overflow-hidden min-h-0">
+                    {dayTrips.slice(0, 2).map((trip) => {
+                      const colorConf = STATUS_COLOR_MAP[trip.status] || STATUS_COLOR_MAP.draft;
+                      const formattedNum = tripNumberService.format(trip.trip_number);
+                      const routeText = `${trip.route?.from_location || trip.origin} → ${trip.route?.to_location || trip.destination}`;
+
+                      return (
+                        <div
+                          key={trip.id}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/trips/${trip.id}`);
+                          }}
+                          className={cn(
+                            'px-1.5 py-1 rounded text-[11px] font-medium border truncate flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs',
+                            colorConf.bg,
+                            colorConf.text,
+                            colorConf.border
+                          )}
+                          title={`${formattedNum}: ${routeText} (${trip.status})`}
+                        >
+                          <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', colorConf.dot)} />
+                          <span className="font-mono text-[10px] font-bold shrink-0 opacity-90">
+                            {formattedNum.replace('TRP-', '')}
+                          </span>
+                          <span className="truncate text-[10.5px]">
+                            {trip.route?.to_location || trip.destination || trip.origin}
+                          </span>
+                        </div>
+                      );
+                    })}
+
+                    {dayTrips.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDayClick(day, dayTrips);
+                        }}
+                        className="text-[10px] font-semibold text-primary hover:underline text-left px-1 py-0.5 rounded hover:bg-primary/10 transition-colors w-fit"
+                      >
+                        +{dayTrips.length - 2} more trips
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* WEEK VIEW */}
+      {calendarMode === 'week' && (
+        <div className="flex-1 min-h-0 bg-card border rounded-xl shadow-xs overflow-hidden flex flex-col">
+          {/* Week Columns Matrix */}
+          <div className="grid grid-cols-7 flex-1 divide-x overflow-y-auto">
+            {weekDays.map((day) => {
+              const dayTrips = getTripsForDay(day);
+              const isTodayDate = isToday(day);
+
+              return (
+                <div key={day.toISOString()} className="flex flex-col min-w-0">
+                  {/* Day Column Header */}
+                  <div
+                    className={cn(
+                      'p-2.5 border-b text-center shrink-0 flex flex-col items-center gap-1',
+                      isTodayDate ? 'bg-primary/10 border-b-primary/30' : 'bg-muted/30'
+                    )}
+                  >
+                    <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                      {format(day, 'EEE')}
+                    </span>
+                    <span
+                      className={cn(
+                        'text-sm font-semibold flex items-center justify-center w-7 h-7 rounded-full',
+                        isTodayDate ? 'bg-primary text-primary-foreground font-bold' : 'text-foreground'
+                      )}
+                    >
+                      {format(day, 'd')}
+                    </span>
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      {dayTrips.length} {dayTrips.length === 1 ? 'trip' : 'trips'}
+                    </span>
+                  </div>
+
+                  {/* Trips in Day */}
+                  <div className="flex-1 p-2 space-y-2 overflow-y-auto min-h-0">
+                    {dayTrips.length === 0 ? (
+                      <div className="py-8 text-center text-[11px] text-muted-foreground/60 border border-dashed rounded-lg p-2">
+                        No trips
+                      </div>
+                    ) : (
+                      dayTrips.map((trip) => {
+                        const colorConf = STATUS_COLOR_MAP[trip.status] || STATUS_COLOR_MAP.draft;
+                        return (
+                          <div
+                            key={trip.id}
+                            onClick={() => router.push(`/trips/${trip.id}`)}
+                            className={cn(
+                              'p-2.5 rounded-lg border bg-card/80 hover:bg-card hover:border-primary/50 transition-all cursor-pointer space-y-1.5 shadow-2xs',
+                              colorConf.border
+                            )}
+                          >
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="font-mono text-[11px] font-bold text-primary truncate">
+                                {tripNumberService.format(trip.trip_number)}
+                              </span>
+                              <TripStatusBadge status={trip.status} size="sm" />
+                            </div>
+
+                            <div className="text-[11px] font-medium text-foreground truncate">
+                              {trip.customer?.name || 'No Customer'}
+                            </div>
+
+                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground bg-muted/40 p-1.5 rounded truncate">
+                              <MapPin className="h-3 w-3 text-primary shrink-0" />
+                              <span className="truncate">{trip.route?.from_location || trip.origin}</span>
+                              <ArrowRight className="h-2.5 w-2.5 shrink-0" />
+                              <span className="truncate">{trip.route?.to_location || trip.destination}</span>
+                            </div>
+
+                            <div className="pt-1 flex items-center justify-between text-[10px] text-muted-foreground">
+                              <span className="truncate">{trip.vehicle?.license_plate || 'No Vehicle'}</span>
+                              <span className="truncate">{trip.driver?.name || 'No Driver'}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Selected Day Trips Modal */}
       <Dialog open={dayDialogOpen} onOpenChange={setDayDialogOpen}>
@@ -256,11 +477,11 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base">
               <CalendarIcon className="h-4 w-4 text-primary" />
-              Trips for {selectedDay ? format(selectedDay, 'EEEE, MMMM d, yyyy') : ''}
+              Trips on {selectedDay ? format(selectedDay, 'EEEE, MMMM d, yyyy') : ''}
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+          <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
             {selectedDayTrips.map((trip) => (
               <Card
                 key={trip.id}
@@ -268,7 +489,7 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                   setDayDialogOpen(false);
                   router.push(`/trips/${trip.id}`);
                 }}
-                className="cursor-pointer hover:border-primary/50 transition-all shadow-2xs"
+                className="cursor-pointer hover:border-primary/50 transition-all shadow-2xs border bg-card/70"
               >
                 <CardHeader className="p-3 pb-2 flex flex-row items-center justify-between gap-2">
                   <div>
@@ -283,7 +504,7 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                 </CardHeader>
 
                 <CardContent className="p-3 pt-0 space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs bg-muted/30 p-1.5 rounded">
+                  <div className="flex items-center gap-1.5 text-xs bg-muted/40 p-1.5 rounded">
                     <MapPin className="h-3 w-3 text-primary shrink-0" />
                     <span className="truncate font-medium">
                       {trip.route?.from_location || trip.origin}
@@ -294,7 +515,7 @@ export function TripCalendarView({ trips, isLoading }: TripCalendarViewProps) {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
                     <div className="flex items-center gap-1">
                       <Car className="h-3 w-3" />
                       <span>{trip.vehicle?.license_plate || 'No Vehicle'}</span>
