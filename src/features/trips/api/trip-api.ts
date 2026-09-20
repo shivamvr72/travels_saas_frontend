@@ -289,6 +289,7 @@ export const tripApi = {
       dispatcher_id: uuid(data.dispatcher_id),
       company_id: uuid(data.company_id),
       customer_id: uuid(data.customer_id),
+      booking_reference: data.booking_reference?.trim() || null,
       notes: data.remarks?.trim() || null,
       reporting_address: data.origin?.trim() || null,
       trip_type: data.trip_type || 'One Way',
@@ -296,8 +297,14 @@ export const tripApi = {
       engaged_by: null,
     };
 
-    // 2. Call backend to create trip core
-    const beTrip = await apiClient.post('/api/v1/trips/', backendPayload).then((r) => r.data as BETrip);
+    // 2. Call backend to create trip core with Idempotency-Key support
+    const idempotencyKey = (data as any).idempotency_key || (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined);
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) {
+      headers['Idempotency-Key'] = idempotencyKey;
+    }
+
+    const beTrip = await apiClient.post('/api/v1/trips/', backendPayload, { headers }).then((r) => r.data as BETrip);
 
     // 4. If locations (origin, destination) are filled, add trip location
     if (data.origin && data.destination) {

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -17,6 +18,8 @@ import { useCreateDriver } from '@/features/drivers/api';
 import { useCreateCustomer } from '@/features/customers/api';
 import { useCreateExternalHiring } from '@/features/external-hiring/api';
 import { toast } from 'sonner';
+import { apiClient } from '@/shared/lib/axios';
+import { RefreshCw } from 'lucide-react';
 
 export function TripCreateForm() {
   const router = useRouter();
@@ -24,6 +27,9 @@ export function TripCreateForm() {
   const createDriverMutation = useCreateDriver();
   const createCustomerMutation = useCreateCustomer();
   const createExternalHiringMutation = useCreateExternalHiring();
+  const [isGeneratingRef, setIsGeneratingRef] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const form = useForm<TripFormValues>({
     mode: 'onChange',
@@ -60,7 +66,24 @@ export function TripCreateForm() {
   const isExternalDriver = form.watch('isExternalDriver');
   const isExternalVehicle = form.watch('isExternalVehicle');
 
+  const fetchNextBookingRef = async () => {
+    try {
+      setIsGeneratingRef(true);
+      const res = await apiClient.get('/api/v1/bookings/next-reference');
+      if (res.data?.reference) {
+        form.setValue('booking_reference', res.data.reference, { shouldDirty: true, shouldValidate: true });
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setIsGeneratingRef(false);
+    }
+  };
+
   const onSubmit = async (data: TripFormValues) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
     try {
       let finalDriverId = data.driver_id;
       let finalVehicleId = data.vehicle_id;
@@ -92,12 +115,15 @@ export function TripCreateForm() {
         finalVehicleId = undefined; // Backend doesn't expect vehicle_id if external
       }
 
+      const idempotencyKey = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : undefined;
+
       // We override the IDs in data so the backend gets it
       const payload = { 
         ...data, 
         driver_id: finalDriverId, 
         vehicle_id: finalVehicleId,
-        external_hiring_id: finalExternalHiringId
+        external_hiring_id: finalExternalHiringId,
+        idempotency_key: idempotencyKey,
       };
 
       const result = await createTrip.mutateAsync(payload as any);
@@ -105,6 +131,9 @@ export function TripCreateForm() {
       router.push(`/trips/${result.id}`);
     } catch (error: any) {
       toast.error(error.message || 'Failed to create trip');
+    } finally {
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
@@ -166,9 +195,25 @@ export function TripCreateForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Booking Reference</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. BKG-12345" {...field} value={field.value || ''} />
-                  </FormControl>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input placeholder="Auto-generated on save (e.g. BKG-20260920-0001)" {...field} value={field.value || ''} />
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      title="Preview next automated reference"
+                      disabled={isGeneratingRef}
+                      onClick={fetchNextBookingRef}
+                      className="shrink-0 h-9 w-9"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isGeneratingRef ? 'animate-spin' : ''}`} />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Leave blank to auto-generate upon saving, or enter an existing booking reference.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
@@ -560,8 +605,8 @@ export function TripCreateForm() {
 
         <div className="flex justify-end gap-3 pt-6 border-t border-border mt-10">
           <Button type="button" variant="outline" onClick={() => router.back()} className="w-24">Cancel</Button>
-          <Button type="submit" disabled={createTrip.isPending} className="w-32">
-            {createTrip.isPending ? 'Creating...' : 'Create Trip'}
+          <Button type="submit" disabled={createTrip.isPending || isSubmitting} className="w-32">
+            {createTrip.isPending || isSubmitting ? 'Creating...' : 'Create Trip'}
           </Button>
         </div>
       </form>

@@ -90,7 +90,16 @@ export function ProfitTrendChart({
                     if (name === 'margin_pct') return [`${value.toFixed(1)}%`, 'Profit Margin'];
                     return [formatY(value), name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())];
                   }}
-                  contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    borderColor: 'hsl(var(--border))',
+                    borderRadius: '8px',
+                    color: 'hsl(var(--card-foreground))',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                  }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}
+                  cursor={{ fill: 'hsl(var(--muted) / 0.15)' }}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
                 

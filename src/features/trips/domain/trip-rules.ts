@@ -15,8 +15,10 @@ export function validateTransition(trip: Trip, targetStatus: TripStatus): RuleVi
 
   switch (targetStatus) {
     case 'dispatched':
-      // To dispatch, must have both vehicle and driver assigned
-      if (!trip.vehicle_id || !trip.driver_id) {
+      // To dispatch, must have both vehicle (internal or external) and driver assigned
+      const hasVehicle = Boolean(trip.vehicle_id || trip.external_hiring_id || trip.vehicle || trip.external_hiring);
+      const hasDriver = Boolean(trip.driver_id || trip.driver);
+      if (!hasVehicle || !hasDriver) {
         violations.push({
           code: 'INCOMPLETE_ASSIGNMENT',
           message: 'Vehicle and Driver are required before dispatching.',

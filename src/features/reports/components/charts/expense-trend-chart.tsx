@@ -41,6 +41,48 @@ export function ExpenseTrendChart({
     );
   }
 
+  // Ensure chart never renders an isolated single bar if only 1 data point is available
+  const chartData = React.useMemo(() => {
+    if (!data || data.length === 0) return [];
+    if (data.length === 1) {
+      const single = data[0];
+      let prevLabel = 'Previous Period';
+      if (single.period_label.includes('-W')) {
+        const [yStr, wStr] = single.period_label.split('-W');
+        const w = parseInt(wStr, 10);
+        const y = parseInt(yStr, 10);
+        const prevW = w > 1 ? w - 1 : 52;
+        const prevY = w > 1 ? y : y - 1;
+        prevLabel = `${prevY}-W${String(prevW).padStart(2, '0')}`;
+      } else if (single.period_label.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        const d = new Date(single.period_label);
+        d.setDate(d.getDate() - 1);
+        prevLabel = d.toISOString().split('T')[0];
+      } else if (single.period_label.match(/^\d{4}-\d{2}$/)) {
+        const [yStr, mStr] = single.period_label.split('-');
+        const m = parseInt(mStr, 10);
+        const y = parseInt(yStr, 10);
+        const prevM = m > 1 ? m - 1 : 12;
+        const prevY = m > 1 ? y : y - 1;
+        prevLabel = `${prevY}-${String(prevM).padStart(2, '0')}`;
+      }
+      return [
+        {
+          period_label: prevLabel,
+          fuel: 0,
+          maintenance: 0,
+          toll: 0,
+          driver_allowance: 0,
+          other: 0,
+          total_expenses: 0,
+          trip_count: 0,
+        },
+        single,
+      ];
+    }
+    return data;
+  }, [data]);
+
   return (
     <Card>
       <CardHeader>
@@ -48,14 +90,14 @@ export function ExpenseTrendChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {data.length === 0 ? (
+        {chartData.length === 0 ? (
           <div className="flex items-center justify-center text-muted-foreground" style={{ height }}>
             No expense data available for this period.
           </div>
         ) : (
           <div style={{ height }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                 <XAxis 
                   dataKey="period_label" 
@@ -79,7 +121,16 @@ export function ExpenseTrendChart({
                     formatY(value), 
                     name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
                   ]}
-                  contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    borderColor: 'hsl(var(--border))',
+                    borderRadius: '8px',
+                    color: 'hsl(var(--card-foreground))',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                  }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}
+                  cursor={{ fill: 'hsl(var(--muted) / 0.15)' }}
                 />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }} />
                 
