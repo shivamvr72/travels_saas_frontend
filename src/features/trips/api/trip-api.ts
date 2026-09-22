@@ -282,9 +282,10 @@ export const tripApi = {
 
     // 1. Prepare backend payload matching components['schemas']['TripCreate']
     const backendPayload = {
-      trip_date: data.start_date,
-      vehicle_id: data.vehicle_id,   // required - already validated by zod
-      driver_id: data.driver_id,     // required - already validated by zod
+      trip_date: data.start_date ? data.start_date.split('T')[0] : (data as any).trip_date,
+      vehicle_id: uuid(data.vehicle_id),
+      driver_id: uuid(data.driver_id),
+      external_hiring_id: uuid(data.external_hiring_id),
       co_driver_id: uuid(data.co_driver_id),
       dispatcher_id: uuid(data.dispatcher_id),
       company_id: uuid(data.company_id),

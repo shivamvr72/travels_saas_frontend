@@ -49,7 +49,9 @@ export const tripSchema = z.object({
   external_vehicle_reg: z.string().optional(),
   external_vehicle_make: z.string().optional(),
   external_provider_name: z.string().optional(),
-
+  external_provider_phone: z.string().optional().or(z.literal('')),
+  external_agreed_rate: z.coerce.number().min(0).optional(),
+  external_provider_type: z.enum(['registered_travel', 'individual_owner', 'rental_agency']).default('rental_agency').optional(),
 }).superRefine((data, ctx) => {
   // Cross-field: expected_end_date must be after start_date
   if (data.start_date && data.expected_end_date) {

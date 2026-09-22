@@ -163,6 +163,7 @@ export interface TripCreate {
   driver_id?: string | null;
   co_driver_id?: string | null;
   dispatcher_id?: string | null;
+  external_hiring_id?: string | null;
 }
 
 export interface TripUpdate extends Partial<TripCreate> {}

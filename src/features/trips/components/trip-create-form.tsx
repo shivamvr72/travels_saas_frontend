@@ -60,6 +60,9 @@ export function TripCreateForm() {
       external_vehicle_reg: '',
       external_vehicle_make: '',
       external_provider_name: '',
+      external_provider_phone: '',
+      external_agreed_rate: undefined,
+      external_provider_type: 'rental_agency',
     },
   });
 
@@ -104,12 +107,18 @@ export function TripCreateForm() {
       // If external vehicle is selected, create external hiring record
       if (data.isExternalVehicle && data.external_vehicle_reg) {
         const extHiring = await createExternalHiringMutation.mutateAsync({
-          provider_name: data.external_provider_name || 'External Agency',
-          provider_phone: null,
-          external_vehicle_reg: data.external_vehicle_reg,
-          vehicle_description: data.external_vehicle_make || null,
-          external_driver_name: data.isExternalDriver ? data.external_driver_name : 'Pending',
-          agreed_rate: 0,
+          provider_type: data.external_provider_type || 'rental_agency',
+          provider_name: data.external_provider_name?.trim() || 'External Agency',
+          provider_phone: data.external_provider_phone?.trim() || null,
+          external_vehicle_reg: data.external_vehicle_reg.trim(),
+          vehicle_description: data.external_vehicle_make?.trim() || null,
+          external_driver_name: data.isExternalDriver ? data.external_driver_name?.trim() || null : null,
+          with_driver: !!data.isExternalDriver,
+          start_date: data.start_date ? data.start_date.split('T')[0] : new Date().toISOString().split('T')[0],
+          end_date: data.expected_end_date ? data.expected_end_date.split('T')[0] : null,
+          agreed_rate: (data.external_agreed_rate && !isNaN(Number(data.external_agreed_rate))) ? Number(data.external_agreed_rate) : 0,
+          rate_type: 'fixed',
+          status: 'active',
         } as any);
         finalExternalHiringId = extHiring.id;
         finalVehicleId = undefined; // Backend doesn't expect vehicle_id if external
@@ -130,7 +139,13 @@ export function TripCreateForm() {
       toast.success(`Trip ${result.trip_number || 'created'} successfully`);
       router.push(`/trips/${result.id}`);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to create trip');
+      console.error('Failed to create trip:', error);
+      const detail =
+        error?.response?.data?.error?.details?.[0]?.msg ||
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to create trip';
+      toast.error(detail);
     } finally {
       isSubmittingRef.current = false;
       setIsSubmitting(false);
@@ -418,6 +433,8 @@ export function TripCreateForm() {
                             form.setValue('external_vehicle_reg', '');
                             form.setValue('external_vehicle_make', '');
                             form.setValue('external_provider_name', '');
+                            form.setValue('external_provider_phone', '');
+                            form.setValue('external_agreed_rate', undefined);
                           }
                         }}
                       />
@@ -475,6 +492,34 @@ export function TripCreateForm() {
                           </FormItem>
                         )}
                       />
+                      <div className="grid grid-cols-2 gap-3">
+                        <FormField
+                          control={form.control}
+                          name="external_agreed_rate"
+                          render={({ field: rateField }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs">Agreed Rate (₹)</FormLabel>
+                              <FormControl>
+                                <Input type="number" placeholder="0" {...rateField} value={rateField.value ?? ''} className="bg-background" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="external_provider_phone"
+                          render={({ field: phoneField }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs">Vendor Phone</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Phone (optional)" {...phoneField} value={phoneField.value || ''} className="bg-background" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                   )}
                   <FormMessage />
