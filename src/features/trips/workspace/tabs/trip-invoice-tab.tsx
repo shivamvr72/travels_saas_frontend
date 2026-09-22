@@ -8,9 +8,11 @@ import { InvoiceUpdateValues } from '@/features/finance/schemas/finance-schemas'
 import { FinanceRules } from '@/features/finance/domain/finance-rules';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, FileText, CheckCircle2, RefreshCw } from 'lucide-react';
+import { AlertCircle, FileText, CheckCircle2, RefreshCw, Download } from 'lucide-react';
 import { AppLoadingState } from '@/components/shared/app-loading-state';
 import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
+import { generateInvoicePDF } from '@/features/finance/utils/invoice-pdf-generator';
+import { toast } from 'sonner';
 
 interface TripInvoiceTabProps {
   trip: Trip;
@@ -97,6 +99,17 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    if (!invoice) return;
+    try {
+      await generateInvoicePDF(trip, invoice);
+      toast.success('Invoice PDF downloaded successfully');
+    } catch (error) {
+      console.error('Failed to generate PDF', error);
+      toast.error('Failed to generate invoice PDF');
+    }
+  };
+
   const canGenerate = FinanceRules.canGenerateInvoice(trip.status);
 
   if (isLoading) return <AppLoadingState />;
@@ -132,7 +145,11 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
               <InvoiceSummary invoice={invoice} />
               
               {FinanceRules.canEditInvoice(invoice.status) && invoice.status === 'Draft' && (
-                <div className="flex justify-end gap-4">
+                <div className="flex flex-wrap justify-end gap-3">
+                  <Button variant="outline" onClick={handleDownloadPDF}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download Draft PDF
+                  </Button>
                   <Button variant="outline" onClick={handleSyncExpenses} disabled={isSyncing}>
                     <RefreshCw className={`mr-2 h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} /> 
                     {isSyncing ? 'Syncing...' : 'Auto-Fill Billable Expenses'}
@@ -174,7 +191,11 @@ export function TripInvoiceTab({ trip }: TripInvoiceTabProps) {
                       <p>This invoice can no longer be edited as it has been generated and locked.</p>
                     </div>
                   </div>
-                  <div className="flex justify-end">
+                  <div className="flex justify-end gap-3">
+                    <Button variant="default" onClick={handleDownloadPDF}>
+                      <Download className="mr-2 h-4 w-4" />
+                      Download Invoice PDF
+                    </Button>
                     <Button variant="outline" className="text-destructive hover:bg-destructive/10" onClick={() => setIsRevertConfirmOpen(true)} disabled={isReverting}>
                       {isReverting ? 'Reverting...' : 'Revert to Draft'}
                     </Button>

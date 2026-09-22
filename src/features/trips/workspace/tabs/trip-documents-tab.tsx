@@ -6,6 +6,10 @@ import { FileText, Upload, File, Trash2, Download } from 'lucide-react';
 import { useTripDocuments } from '../../hooks/use-trip-documents';
 import { formatBytes } from '@/shared/lib/utils';
 import { format } from 'date-fns';
+import { generateInvoicePDF } from '@/features/finance/utils/invoice-pdf-generator';
+import { BillingService } from '@/features/finance/services/billing.service';
+import { apiClient } from '@/shared/lib/axios';
+import { toast } from 'sonner';
 
 interface TripDocumentsTabProps {
   trip: Trip;
@@ -29,6 +33,46 @@ export function TripDocumentsTab({ trip }: TripDocumentsTabProps) {
   const { data, isLoading } = useTripDocuments(trip.id);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadCategory, setUploadCategory] = useState<string>('');
+
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  const handleDownload = async (doc: TripDocument) => {
+    setDownloadingId(doc.id);
+    try {
+      if (doc.category === 'invoice' || !doc.file_url || doc.file_url.startsWith('#')) {
+        let invoiceData = null;
+        try {
+          invoiceData = await BillingService.getOrCreateDraftInvoice(trip.id, trip.status);
+        } catch (err) {
+          console.warn('Could not load detailed billing data for PDF, using trip info:', err);
+        }
+        await generateInvoicePDF(trip, invoiceData, doc.file_name);
+        toast.success('Invoice PDF downloaded successfully');
+        return;
+      }
+
+      // Download actual document from backend
+      const downloadUrl = doc.file_url.startsWith('http')
+        ? doc.file_url
+        : `/api/v1/documents/${doc.id}/download`;
+      const response = await apiClient.get(downloadUrl, { responseType: 'blob' });
+      const blob = new Blob([response.data], { type: doc.mime_type || 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.file_name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Document downloaded');
+    } catch (err: any) {
+      console.error('Download error:', err);
+      toast.error('Failed to download document');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const documents = data?.items || [];
 
@@ -77,15 +121,16 @@ export function TripDocumentsTab({ trip }: TripDocumentsTabProps) {
               </p>
             </div>
             <div className="flex items-center gap-1">
-              <a 
-                href={doc.file_url} 
-                download={doc.file_name} 
-                target="_blank" 
-                rel="noreferrer"
-                className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "h-8 w-8 text-muted-foreground hover:text-foreground")}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDownload(doc)}
+                disabled={downloadingId === doc.id}
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                title="Download"
               >
-                <Download className="h-4 w-4" />
-              </a>
+                <Download className={cn("h-4 w-4", downloadingId === doc.id && "animate-bounce")} />
+              </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10">
                 <Trash2 className="h-4 w-4" />
               </Button>
