@@ -57,7 +57,15 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
   return (
     <div className="flex items-center space-x-2">
       {availableActions
-        .filter((action) => action.targetStatus !== 'assigned' && action.targetStatus !== 'draft')
+        .filter((action) => {
+          if (action.targetStatus === 'assigned' || action.targetStatus === 'draft') return false;
+          if (action.targetStatus === 'dispatched' && trip.status === 'draft') {
+            const hasVeh = Boolean(trip.vehicle_id || trip.external_hiring_id || trip.vehicle || trip.external_hiring);
+            const hasDrv = Boolean(trip.driver_id || trip.driver);
+            return hasVeh && hasDrv;
+          }
+          return true;
+        })
         .map((action) => {
         const Icon = action.icon;
         

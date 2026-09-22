@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { isTerminalState } from '../domain/trip-status';
 import { useQueryClient } from '@tanstack/react-query';
 import { tripApi } from '../api/trip-api';
+import { apiClient } from '@/shared/lib/axios';
 
 export function useTripLifecycle(trip: Trip | undefined | null) {
   const dispatchMutation = useDispatchTrip();
@@ -81,6 +82,14 @@ export function useTripLifecycle(trip: Trip | undefined | null) {
     try {
       switch (target) {
         case 'dispatched':
+          // If trip is still in draft state, promote it to assigned first so backend dispatch validator passes
+          if (currentTrip.status === 'draft') {
+            try {
+              await apiClient.patch(`/api/v1/trips/${currentTrip.id}/status`, { status: 'assigned' });
+            } catch (statusErr) {
+              console.warn('Could not auto-promote draft trip to assigned:', statusErr);
+            }
+          }
           await dispatchMutation.mutateAsync({
             id: currentTrip.id,
             payload: { confirmation_notes: payload?.notes ?? null },

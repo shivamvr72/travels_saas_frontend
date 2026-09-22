@@ -1,7 +1,7 @@
 import { TripStatus } from './trip-types';
 
 export const VALID_TRANSITIONS: Record<TripStatus, TripStatus[]> = {
-  draft:      ['assigned', 'cancelled'],
+  draft:      ['assigned', 'dispatched', 'cancelled'],
   assigned:   ['dispatched', 'draft', 'cancelled'],
   dispatched: ['started', 'cancelled'],
   started:    ['completed', 'cancelled'],
