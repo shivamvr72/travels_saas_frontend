@@ -21,6 +21,7 @@ export interface CompleteTripPayload {
 
 export interface CancelTripPayload {
   cancellation_reason: string;
+  reason_code?: string;
 }
 
 export const tripLifecycleApi = {

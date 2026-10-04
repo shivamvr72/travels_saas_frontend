@@ -64,7 +64,6 @@ export function TripCancelDialog({
       {
         id: tripId,
         payload: {
-          reason_code: values.reason_code,
           cancellation_reason: fullReason,
         },
       },
