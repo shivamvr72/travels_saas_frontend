@@ -561,5 +561,13 @@ export const tripApi = {
       description: note
     });
   },
+
+  /**
+   * Permanently delete a DRAFT trip with no financial attachments.
+   * Hybrid Approach: only for status === 'draft' + no expenses or billing.
+   * Use cancelTrip() for assigned/dispatched/active trips.
+   */
+  deleteDraft: (id: string): Promise<{ message: string }> =>
+    apiClient.delete(`/api/v1/trips/${id}`).then((r) => r.data),
 };
 

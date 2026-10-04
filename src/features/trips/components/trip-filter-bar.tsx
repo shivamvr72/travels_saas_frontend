@@ -10,12 +10,16 @@ import { AppLookup } from '@/components/shared/app-lookup';
 import { X } from 'lucide-react';
 import { TripStatus, TripType, TripPriority } from '../domain/trip-types';
 import { resolveStatus } from '@/shared/status/status-config';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface TripFilterBarProps {
   filters: Record<string, any>;
   onUpdateFilter: (key: any, value: any) => void;
   onReset: () => void;
   isOpen: boolean;
+  showCancelled: boolean;
+  setShowCancelled: (show: boolean) => void;
 }
 
 const TRIP_TYPES: { label: string; value: TripType }[] = [
@@ -37,7 +41,7 @@ const TRIP_STATUS_LIST: TripStatus[] = [
   'draft', 'assigned', 'dispatched', 'started', 'completed', 'cancelled'
 ];
 
-export function TripFilterBar({ filters, onUpdateFilter, onReset, isOpen }: TripFilterBarProps) {
+export function TripFilterBar({ filters, onUpdateFilter, onReset, isOpen, showCancelled, setShowCancelled }: TripFilterBarProps) {
   if (!isOpen) return null;
 
   return (
@@ -161,6 +165,17 @@ export function TripFilterBar({ filters, onUpdateFilter, onReset, isOpen }: Trip
           onChange={(val) => onUpdateFilter('dispatcher_id', val)}
           placeholder="Filter by dispatcher..."
         />
+      </div>
+
+      <div className="flex items-center space-x-2 pt-6">
+        <Switch 
+          id="show-cancelled"
+          checked={showCancelled} 
+          onCheckedChange={setShowCancelled} 
+        />
+        <Label htmlFor="show-cancelled" className="text-xs font-medium text-muted-foreground cursor-pointer">
+          Show Cancelled
+        </Label>
       </div>
 
       <div className="flex items-end h-full pt-1.5 pb-0">

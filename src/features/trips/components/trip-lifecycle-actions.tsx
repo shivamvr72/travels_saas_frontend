@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Trip, TripStatus } from '../domain/trip-types';
 import { useTripLifecycle } from '../hooks/use-trip-lifecycle';
@@ -7,14 +9,19 @@ import { AppConfirmDialog } from '@/components/shared/app-confirm-dialog';
 import { PERMISSION_KEYS } from '@/shared/permissions';
 import { getActionDef } from '../domain/trip-actions';
 import { TripCancelDialog } from './trip-cancel-dialog';
+import { useDeleteDraftTrip } from '../api';
+import { Trash2 } from 'lucide-react';
 
 interface TripLifecycleActionsProps {
   trip: Trip;
 }
 
 export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
+  const router = useRouter();
   const { availableActions, execute, isPending } = useTripLifecycle(trip);
+  const deleteDraftMutation = useDeleteDraftTrip();
   const [confirmAction, setConfirmAction] = useState<TripStatus | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSettled, setIsSettled] = useState(false);
 
   useEffect(() => {
@@ -54,11 +61,27 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
     }
   };
 
+  const handleDeleteDraft = async () => {
+    try {
+      await deleteDraftMutation.mutateAsync(trip.id);
+      setShowDeleteConfirm(false);
+      toast.success('Draft trip deleted successfully');
+      router.push('/trips');
+    } catch (error: any) {
+      setShowDeleteConfirm(false);
+      const detail = error.response?.data?.detail;
+      const msg = typeof detail === 'string' ? detail : (error.message || 'Failed to delete draft trip');
+      toast.error(msg);
+    }
+  };
+
   return (
     <div className="flex items-center space-x-2">
       {availableActions
         .filter((action) => {
           if (action.targetStatus === 'assigned' || action.targetStatus === 'draft') return false;
+          // Hybrid approach: Draft trips use "Delete Draft", not "Cancel"
+          if (action.targetStatus === 'cancelled' && trip.status === 'draft') return false;
           if (action.targetStatus === 'dispatched' && trip.status === 'draft') {
             const hasVeh = Boolean(trip.vehicle_id || trip.external_hiring_id || trip.vehicle || trip.external_hiring);
             const hasDrv = Boolean(trip.driver_id || trip.driver);
@@ -94,6 +117,21 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
         );
       })}
 
+      {trip.status === 'draft' && (
+        <Can permission={PERMISSION_KEYS.TRIPS_DELETE}>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="gap-1.5"
+            disabled={deleteDraftMutation.isPending}
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Draft
+          </Button>
+        </Can>
+      )}
+
       <AppConfirmDialog
         isOpen={!!confirmAction && confirmAction !== 'cancelled'}
         onClose={() => setConfirmAction(null)}
@@ -108,6 +146,16 @@ export function TripLifecycleActions({ trip }: TripLifecycleActionsProps) {
         isOpen={confirmAction === 'cancelled'}
         onClose={() => setConfirmAction(null)}
         tripId={trip.id}
+      />
+
+      <AppConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteDraft}
+        title="Delete Draft Trip?"
+        description="This will permanently delete this draft trip and its associated draft records. This action cannot be undone."
+        confirmLabel={deleteDraftMutation.isPending ? "Deleting..." : "Yes, Delete Draft"}
+        isDestructive
       />
     </div>
   );

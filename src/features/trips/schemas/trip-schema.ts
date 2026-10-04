@@ -114,12 +114,23 @@ export type TripFormValues = z.infer<typeof tripSchema>;
 
 // ─── Transition & Operation Schemas ─────────────────────────────────────────
 
+// Structured cancellation reason codes — must match backend CancellationReason enum
+export const CANCELLATION_REASONS = [
+  { value: 'Created by mistake / Duplicate entry',  label: '🔁 Created by mistake / Duplicate entry' },
+  { value: 'Customer cancelled booking',             label: '👤 Customer cancelled booking' },
+  { value: 'Vehicle breakdown / Driver unavailable', label: '🚗 Vehicle breakdown / Driver unavailable' },
+  { value: 'Billing or route error',                 label: '💰 Billing or route error' },
+  { value: 'Other',                                  label: '✏️ Other (describe below)' },
+] as const;
+
+export type CancellationReasonCode = typeof CANCELLATION_REASONS[number]['value'];
+
 export const tripCancelSchema = z.object({
-  reason: z.string()
-    .min(10, 'Please provide a reason of at least 10 characters')
-    .max(500, 'Reason cannot exceed 500 characters'),
+  reason_code: z.string().min(1, 'Please select a cancellation reason'),
+  additional_notes: z.string().max(500, 'Notes cannot exceed 500 characters').optional(),
 });
 export type TripCancelValues = z.infer<typeof tripCancelSchema>;
+
 
 export const bulkCancelSchema = z.object({
   reason: z.string()

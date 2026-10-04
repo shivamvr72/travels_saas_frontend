@@ -202,6 +202,26 @@ export const useSettleTrip = () => {
   });
 };
 
+/**
+ * Permanently delete a DRAFT trip with no financial attachments.
+ * Hybrid Approach: only applicable when trip.status === 'draft'.
+ * For active/dispatched trips, use useCancelTrip() instead.
+ */
+export const useDeleteDraftTrip = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (tripId: string) => tripApi.deleteDraft(tripId),
+    onSuccess: (_data, tripId) => {
+      // Remove the detail cache entry so any lingering references return 404-like behavior
+      queryClient.removeQueries({ queryKey: tripQueryKeys.detail(tripId) });
+      // Refresh list and stats so the board updates immediately
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: tripQueryKeys.stats() });
+    },
+  });
+};
+
+
 export const useTripAssign = () => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -40,6 +40,7 @@ export function TripListPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'table' | 'card' | 'calendar' | 'board'>('table');
+  const [showCancelled, setShowCancelled] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('tripList_viewMode');
@@ -159,6 +160,10 @@ export function TripListPage() {
     setParams(prev => ({ ...prev, page }));
   };
 
+  const filteredItems = data?.items?.filter(
+    trip => showCancelled || trip.status !== 'cancelled'
+  ) || [];
+
   return (
     <div className="flex flex-col h-full gap-2">
       <AppToolbar
@@ -200,6 +205,8 @@ export function TripListPage() {
         onUpdateFilter={updateFilter}
         onReset={resetFilters}
         isOpen={isFilterOpen}
+        showCancelled={showCancelled}
+        setShowCancelled={setShowCancelled}
       />
 
       {viewMode === 'table' && (
@@ -207,7 +214,7 @@ export function TripListPage() {
           <AppDataTable
             className="flex-1 min-h-0"
             columns={columns}
-            data={data?.items || []}
+            data={filteredItems}
             isLoading={isLoading}
             selectable={true}
             selectedIds={selectedIds}
@@ -238,7 +245,7 @@ export function TripListPage() {
         <div className="flex-1 flex flex-col min-h-0 gap-2">
           <div className="flex-1 overflow-y-auto pr-2 no-scrollbar">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-4">
-              {data?.items.map(trip => (
+              {filteredItems.map(trip => (
                 <TripCard
                   key={trip.id}
                   trip={trip}
@@ -252,7 +259,7 @@ export function TripListPage() {
                   }}
                 />
               ))}
-              {(!data?.items || data.items.length === 0) && !isLoading && (
+              {filteredItems.length === 0 && !isLoading && (
                 <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-lg">
                   No trips found.
                 </div>
@@ -274,11 +281,11 @@ export function TripListPage() {
       )}
 
       {viewMode === 'calendar' && (
-        <TripCalendarView trips={data?.items || []} isLoading={isLoading} />
+        <TripCalendarView trips={filteredItems} isLoading={isLoading} />
       )}
 
       {viewMode === 'board' && (
-        <TripBoardView trips={data?.items || []} isLoading={isLoading} />
+        <TripBoardView trips={filteredItems} isLoading={isLoading} />
       )}
     </div>
   );
