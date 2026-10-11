@@ -53,7 +53,7 @@ export function AppUserMenu() {
               </span>
             </div>
             <Avatar className="h-8 w-8">
-              <AvatarImage src="" alt={user?.full_name || 'User Avatar'} />
+              <AvatarImage src={user?.avatar_url || ''} alt={user?.full_name || 'User Avatar'} />
               <AvatarFallback className="bg-primary/10 text-primary">
                 {user?.full_name ? getInitials(user.full_name) : 'U'}
               </AvatarFallback>

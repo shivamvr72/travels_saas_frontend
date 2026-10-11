@@ -187,10 +187,53 @@ export default function ProfilePage() {
                 <DialogHeader>
                   <DialogTitle>Update Profile Picture</DialogTitle>
                   <DialogDescription>
-                    Enter a URL for your new profile picture.
+                    Upload an image from your device or enter an image URL.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
+                  {editAvatarUrl && (
+                    <div className="flex justify-center">
+                      <Avatar className="h-20 w-20 border shadow">
+                        <AvatarImage src={editAvatarUrl} />
+                        <AvatarFallback>Preview</AvatarFallback>
+                      </Avatar>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <Label>Upload from Device</Label>
+                    <Input
+                      type="file"
+                      accept="image/png, image/jpeg, image/webp, image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("Image size must be less than 2MB");
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            if (typeof reader.result === 'string') {
+                              setEditAvatarUrl(reader.result);
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground">Supports PNG, JPG, or WEBP (max 2MB).</p>
+                  </div>
+
+                  <div className="relative my-1">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or image link</span>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="avatarUrl">Image URL</Label>
                     <Input
@@ -201,9 +244,19 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex gap-2 sm:justify-between">
+                  {editAvatarUrl && (
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => setEditAvatarUrl('')}
+                    >
+                      Remove
+                    </Button>
+                  )}
                   <Button type="button" onClick={handleAvatarSave} disabled={isSaving}>
-                    {isSaving ? 'Saving...' : 'Update Picture'}
+                    {isSaving ? 'Saving...' : 'Save Picture'}
                   </Button>
                 </DialogFooter>
               </DialogContent>

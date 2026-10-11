@@ -12,6 +12,9 @@ interface TenantProfile {
   travel_name?: string;
   slug: string;
   logo_url?: string;
+  primary_color?: string | null;
+  secondary_color?: string | null;
+  font_family?: string | null;
   theme?: TenantTheme;
 }
 

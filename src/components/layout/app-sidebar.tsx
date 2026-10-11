@@ -33,10 +33,18 @@ function SidebarContent() {
           href="/dashboard" 
           className={cn(
             "flex items-center overflow-hidden w-full transition-all duration-300",
-            !isSidebarOpen ? "justify-center" : "gap-2"
+            !isSidebarOpen ? "justify-center" : "gap-2.5"
           )}
         >
-          <Building2 className="h-6 w-6 shrink-0 text-primary" />
+          {tenant?.logo_url ? (
+            <img 
+              src={tenant.logo_url} 
+              alt={tenant.name || tenant.travel_name || 'Logo'} 
+              className="h-7 w-7 object-contain shrink-0 rounded"
+            />
+          ) : (
+            <Building2 className="h-6 w-6 shrink-0 text-primary" />
+          )}
           <span className={cn(
             "font-bold text-lg whitespace-nowrap transition-all duration-300",
             !isSidebarOpen ? "opacity-0 md:hidden" : "opacity-100"
@@ -129,7 +137,7 @@ function SidebarContent() {
           )}
         >
           <Avatar className="h-9 w-9 shrink-0 border border-border">
-            <AvatarImage src="" />
+            <AvatarImage src={user.avatar_url || ''} alt={user.full_name || 'User'} />
             <AvatarFallback className="bg-primary/10 text-primary">
               {user.full_name?.substring(0, 2).toUpperCase() || 'U'}
             </AvatarFallback>

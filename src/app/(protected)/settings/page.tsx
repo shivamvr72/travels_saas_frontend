@@ -1,5 +1,5 @@
-import { MetadataCrudView } from '@/components/layout/crud/metadata-crud-view';
+import { SettingsPage } from '@/features/settings/components/settings-page';
 
 export default function settingsListPage() {
-  return <MetadataCrudView feature="settings" view="list" />;
+  return <SettingsPage />;
 }

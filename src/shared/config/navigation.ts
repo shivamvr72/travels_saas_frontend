@@ -86,6 +86,7 @@ export const NAVIGATION_CONFIG: NavGroup[] = [
     group: 'Administration',
     items: [
       { title: 'Administration', href: '/admin', icon: ShieldAlert, module: 'USERS' },
+      { title: 'Settings', href: '/settings', icon: Settings, module: 'USERS' },
     ],
   },
 ];
